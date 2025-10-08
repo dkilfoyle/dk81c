@@ -1,0 +1,11 @@
+{
+  "projectName": "Zxbasic",
+  "languages": [
+    {
+      "id": "zxbasic",
+      "grammar": "zxbasic.langium",
+      "fileExtensions": ["bas"]
+    }
+  ],
+  "out": "generated"
+}

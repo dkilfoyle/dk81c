@@ -1,0 +1,82 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "zxbasic",
+  "patterns": [
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    },
+    { "include": "#comments" }
+  ],
+  "repository": {
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.zxbasic",
+          "match": "(?i:\\b(AT|CLEAR|CLS|CONT|COPY|DIM|FAST|FOR|GOSUB|GOTO|IF|INPUT|LET|LIST|LLIST|LOAD|LPRINT|NEW|NEXT|PAUSE|PLOT|POKE|PRINT|RAND|REM|RETURN|RUN|SAVE|SCROLL|SLOW|STEP|STOP|TAB|THEN|TO|UNPLOT)\\b)"
+        },
+        {
+          "name": "keyword.operator.logical.zxbasic",
+          "match": "(?i:\\b(AND|NOT|OR)\\b)"
+        },
+        {
+          "name": "entity.name.function.zxbasic",
+          "match": "(?i:\\b(ABS|ACS|ASN|ATN|CHR|CODE|COS|EXP|INKEY|INT|LEN|LN|PEEK|PI|RND|SGN|SIN|SQR|STR|TAN|TLS|USR|VAL)\\b)"
+        },
+        {
+          "name": "comment.line.zxbasic",
+          "match": "(?i:(\\bREM\\b|').*)"
+        },
+        {
+          "name": "comment.block.zxbasic",
+          "begin": "/'",
+          "end": "'/"
+        },
+        {
+          "name": "variable.name.zxbasic",
+          "match": "\\b[A-Za-z](\\$|[A-Za-z0-9]*)"
+        },
+        {
+          "name": "constant.numeric.zxbasic",
+          "match": "-?\\b((([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f)?|(\\$[a-zA-Z0-9]+)|(@[0|1]+)\\b"
+        },
+        {
+          "match": "&|\\*|\\-|\\+|=|<>|<|>|\\|\\^|<<|>>|~",
+          "name": "keyword.operator.arithmetic.zxbasic"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.zxbasic",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.zxbasic",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.zxbasic",
+          "begin": "(^[ \\t]+)?(?=#)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.whitespace.comment.leading.zxbasic" }
+          },
+          "end": "(?!\\G)",
+          "patterns": [
+            {
+              "name": "comment.line.double-slash.zxbasic",
+              "match": ".*"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "scopeName": "source.zxbasic"
+}
