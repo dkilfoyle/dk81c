@@ -220,7 +220,7 @@ export class Alu {
       ((this.regs.f | this.regs.a) & (Flag.X3 | Flag.X5));
   }
 
-  add8(value: number, carry = false) {
+  add(value: number, carry = false) {
     let result = (this.regs.a + value) & 0xffff;
     if (carry && (this.regs.f & Flag.C) !== 0) result = (result + 1) & 0xffff;
     const lookup = (((this.regs.a & 0x88) >> 3) | ((value & 0x88) >> 2) | ((result & 0x88) >> 1)) & 0xff;
@@ -232,11 +232,11 @@ export class Alu {
       this.sz53Table[this.regs.a];
   }
 
-  adc8(value: number) {
-    this.add8(value, true);
+  adc(value: number) {
+    this.add(value, true);
   }
 
-  sub8(value: number, carry = false) {
+  sub(value: number, carry = false) {
     let result = (this.regs.a - value) & 0xffff;
     if (carry && (this.regs.f & Flag.C) !== 0) result = (result - 1) & 0xffff;
     const lookup = (((this.regs.a & 0x88) >> 3) | ((value & 0x88) >> 2) | ((result & 0x88) >> 1)) & 0xff;
@@ -249,27 +249,27 @@ export class Alu {
       this.sz53Table[this.regs.a];
   }
 
-  sbc8(value: number) {
-    this.sub8(value, true);
+  sbc(value: number) {
+    this.sub(value, true);
   }
 
-  and8(value: number) {
+  and(value: number) {
     this.regs.a &= value;
     this.regs.f = this.sz53pTable[this.regs.a];
     this.regs.f |= Flag.H;
   }
 
-  xor8(value: number) {
+  xor(value: number) {
     this.regs.a ^= value;
     this.regs.f = this.sz53pTable[this.regs.a];
   }
 
-  or8(value: number) {
+  or(value: number) {
     this.regs.a |= value;
     this.regs.f = this.sz53pTable[this.regs.a];
   }
 
-  cp8(value: number) {
+  cp(value: number) {
     const diff = (this.regs.a - value) & 0xffff;
     const lookup = (((this.regs.a & 0x88) >> 3) | ((value & 0x88) >> 2) | ((diff & 0x88) >> 1)) & 0xff;
     let f = Flag.N;

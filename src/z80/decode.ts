@@ -25,14 +25,13 @@ opcodes.set(0x00, {
   name: "NOP",
   bytes: "00",
   group: "CPU Control",
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   fn: (z80) => {},
 });
 
 // {n:1, x:0, y:0, z:1, p:0, q:0}
 // LD $RP,$nn
 opcodes.set(0x01, {
-  name: "LD bc,$nn",
+  name: "LD BC,$NN",
   bytes: "01 XX XX",
   doc: "bc=nn",
   group: "Load 16bit",
@@ -70,7 +69,7 @@ opcodes.set(0x02, {
 // {n:3, x:0, y:0, z:3, p:0, q:0}
 // INC $RP
 opcodes.set(0x03, {
-  name: "INC bc",
+  name: "INC BC",
   bytes: "03",
   doc: "bc+=1",
   group: "ALU 16bit",
@@ -84,7 +83,7 @@ opcodes.set(0x03, {
 // {n:4, x:0, y:0, z:4, p:0, q:0}
 // INC $RY
 opcodes.set(0x04, {
-  name: "INC b",
+  name: "INC B",
   bytes: "04",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -96,7 +95,7 @@ opcodes.set(0x04, {
 // {n:5, x:0, y:0, z:5, p:0, q:0}
 // DEC $RY
 opcodes.set(0x05, {
-  name: "DEC b",
+  name: "DEC B",
   bytes: "05",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -108,7 +107,7 @@ opcodes.set(0x05, {
 // {n:6, x:0, y:0, z:6, p:0, q:0}
 // LD $RY,$n
 opcodes.set(0x06, {
-  name: "LD b,$n",
+  name: "LD B,$N",
   bytes: "06 XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -148,7 +147,7 @@ opcodes.set(0x08, {
 // {n:9, x:0, y:1, z:1, p:0, q:1}
 // ADD HL,$RP
 opcodes.set(0x09, {
-  name: "ADD HL,bc",
+  name: "ADD HL,BC",
   bytes: "09",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -177,7 +176,7 @@ opcodes.set(0x0a, {
 // {n:11, x:0, y:1, z:3, p:0, q:1}
 // DEC $RP
 opcodes.set(0x0b, {
-  name: "DEC bc",
+  name: "DEC BC",
   bytes: "0b",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -190,7 +189,7 @@ opcodes.set(0x0b, {
 // {n:12, x:0, y:1, z:4, p:0, q:1}
 // INC $RY
 opcodes.set(0x0c, {
-  name: "INC c",
+  name: "INC C",
   bytes: "0c",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -202,7 +201,7 @@ opcodes.set(0x0c, {
 // {n:13, x:0, y:1, z:5, p:0, q:1}
 // DEC $RY
 opcodes.set(0x0d, {
-  name: "DEC c",
+  name: "DEC C",
   bytes: "0d",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -214,7 +213,7 @@ opcodes.set(0x0d, {
 // {n:14, x:0, y:1, z:6, p:0, q:1}
 // LD $RY,$n
 opcodes.set(0x0e, {
-  name: "LD c,$n",
+  name: "LD C,$N",
   bytes: "0e XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -242,7 +241,7 @@ opcodes.set(0x0f, {
 // {n:16, x:0, y:2, z:0, p:1, q:0}
 // DJNZ $n
 opcodes.set(0x10, {
-  name: "DJNZ $n",
+  name: "DJNZ $N",
   bytes: "10 XX",
   doc: "B=B-1, if B != 0 then PC+=n",
   group: "Control flow",
@@ -268,7 +267,7 @@ opcodes.set(0x10, {
 // {n:17, x:0, y:2, z:1, p:1, q:0}
 // LD $RP,$nn
 opcodes.set(0x11, {
-  name: "LD de,$nn",
+  name: "LD DE,$NN",
   bytes: "11 XX XX",
   doc: "de=nn",
   group: "Load 16bit",
@@ -306,7 +305,7 @@ opcodes.set(0x12, {
 // {n:19, x:0, y:2, z:3, p:1, q:0}
 // INC $RP
 opcodes.set(0x13, {
-  name: "INC de",
+  name: "INC DE",
   bytes: "13",
   doc: "de+=1",
   group: "ALU 16bit",
@@ -320,7 +319,7 @@ opcodes.set(0x13, {
 // {n:20, x:0, y:2, z:4, p:1, q:0}
 // INC $RY
 opcodes.set(0x14, {
-  name: "INC d",
+  name: "INC D",
   bytes: "14",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -332,7 +331,7 @@ opcodes.set(0x14, {
 // {n:21, x:0, y:2, z:5, p:1, q:0}
 // DEC $RY
 opcodes.set(0x15, {
-  name: "DEC d",
+  name: "DEC D",
   bytes: "15",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -344,7 +343,7 @@ opcodes.set(0x15, {
 // {n:22, x:0, y:2, z:6, p:1, q:0}
 // LD $RY,$n
 opcodes.set(0x16, {
-  name: "LD d,$n",
+  name: "LD D,$N",
   bytes: "16 XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -372,7 +371,7 @@ opcodes.set(0x17, {
 // {n:24, x:0, y:3, z:0, p:1, q:1}
 // JR $n
 opcodes.set(0x18, {
-  name: "JR $n",
+  name: "JR $N",
   bytes: "18 XX",
   doc: "PC=PC+n",
   group: "Control flow",
@@ -391,7 +390,7 @@ opcodes.set(0x18, {
 // {n:25, x:0, y:3, z:1, p:1, q:1}
 // ADD HL,$RP
 opcodes.set(0x19, {
-  name: "ADD HL,de",
+  name: "ADD HL,DE",
   bytes: "19",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -420,7 +419,7 @@ opcodes.set(0x1a, {
 // {n:27, x:0, y:3, z:3, p:1, q:1}
 // DEC $RP
 opcodes.set(0x1b, {
-  name: "DEC de",
+  name: "DEC DE",
   bytes: "1b",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -433,7 +432,7 @@ opcodes.set(0x1b, {
 // {n:28, x:0, y:3, z:4, p:1, q:1}
 // INC $RY
 opcodes.set(0x1c, {
-  name: "INC e",
+  name: "INC E",
   bytes: "1c",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -445,7 +444,7 @@ opcodes.set(0x1c, {
 // {n:29, x:0, y:3, z:5, p:1, q:1}
 // DEC $RY
 opcodes.set(0x1d, {
-  name: "DEC e",
+  name: "DEC E",
   bytes: "1d",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -457,7 +456,7 @@ opcodes.set(0x1d, {
 // {n:30, x:0, y:3, z:6, p:1, q:1}
 // LD $RY,$n
 opcodes.set(0x1e, {
-  name: "LD e,$n",
+  name: "LD E,$N",
   bytes: "1e XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -485,7 +484,7 @@ opcodes.set(0x1f, {
 // {n:32, x:0, y:4, z:0, p:2, q:0}
 // JR $CC-4,$n
 opcodes.set(0x20, {
-  name: "JR NZ,$n",
+  name: "JR NZ,$N",
   bytes: "20 XX",
   doc: "if NZ then PC=PC+n",
   group: "Control flow",
@@ -505,7 +504,7 @@ opcodes.set(0x20, {
 // {n:33, x:0, y:4, z:1, p:2, q:0}
 // LD $RP,$nn
 opcodes.set(0x21, {
-  name: "LD hl,$nn",
+  name: "LD HL,$NN",
   bytes: "21 XX XX",
   doc: "hl=nn",
   group: "Load 16bit",
@@ -526,7 +525,7 @@ opcodes.set(0x21, {
 // {n:34, x:0, y:4, z:2, p:2, q:0}
 // LD ($nn),HL
 opcodes.set(0x22, {
-  name: "LD ($nn),HL",
+  name: "LD ($NN),HL",
   bytes: "22 XX XX",
   doc: "[nn]=HL",
   group: "Load 16bit",
@@ -556,7 +555,7 @@ opcodes.set(0x22, {
 // {n:35, x:0, y:4, z:3, p:2, q:0}
 // INC $RP
 opcodes.set(0x23, {
-  name: "INC hl",
+  name: "INC HL",
   bytes: "23",
   doc: "hl+=1",
   group: "ALU 16bit",
@@ -570,7 +569,7 @@ opcodes.set(0x23, {
 // {n:36, x:0, y:4, z:4, p:2, q:0}
 // INC $RY
 opcodes.set(0x24, {
-  name: "INC h",
+  name: "INC H",
   bytes: "24",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -582,7 +581,7 @@ opcodes.set(0x24, {
 // {n:37, x:0, y:4, z:5, p:2, q:0}
 // DEC $RY
 opcodes.set(0x25, {
-  name: "DEC h",
+  name: "DEC H",
   bytes: "25",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -594,7 +593,7 @@ opcodes.set(0x25, {
 // {n:38, x:0, y:4, z:6, p:2, q:0}
 // LD $RY,$n
 opcodes.set(0x26, {
-  name: "LD h,$n",
+  name: "LD H,$N",
   bytes: "26 XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -622,7 +621,7 @@ opcodes.set(0x27, {
 // {n:40, x:0, y:5, z:0, p:2, q:1}
 // JR $CC-4,$n
 opcodes.set(0x28, {
-  name: "JR Z,$n",
+  name: "JR Z,$N",
   bytes: "28 XX",
   doc: "if Z then PC=PC+n",
   group: "Control flow",
@@ -642,7 +641,7 @@ opcodes.set(0x28, {
 // {n:41, x:0, y:5, z:1, p:2, q:1}
 // ADD HL,$RP
 opcodes.set(0x29, {
-  name: "ADD HL,hl",
+  name: "ADD HL,HL",
   bytes: "29",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -655,7 +654,7 @@ opcodes.set(0x29, {
 // {n:42, x:0, y:5, z:2, p:2, q:1}
 // LD HL,($nn)
 opcodes.set(0x2a, {
-  name: "LD HL,($nn)",
+  name: "LD HL,($NN)",
   bytes: "2a XX XX",
   doc: "HL=[nn]",
   group: "Load 16bit",
@@ -685,7 +684,7 @@ opcodes.set(0x2a, {
 // {n:43, x:0, y:5, z:3, p:2, q:1}
 // DEC $RP
 opcodes.set(0x2b, {
-  name: "DEC hl",
+  name: "DEC HL",
   bytes: "2b",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -698,7 +697,7 @@ opcodes.set(0x2b, {
 // {n:44, x:0, y:5, z:4, p:2, q:1}
 // INC $RY
 opcodes.set(0x2c, {
-  name: "INC l",
+  name: "INC L",
   bytes: "2c",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -710,7 +709,7 @@ opcodes.set(0x2c, {
 // {n:45, x:0, y:5, z:5, p:2, q:1}
 // DEC $RY
 opcodes.set(0x2d, {
-  name: "DEC l",
+  name: "DEC L",
   bytes: "2d",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -722,7 +721,7 @@ opcodes.set(0x2d, {
 // {n:46, x:0, y:5, z:6, p:2, q:1}
 // LD $RY,$n
 opcodes.set(0x2e, {
-  name: "LD l,$n",
+  name: "LD L,$N",
   bytes: "2e XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -750,7 +749,7 @@ opcodes.set(0x2f, {
 // {n:48, x:0, y:6, z:0, p:3, q:0}
 // JR $CC-4,$n
 opcodes.set(0x30, {
-  name: "JR NC,$n",
+  name: "JR NC,$N",
   bytes: "30 XX",
   doc: "if NC then PC=PC+n",
   group: "Control flow",
@@ -770,7 +769,7 @@ opcodes.set(0x30, {
 // {n:49, x:0, y:6, z:1, p:3, q:0}
 // LD $RP,$nn
 opcodes.set(0x31, {
-  name: "LD sp,$nn",
+  name: "LD SP,$NN",
   bytes: "31 XX XX",
   doc: "sp=nn",
   group: "Load 16bit",
@@ -791,7 +790,7 @@ opcodes.set(0x31, {
 // {n:50, x:0, y:6, z:2, p:3, q:0}
 // LD ($nn),A
 opcodes.set(0x32, {
-  name: "LD ($nn),A",
+  name: "LD ($NN),A",
   bytes: "32 XX XX",
   doc: "[nn]=A",
   group: "Load 16bit",
@@ -818,7 +817,7 @@ opcodes.set(0x32, {
 // {n:51, x:0, y:6, z:3, p:3, q:0}
 // INC $RP
 opcodes.set(0x33, {
-  name: "INC sp",
+  name: "INC SP",
   bytes: "33",
   doc: "sp+=1",
   group: "ALU 16bit",
@@ -868,7 +867,7 @@ opcodes.set(0x35, {
 // {n:54, x:0, y:6, z:6, p:3, q:0}
 // LD (HL),$n
 opcodes.set(0x36, {
-  name: "LD (HL),$n",
+  name: "LD (HL),$N",
   bytes: "36 XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -898,7 +897,7 @@ opcodes.set(0x37, {
 // {n:56, x:0, y:7, z:0, p:3, q:1}
 // JR $CC-4,$n
 opcodes.set(0x38, {
-  name: "JR C,$n",
+  name: "JR C,$N",
   bytes: "38 XX",
   doc: "if C then PC=PC+n",
   group: "Control flow",
@@ -918,7 +917,7 @@ opcodes.set(0x38, {
 // {n:57, x:0, y:7, z:1, p:3, q:1}
 // ADD HL,$RP
 opcodes.set(0x39, {
-  name: "ADD HL,sp",
+  name: "ADD HL,SP",
   bytes: "39",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -931,7 +930,7 @@ opcodes.set(0x39, {
 // {n:58, x:0, y:7, z:2, p:3, q:1}
 // LD A,($nn)
 opcodes.set(0x3a, {
-  name: "LD A,($nn)",
+  name: "LD A,($NN)",
   bytes: "3a XX XX",
   doc: "A=[nn]",
   group: "Load 16bit",
@@ -957,7 +956,7 @@ opcodes.set(0x3a, {
 // {n:59, x:0, y:7, z:3, p:3, q:1}
 // DEC $RP
 opcodes.set(0x3b, {
-  name: "DEC sp",
+  name: "DEC SP",
   bytes: "3b",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -970,7 +969,7 @@ opcodes.set(0x3b, {
 // {n:60, x:0, y:7, z:4, p:3, q:1}
 // INC $RY
 opcodes.set(0x3c, {
-  name: "INC a",
+  name: "INC A",
   bytes: "3c",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -982,7 +981,7 @@ opcodes.set(0x3c, {
 // {n:61, x:0, y:7, z:5, p:3, q:1}
 // DEC $RY
 opcodes.set(0x3d, {
-  name: "DEC a",
+  name: "DEC A",
   bytes: "3d",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -994,7 +993,7 @@ opcodes.set(0x3d, {
 // {n:62, x:0, y:7, z:6, p:3, q:1}
 // LD $RY,$n
 opcodes.set(0x3e, {
-  name: "LD a,$n",
+  name: "LD A,$N",
   bytes: "3e XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1022,7 +1021,7 @@ opcodes.set(0x3f, {
 // {n:64, x:1, y:0, z:0, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0x40, {
-  name: "LD b,b",
+  name: "LD B,B",
   bytes: "40",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1034,7 +1033,7 @@ opcodes.set(0x40, {
 // {n:65, x:1, y:0, z:1, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0x41, {
-  name: "LD b,c",
+  name: "LD B,C",
   bytes: "41",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1046,7 +1045,7 @@ opcodes.set(0x41, {
 // {n:66, x:1, y:0, z:2, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0x42, {
-  name: "LD b,d",
+  name: "LD B,D",
   bytes: "42",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1058,7 +1057,7 @@ opcodes.set(0x42, {
 // {n:67, x:1, y:0, z:3, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0x43, {
-  name: "LD b,e",
+  name: "LD B,E",
   bytes: "43",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1070,7 +1069,7 @@ opcodes.set(0x43, {
 // {n:68, x:1, y:0, z:4, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0x44, {
-  name: "LD b,h",
+  name: "LD B,H",
   bytes: "44",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1082,7 +1081,7 @@ opcodes.set(0x44, {
 // {n:69, x:1, y:0, z:5, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0x45, {
-  name: "LD b,l",
+  name: "LD B,L",
   bytes: "45",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1094,7 +1093,7 @@ opcodes.set(0x45, {
 // {n:70, x:1, y:0, z:6, p:0, q:0}
 // LD $RY,(HL)
 opcodes.set(0x46, {
-  name: "LD b,(HL)",
+  name: "LD B,(HL)",
   bytes: "46",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1108,7 +1107,7 @@ opcodes.set(0x46, {
 // {n:71, x:1, y:0, z:7, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0x47, {
-  name: "LD b,a",
+  name: "LD B,A",
   bytes: "47",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1120,7 +1119,7 @@ opcodes.set(0x47, {
 // {n:72, x:1, y:1, z:0, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0x48, {
-  name: "LD c,b",
+  name: "LD C,B",
   bytes: "48",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1132,7 +1131,7 @@ opcodes.set(0x48, {
 // {n:73, x:1, y:1, z:1, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0x49, {
-  name: "LD c,c",
+  name: "LD C,C",
   bytes: "49",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1144,7 +1143,7 @@ opcodes.set(0x49, {
 // {n:74, x:1, y:1, z:2, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0x4a, {
-  name: "LD c,d",
+  name: "LD C,D",
   bytes: "4a",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1156,7 +1155,7 @@ opcodes.set(0x4a, {
 // {n:75, x:1, y:1, z:3, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0x4b, {
-  name: "LD c,e",
+  name: "LD C,E",
   bytes: "4b",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1168,7 +1167,7 @@ opcodes.set(0x4b, {
 // {n:76, x:1, y:1, z:4, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0x4c, {
-  name: "LD c,h",
+  name: "LD C,H",
   bytes: "4c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1180,7 +1179,7 @@ opcodes.set(0x4c, {
 // {n:77, x:1, y:1, z:5, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0x4d, {
-  name: "LD c,l",
+  name: "LD C,L",
   bytes: "4d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1192,7 +1191,7 @@ opcodes.set(0x4d, {
 // {n:78, x:1, y:1, z:6, p:0, q:1}
 // LD $RY,(HL)
 opcodes.set(0x4e, {
-  name: "LD c,(HL)",
+  name: "LD C,(HL)",
   bytes: "4e",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1206,7 +1205,7 @@ opcodes.set(0x4e, {
 // {n:79, x:1, y:1, z:7, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0x4f, {
-  name: "LD c,a",
+  name: "LD C,A",
   bytes: "4f",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1218,7 +1217,7 @@ opcodes.set(0x4f, {
 // {n:80, x:1, y:2, z:0, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0x50, {
-  name: "LD d,b",
+  name: "LD D,B",
   bytes: "50",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1230,7 +1229,7 @@ opcodes.set(0x50, {
 // {n:81, x:1, y:2, z:1, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0x51, {
-  name: "LD d,c",
+  name: "LD D,C",
   bytes: "51",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1242,7 +1241,7 @@ opcodes.set(0x51, {
 // {n:82, x:1, y:2, z:2, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0x52, {
-  name: "LD d,d",
+  name: "LD D,D",
   bytes: "52",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1254,7 +1253,7 @@ opcodes.set(0x52, {
 // {n:83, x:1, y:2, z:3, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0x53, {
-  name: "LD d,e",
+  name: "LD D,E",
   bytes: "53",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1266,7 +1265,7 @@ opcodes.set(0x53, {
 // {n:84, x:1, y:2, z:4, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0x54, {
-  name: "LD d,h",
+  name: "LD D,H",
   bytes: "54",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1278,7 +1277,7 @@ opcodes.set(0x54, {
 // {n:85, x:1, y:2, z:5, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0x55, {
-  name: "LD d,l",
+  name: "LD D,L",
   bytes: "55",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1290,7 +1289,7 @@ opcodes.set(0x55, {
 // {n:86, x:1, y:2, z:6, p:1, q:0}
 // LD $RY,(HL)
 opcodes.set(0x56, {
-  name: "LD d,(HL)",
+  name: "LD D,(HL)",
   bytes: "56",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1304,7 +1303,7 @@ opcodes.set(0x56, {
 // {n:87, x:1, y:2, z:7, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0x57, {
-  name: "LD d,a",
+  name: "LD D,A",
   bytes: "57",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1316,7 +1315,7 @@ opcodes.set(0x57, {
 // {n:88, x:1, y:3, z:0, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0x58, {
-  name: "LD e,b",
+  name: "LD E,B",
   bytes: "58",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1328,7 +1327,7 @@ opcodes.set(0x58, {
 // {n:89, x:1, y:3, z:1, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0x59, {
-  name: "LD e,c",
+  name: "LD E,C",
   bytes: "59",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1340,7 +1339,7 @@ opcodes.set(0x59, {
 // {n:90, x:1, y:3, z:2, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0x5a, {
-  name: "LD e,d",
+  name: "LD E,D",
   bytes: "5a",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1352,7 +1351,7 @@ opcodes.set(0x5a, {
 // {n:91, x:1, y:3, z:3, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0x5b, {
-  name: "LD e,e",
+  name: "LD E,E",
   bytes: "5b",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1364,7 +1363,7 @@ opcodes.set(0x5b, {
 // {n:92, x:1, y:3, z:4, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0x5c, {
-  name: "LD e,h",
+  name: "LD E,H",
   bytes: "5c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1376,7 +1375,7 @@ opcodes.set(0x5c, {
 // {n:93, x:1, y:3, z:5, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0x5d, {
-  name: "LD e,l",
+  name: "LD E,L",
   bytes: "5d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1388,7 +1387,7 @@ opcodes.set(0x5d, {
 // {n:94, x:1, y:3, z:6, p:1, q:1}
 // LD $RY,(HL)
 opcodes.set(0x5e, {
-  name: "LD e,(HL)",
+  name: "LD E,(HL)",
   bytes: "5e",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1402,7 +1401,7 @@ opcodes.set(0x5e, {
 // {n:95, x:1, y:3, z:7, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0x5f, {
-  name: "LD e,a",
+  name: "LD E,A",
   bytes: "5f",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1414,7 +1413,7 @@ opcodes.set(0x5f, {
 // {n:96, x:1, y:4, z:0, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0x60, {
-  name: "LD h,b",
+  name: "LD H,B",
   bytes: "60",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1426,7 +1425,7 @@ opcodes.set(0x60, {
 // {n:97, x:1, y:4, z:1, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0x61, {
-  name: "LD h,c",
+  name: "LD H,C",
   bytes: "61",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1438,7 +1437,7 @@ opcodes.set(0x61, {
 // {n:98, x:1, y:4, z:2, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0x62, {
-  name: "LD h,d",
+  name: "LD H,D",
   bytes: "62",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1450,7 +1449,7 @@ opcodes.set(0x62, {
 // {n:99, x:1, y:4, z:3, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0x63, {
-  name: "LD h,e",
+  name: "LD H,E",
   bytes: "63",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1462,7 +1461,7 @@ opcodes.set(0x63, {
 // {n:100, x:1, y:4, z:4, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0x64, {
-  name: "LD h,h",
+  name: "LD H,H",
   bytes: "64",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1474,7 +1473,7 @@ opcodes.set(0x64, {
 // {n:101, x:1, y:4, z:5, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0x65, {
-  name: "LD h,l",
+  name: "LD H,L",
   bytes: "65",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1486,7 +1485,7 @@ opcodes.set(0x65, {
 // {n:102, x:1, y:4, z:6, p:2, q:0}
 // LD $RY,(HL)
 opcodes.set(0x66, {
-  name: "LD h,(HL)",
+  name: "LD H,(HL)",
   bytes: "66",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1500,7 +1499,7 @@ opcodes.set(0x66, {
 // {n:103, x:1, y:4, z:7, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0x67, {
-  name: "LD h,a",
+  name: "LD H,A",
   bytes: "67",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1512,7 +1511,7 @@ opcodes.set(0x67, {
 // {n:104, x:1, y:5, z:0, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0x68, {
-  name: "LD l,b",
+  name: "LD L,B",
   bytes: "68",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1524,7 +1523,7 @@ opcodes.set(0x68, {
 // {n:105, x:1, y:5, z:1, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0x69, {
-  name: "LD l,c",
+  name: "LD L,C",
   bytes: "69",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1536,7 +1535,7 @@ opcodes.set(0x69, {
 // {n:106, x:1, y:5, z:2, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0x6a, {
-  name: "LD l,d",
+  name: "LD L,D",
   bytes: "6a",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1548,7 +1547,7 @@ opcodes.set(0x6a, {
 // {n:107, x:1, y:5, z:3, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0x6b, {
-  name: "LD l,e",
+  name: "LD L,E",
   bytes: "6b",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1560,7 +1559,7 @@ opcodes.set(0x6b, {
 // {n:108, x:1, y:5, z:4, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0x6c, {
-  name: "LD l,h",
+  name: "LD L,H",
   bytes: "6c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1572,7 +1571,7 @@ opcodes.set(0x6c, {
 // {n:109, x:1, y:5, z:5, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0x6d, {
-  name: "LD l,l",
+  name: "LD L,L",
   bytes: "6d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1584,7 +1583,7 @@ opcodes.set(0x6d, {
 // {n:110, x:1, y:5, z:6, p:2, q:1}
 // LD $RY,(HL)
 opcodes.set(0x6e, {
-  name: "LD l,(HL)",
+  name: "LD L,(HL)",
   bytes: "6e",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1598,7 +1597,7 @@ opcodes.set(0x6e, {
 // {n:111, x:1, y:5, z:7, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0x6f, {
-  name: "LD l,a",
+  name: "LD L,A",
   bytes: "6f",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1610,7 +1609,7 @@ opcodes.set(0x6f, {
 // {n:112, x:1, y:6, z:0, p:3, q:0}
 // LD (HL),$RZ
 opcodes.set(0x70, {
-  name: "LD (HL),b",
+  name: "LD (HL),B",
   bytes: "70",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1624,7 +1623,7 @@ opcodes.set(0x70, {
 // {n:113, x:1, y:6, z:1, p:3, q:0}
 // LD (HL),$RZ
 opcodes.set(0x71, {
-  name: "LD (HL),c",
+  name: "LD (HL),C",
   bytes: "71",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1638,7 +1637,7 @@ opcodes.set(0x71, {
 // {n:114, x:1, y:6, z:2, p:3, q:0}
 // LD (HL),$RZ
 opcodes.set(0x72, {
-  name: "LD (HL),d",
+  name: "LD (HL),D",
   bytes: "72",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1652,7 +1651,7 @@ opcodes.set(0x72, {
 // {n:115, x:1, y:6, z:3, p:3, q:0}
 // LD (HL),$RZ
 opcodes.set(0x73, {
-  name: "LD (HL),e",
+  name: "LD (HL),E",
   bytes: "73",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1666,7 +1665,7 @@ opcodes.set(0x73, {
 // {n:116, x:1, y:6, z:4, p:3, q:0}
 // LD (HL),$RZ
 opcodes.set(0x74, {
-  name: "LD (HL),h",
+  name: "LD (HL),H",
   bytes: "74",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1680,7 +1679,7 @@ opcodes.set(0x74, {
 // {n:117, x:1, y:6, z:5, p:3, q:0}
 // LD (HL),$RZ
 opcodes.set(0x75, {
-  name: "LD (HL),l",
+  name: "LD (HL),L",
   bytes: "75",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1707,7 +1706,7 @@ opcodes.set(0x76, {
 // {n:119, x:1, y:6, z:7, p:3, q:0}
 // LD (HL),$RZ
 opcodes.set(0x77, {
-  name: "LD (HL),a",
+  name: "LD (HL),A",
   bytes: "77",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1721,7 +1720,7 @@ opcodes.set(0x77, {
 // {n:120, x:1, y:7, z:0, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0x78, {
-  name: "LD a,b",
+  name: "LD A,B",
   bytes: "78",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1733,7 +1732,7 @@ opcodes.set(0x78, {
 // {n:121, x:1, y:7, z:1, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0x79, {
-  name: "LD a,c",
+  name: "LD A,C",
   bytes: "79",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1745,7 +1744,7 @@ opcodes.set(0x79, {
 // {n:122, x:1, y:7, z:2, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0x7a, {
-  name: "LD a,d",
+  name: "LD A,D",
   bytes: "7a",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1757,7 +1756,7 @@ opcodes.set(0x7a, {
 // {n:123, x:1, y:7, z:3, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0x7b, {
-  name: "LD a,e",
+  name: "LD A,E",
   bytes: "7b",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1769,7 +1768,7 @@ opcodes.set(0x7b, {
 // {n:124, x:1, y:7, z:4, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0x7c, {
-  name: "LD a,h",
+  name: "LD A,H",
   bytes: "7c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1781,7 +1780,7 @@ opcodes.set(0x7c, {
 // {n:125, x:1, y:7, z:5, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0x7d, {
-  name: "LD a,l",
+  name: "LD A,L",
   bytes: "7d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1793,7 +1792,7 @@ opcodes.set(0x7d, {
 // {n:126, x:1, y:7, z:6, p:3, q:1}
 // LD $RY,(HL)
 opcodes.set(0x7e, {
-  name: "LD a,(HL)",
+  name: "LD A,(HL)",
   bytes: "7e",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1807,7 +1806,7 @@ opcodes.set(0x7e, {
 // {n:127, x:1, y:7, z:7, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0x7f, {
-  name: "LD a,a",
+  name: "LD A,A",
   bytes: "7f",
   group: "Load 8bit",
   fn: (z80) => {
@@ -1819,79 +1818,79 @@ opcodes.set(0x7f, {
 // {n:128, x:2, y:0, z:0, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x80, {
-  name: "add8 b",
+  name: "ADD B",
   bytes: "80",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.b);
+    z80.alu.add(z80.regs.b);
   },
 });
 
 // {n:129, x:2, y:0, z:1, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x81, {
-  name: "add8 c",
+  name: "ADD C",
   bytes: "81",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.c);
+    z80.alu.add(z80.regs.c);
   },
 });
 
 // {n:130, x:2, y:0, z:2, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x82, {
-  name: "add8 d",
+  name: "ADD D",
   bytes: "82",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.d);
+    z80.alu.add(z80.regs.d);
   },
 });
 
 // {n:131, x:2, y:0, z:3, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x83, {
-  name: "add8 e",
+  name: "ADD E",
   bytes: "83",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.e);
+    z80.alu.add(z80.regs.e);
   },
 });
 
 // {n:132, x:2, y:0, z:4, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x84, {
-  name: "add8 h",
+  name: "ADD H",
   bytes: "84",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.h);
+    z80.alu.add(z80.regs.h);
   },
 });
 
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x85, {
-  name: "add8 l",
+  name: "ADD L",
   bytes: "85",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.l);
+    z80.alu.add(z80.regs.l);
   },
 });
 
 // {n:134, x:2, y:0, z:6, p:0, q:0}
 // $ALU (HL)
 opcodes.set(0x86, {
-  name: "add8 (HL)",
+  name: "ADD (HL)",
   bytes: "86",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -1899,98 +1898,98 @@ opcodes.set(0x86, {
     z80.abus = z80.regs.hl;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.add8(z80.dbus);
+    z80.alu.add(z80.dbus);
   },
 });
 
 // {n:135, x:2, y:0, z:7, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x87, {
-  name: "add8 a",
+  name: "ADD A",
   bytes: "87",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.a);
+    z80.alu.add(z80.regs.a);
   },
 });
 
 // {n:136, x:2, y:1, z:0, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x88, {
-  name: "adc8 b",
+  name: "ADC B",
   bytes: "88",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.b);
+    z80.alu.adc(z80.regs.b);
   },
 });
 
 // {n:137, x:2, y:1, z:1, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x89, {
-  name: "adc8 c",
+  name: "ADC C",
   bytes: "89",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.c);
+    z80.alu.adc(z80.regs.c);
   },
 });
 
 // {n:138, x:2, y:1, z:2, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8a, {
-  name: "adc8 d",
+  name: "ADC D",
   bytes: "8a",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.d);
+    z80.alu.adc(z80.regs.d);
   },
 });
 
 // {n:139, x:2, y:1, z:3, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8b, {
-  name: "adc8 e",
+  name: "ADC E",
   bytes: "8b",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.e);
+    z80.alu.adc(z80.regs.e);
   },
 });
 
 // {n:140, x:2, y:1, z:4, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8c, {
-  name: "adc8 h",
+  name: "ADC H",
   bytes: "8c",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.h);
+    z80.alu.adc(z80.regs.h);
   },
 });
 
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8d, {
-  name: "adc8 l",
+  name: "ADC L",
   bytes: "8d",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.l);
+    z80.alu.adc(z80.regs.l);
   },
 });
 
 // {n:142, x:2, y:1, z:6, p:0, q:1}
 // $ALU (HL)
 opcodes.set(0x8e, {
-  name: "adc8 (HL)",
+  name: "ADC (HL)",
   bytes: "8e",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -1998,98 +1997,98 @@ opcodes.set(0x8e, {
     z80.abus = z80.regs.hl;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.adc8(z80.dbus);
+    z80.alu.adc(z80.dbus);
   },
 });
 
 // {n:143, x:2, y:1, z:7, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8f, {
-  name: "adc8 a",
+  name: "ADC A",
   bytes: "8f",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.a);
+    z80.alu.adc(z80.regs.a);
   },
 });
 
 // {n:144, x:2, y:2, z:0, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0x90, {
-  name: "sub8 b",
+  name: "SUB B",
   bytes: "90",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.b);
+    z80.alu.sub(z80.regs.b);
   },
 });
 
 // {n:145, x:2, y:2, z:1, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0x91, {
-  name: "sub8 c",
+  name: "SUB C",
   bytes: "91",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.c);
+    z80.alu.sub(z80.regs.c);
   },
 });
 
 // {n:146, x:2, y:2, z:2, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0x92, {
-  name: "sub8 d",
+  name: "SUB D",
   bytes: "92",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.d);
+    z80.alu.sub(z80.regs.d);
   },
 });
 
 // {n:147, x:2, y:2, z:3, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0x93, {
-  name: "sub8 e",
+  name: "SUB E",
   bytes: "93",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.e);
+    z80.alu.sub(z80.regs.e);
   },
 });
 
 // {n:148, x:2, y:2, z:4, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0x94, {
-  name: "sub8 h",
+  name: "SUB H",
   bytes: "94",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.h);
+    z80.alu.sub(z80.regs.h);
   },
 });
 
 // {n:149, x:2, y:2, z:5, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0x95, {
-  name: "sub8 l",
+  name: "SUB L",
   bytes: "95",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.l);
+    z80.alu.sub(z80.regs.l);
   },
 });
 
 // {n:150, x:2, y:2, z:6, p:1, q:0}
 // $ALU (HL)
 opcodes.set(0x96, {
-  name: "sub8 (HL)",
+  name: "SUB (HL)",
   bytes: "96",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -2097,98 +2096,98 @@ opcodes.set(0x96, {
     z80.abus = z80.regs.hl;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.sub8(z80.dbus);
+    z80.alu.sub(z80.dbus);
   },
 });
 
 // {n:151, x:2, y:2, z:7, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0x97, {
-  name: "sub8 a",
+  name: "SUB A",
   bytes: "97",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.a);
+    z80.alu.sub(z80.regs.a);
   },
 });
 
 // {n:152, x:2, y:3, z:0, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x98, {
-  name: "sbc8 b",
+  name: "SBC B",
   bytes: "98",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.b);
+    z80.alu.sbc(z80.regs.b);
   },
 });
 
 // {n:153, x:2, y:3, z:1, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x99, {
-  name: "sbc8 c",
+  name: "SBC C",
   bytes: "99",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.c);
+    z80.alu.sbc(z80.regs.c);
   },
 });
 
 // {n:154, x:2, y:3, z:2, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9a, {
-  name: "sbc8 d",
+  name: "SBC D",
   bytes: "9a",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.d);
+    z80.alu.sbc(z80.regs.d);
   },
 });
 
 // {n:155, x:2, y:3, z:3, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9b, {
-  name: "sbc8 e",
+  name: "SBC E",
   bytes: "9b",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.e);
+    z80.alu.sbc(z80.regs.e);
   },
 });
 
 // {n:156, x:2, y:3, z:4, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9c, {
-  name: "sbc8 h",
+  name: "SBC H",
   bytes: "9c",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.h);
+    z80.alu.sbc(z80.regs.h);
   },
 });
 
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9d, {
-  name: "sbc8 l",
+  name: "SBC L",
   bytes: "9d",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.l);
+    z80.alu.sbc(z80.regs.l);
   },
 });
 
 // {n:158, x:2, y:3, z:6, p:1, q:1}
 // $ALU (HL)
 opcodes.set(0x9e, {
-  name: "sbc8 (HL)",
+  name: "SBC (HL)",
   bytes: "9e",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -2196,98 +2195,98 @@ opcodes.set(0x9e, {
     z80.abus = z80.regs.hl;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.sbc8(z80.dbus);
+    z80.alu.sbc(z80.dbus);
   },
 });
 
 // {n:159, x:2, y:3, z:7, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9f, {
-  name: "sbc8 a",
+  name: "SBC A",
   bytes: "9f",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.a);
+    z80.alu.sbc(z80.regs.a);
   },
 });
 
 // {n:160, x:2, y:4, z:0, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xa0, {
-  name: "and8 b",
+  name: "AND B",
   bytes: "a0",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.b);
+    z80.alu.and(z80.regs.b);
   },
 });
 
 // {n:161, x:2, y:4, z:1, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xa1, {
-  name: "and8 c",
+  name: "AND C",
   bytes: "a1",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.c);
+    z80.alu.and(z80.regs.c);
   },
 });
 
 // {n:162, x:2, y:4, z:2, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xa2, {
-  name: "and8 d",
+  name: "AND D",
   bytes: "a2",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.d);
+    z80.alu.and(z80.regs.d);
   },
 });
 
 // {n:163, x:2, y:4, z:3, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xa3, {
-  name: "and8 e",
+  name: "AND E",
   bytes: "a3",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.e);
+    z80.alu.and(z80.regs.e);
   },
 });
 
 // {n:164, x:2, y:4, z:4, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xa4, {
-  name: "and8 h",
+  name: "AND H",
   bytes: "a4",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.h);
+    z80.alu.and(z80.regs.h);
   },
 });
 
 // {n:165, x:2, y:4, z:5, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xa5, {
-  name: "and8 l",
+  name: "AND L",
   bytes: "a5",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.l);
+    z80.alu.and(z80.regs.l);
   },
 });
 
 // {n:166, x:2, y:4, z:6, p:2, q:0}
 // $ALU (HL)
 opcodes.set(0xa6, {
-  name: "and8 (HL)",
+  name: "AND (HL)",
   bytes: "a6",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -2295,98 +2294,98 @@ opcodes.set(0xa6, {
     z80.abus = z80.regs.hl;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.and8(z80.dbus);
+    z80.alu.and(z80.dbus);
   },
 });
 
 // {n:167, x:2, y:4, z:7, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xa7, {
-  name: "and8 a",
+  name: "AND A",
   bytes: "a7",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.a);
+    z80.alu.and(z80.regs.a);
   },
 });
 
 // {n:168, x:2, y:5, z:0, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xa8, {
-  name: "xor8 b",
+  name: "XOR B",
   bytes: "a8",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.b);
+    z80.alu.xor(z80.regs.b);
   },
 });
 
 // {n:169, x:2, y:5, z:1, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xa9, {
-  name: "xor8 c",
+  name: "XOR C",
   bytes: "a9",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.c);
+    z80.alu.xor(z80.regs.c);
   },
 });
 
 // {n:170, x:2, y:5, z:2, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xaa, {
-  name: "xor8 d",
+  name: "XOR D",
   bytes: "aa",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.d);
+    z80.alu.xor(z80.regs.d);
   },
 });
 
 // {n:171, x:2, y:5, z:3, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xab, {
-  name: "xor8 e",
+  name: "XOR E",
   bytes: "ab",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.e);
+    z80.alu.xor(z80.regs.e);
   },
 });
 
 // {n:172, x:2, y:5, z:4, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xac, {
-  name: "xor8 h",
+  name: "XOR H",
   bytes: "ac",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.h);
+    z80.alu.xor(z80.regs.h);
   },
 });
 
 // {n:173, x:2, y:5, z:5, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xad, {
-  name: "xor8 l",
+  name: "XOR L",
   bytes: "ad",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.l);
+    z80.alu.xor(z80.regs.l);
   },
 });
 
 // {n:174, x:2, y:5, z:6, p:2, q:1}
 // $ALU (HL)
 opcodes.set(0xae, {
-  name: "xor8 (HL)",
+  name: "XOR (HL)",
   bytes: "ae",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -2394,98 +2393,98 @@ opcodes.set(0xae, {
     z80.abus = z80.regs.hl;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.xor8(z80.dbus);
+    z80.alu.xor(z80.dbus);
   },
 });
 
 // {n:175, x:2, y:5, z:7, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xaf, {
-  name: "xor8 a",
+  name: "XOR A",
   bytes: "af",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.a);
+    z80.alu.xor(z80.regs.a);
   },
 });
 
 // {n:176, x:2, y:6, z:0, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xb0, {
-  name: "or8 b",
+  name: "OR B",
   bytes: "b0",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.b);
+    z80.alu.or(z80.regs.b);
   },
 });
 
 // {n:177, x:2, y:6, z:1, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xb1, {
-  name: "or8 c",
+  name: "OR C",
   bytes: "b1",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.c);
+    z80.alu.or(z80.regs.c);
   },
 });
 
 // {n:178, x:2, y:6, z:2, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xb2, {
-  name: "or8 d",
+  name: "OR D",
   bytes: "b2",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.d);
+    z80.alu.or(z80.regs.d);
   },
 });
 
 // {n:179, x:2, y:6, z:3, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xb3, {
-  name: "or8 e",
+  name: "OR E",
   bytes: "b3",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.e);
+    z80.alu.or(z80.regs.e);
   },
 });
 
 // {n:180, x:2, y:6, z:4, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xb4, {
-  name: "or8 h",
+  name: "OR H",
   bytes: "b4",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.h);
+    z80.alu.or(z80.regs.h);
   },
 });
 
 // {n:181, x:2, y:6, z:5, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xb5, {
-  name: "or8 l",
+  name: "OR L",
   bytes: "b5",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.l);
+    z80.alu.or(z80.regs.l);
   },
 });
 
 // {n:182, x:2, y:6, z:6, p:3, q:0}
 // $ALU (HL)
 opcodes.set(0xb6, {
-  name: "or8 (HL)",
+  name: "OR (HL)",
   bytes: "b6",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -2493,98 +2492,98 @@ opcodes.set(0xb6, {
     z80.abus = z80.regs.hl;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.or8(z80.dbus);
+    z80.alu.or(z80.dbus);
   },
 });
 
 // {n:183, x:2, y:6, z:7, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xb7, {
-  name: "or8 a",
+  name: "OR A",
   bytes: "b7",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.a);
+    z80.alu.or(z80.regs.a);
   },
 });
 
 // {n:184, x:2, y:7, z:0, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xb8, {
-  name: "cp8 b",
+  name: "CP B",
   bytes: "b8",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.b);
+    z80.alu.cp(z80.regs.b);
   },
 });
 
 // {n:185, x:2, y:7, z:1, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xb9, {
-  name: "cp8 c",
+  name: "CP C",
   bytes: "b9",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.c);
+    z80.alu.cp(z80.regs.c);
   },
 });
 
 // {n:186, x:2, y:7, z:2, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xba, {
-  name: "cp8 d",
+  name: "CP D",
   bytes: "ba",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.d);
+    z80.alu.cp(z80.regs.d);
   },
 });
 
 // {n:187, x:2, y:7, z:3, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xbb, {
-  name: "cp8 e",
+  name: "CP E",
   bytes: "bb",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.e);
+    z80.alu.cp(z80.regs.e);
   },
 });
 
 // {n:188, x:2, y:7, z:4, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xbc, {
-  name: "cp8 h",
+  name: "CP H",
   bytes: "bc",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.h);
+    z80.alu.cp(z80.regs.h);
   },
 });
 
 // {n:189, x:2, y:7, z:5, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xbd, {
-  name: "cp8 l",
+  name: "CP L",
   bytes: "bd",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.l);
+    z80.alu.cp(z80.regs.l);
   },
 });
 
 // {n:190, x:2, y:7, z:6, p:3, q:1}
 // $ALU (HL)
 opcodes.set(0xbe, {
-  name: "cp8 (HL)",
+  name: "CP (HL)",
   bytes: "be",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -2592,19 +2591,19 @@ opcodes.set(0xbe, {
     z80.abus = z80.regs.hl;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.cp8(z80.dbus);
+    z80.alu.cp(z80.dbus);
   },
 });
 
 // {n:191, x:2, y:7, z:7, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xbf, {
-  name: "cp8 a",
+  name: "CP A",
   bytes: "bf",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.a);
+    z80.alu.cp(z80.regs.a);
   },
 });
 
@@ -2635,7 +2634,7 @@ opcodes.set(0xc0, {
 // {n:193, x:3, y:0, z:1, p:0, q:0}
 // POP $RP2
 opcodes.set(0xc1, {
-  name: "POP bc",
+  name: "POP BC",
   bytes: "c1",
   group: "Load 16bit",
   fn: (z80) => {
@@ -2655,7 +2654,7 @@ opcodes.set(0xc1, {
 // {n:194, x:3, y:0, z:2, p:0, q:0}
 // JP $CC,$nn
 opcodes.set(0xc2, {
-  name: "JP NZ,$nn",
+  name: "JP NZ,$NN",
   bytes: "c2 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -2678,7 +2677,7 @@ opcodes.set(0xc2, {
 // {n:195, x:3, y:0, z:3, p:0, q:0}
 // JP $nn
 opcodes.set(0xc3, {
-  name: "JP $nn",
+  name: "JP $NN",
   bytes: "c3 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -2699,7 +2698,7 @@ opcodes.set(0xc3, {
 // {n:196, x:3, y:0, z:4, p:0, q:0}
 // CALL $CC,$nn
 opcodes.set(0xc4, {
-  name: "CALL NZ,$nn",
+  name: "CALL NZ,$NN",
   bytes: "c4 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -2733,7 +2732,7 @@ opcodes.set(0xc4, {
 // {n:197, x:3, y:0, z:5, p:0, q:0}
 // PUSH $RP2
 opcodes.set(0xc5, {
-  name: "PUSH bc",
+  name: "PUSH BC",
   bytes: "c5",
   group: "Load 16bit",
   fn: (z80) => {
@@ -2755,7 +2754,7 @@ opcodes.set(0xc5, {
 // {n:198, x:3, y:0, z:6, p:0, q:0}
 // $ALU $n
 opcodes.set(0xc6, {
-  name: "add8 $n",
+  name: "ADD $N",
   bytes: "c6 XX",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -2764,14 +2763,14 @@ opcodes.set(0xc6, {
     z80.regs.pc = inc16(z80.regs.pc);
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.add8(z80.dbus);
+    z80.alu.add(z80.dbus);
   },
 });
 
 // {n:199, x:3, y:0, z:7, p:0, q:0}
 // RST $Y*8
 opcodes.set(0xc7, {
-  name: "RST 0x00",
+  name: "RST 0X00",
   bytes: "c7",
   doc: "push PC, PC=p",
   group: "CPU control",
@@ -2841,7 +2840,7 @@ opcodes.set(0xc9, {
 // {n:202, x:3, y:1, z:2, p:0, q:1}
 // JP $CC,$nn
 opcodes.set(0xca, {
-  name: "JP Z,$nn",
+  name: "JP Z,$NN",
   bytes: "ca XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -2876,7 +2875,7 @@ opcodes.set(0xcb, {
 // {n:204, x:3, y:1, z:4, p:0, q:1}
 // CALL $CC,$nn
 opcodes.set(0xcc, {
-  name: "CALL Z,$nn",
+  name: "CALL Z,$NN",
   bytes: "cc XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -2910,7 +2909,7 @@ opcodes.set(0xcc, {
 // {n:205, x:3, y:1, z:5, p:0, q:1}
 // CALL $nn
 opcodes.set(0xcd, {
-  name: "CALL $nn",
+  name: "CALL $NN",
   bytes: "cd XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -2942,7 +2941,7 @@ opcodes.set(0xcd, {
 // {n:206, x:3, y:1, z:6, p:0, q:1}
 // $ALU $n
 opcodes.set(0xce, {
-  name: "adc8 $n",
+  name: "ADC $N",
   bytes: "ce XX",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -2951,14 +2950,14 @@ opcodes.set(0xce, {
     z80.regs.pc = inc16(z80.regs.pc);
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.adc8(z80.dbus);
+    z80.alu.adc(z80.dbus);
   },
 });
 
 // {n:207, x:3, y:1, z:7, p:0, q:1}
 // RST $Y*8
 opcodes.set(0xcf, {
-  name: "RST 0x08",
+  name: "RST 0X08",
   bytes: "cf",
   doc: "push PC, PC=p",
   group: "CPU control",
@@ -3007,7 +3006,7 @@ opcodes.set(0xd0, {
 // {n:209, x:3, y:2, z:1, p:1, q:0}
 // POP $RP2
 opcodes.set(0xd1, {
-  name: "POP de",
+  name: "POP DE",
   bytes: "d1",
   group: "Load 16bit",
   fn: (z80) => {
@@ -3027,7 +3026,7 @@ opcodes.set(0xd1, {
 // {n:210, x:3, y:2, z:2, p:1, q:0}
 // JP $CC,$nn
 opcodes.set(0xd2, {
-  name: "JP NC,$nn",
+  name: "JP NC,$NN",
   bytes: "d2 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3050,7 +3049,7 @@ opcodes.set(0xd2, {
 // {n:211, x:3, y:2, z:3, p:1, q:0}
 // OUT ($n),A
 opcodes.set(0xd3, {
-  name: "OUT ($n),A",
+  name: "OUT ($N),A",
   bytes: "d3 XX",
   group: "IO",
   fn: (z80) => {
@@ -3071,7 +3070,7 @@ opcodes.set(0xd3, {
 // {n:212, x:3, y:2, z:4, p:1, q:0}
 // CALL $CC,$nn
 opcodes.set(0xd4, {
-  name: "CALL NC,$nn",
+  name: "CALL NC,$NN",
   bytes: "d4 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3105,7 +3104,7 @@ opcodes.set(0xd4, {
 // {n:213, x:3, y:2, z:5, p:1, q:0}
 // PUSH $RP2
 opcodes.set(0xd5, {
-  name: "PUSH de",
+  name: "PUSH DE",
   bytes: "d5",
   group: "Load 16bit",
   fn: (z80) => {
@@ -3127,7 +3126,7 @@ opcodes.set(0xd5, {
 // {n:214, x:3, y:2, z:6, p:1, q:0}
 // $ALU $n
 opcodes.set(0xd6, {
-  name: "sub8 $n",
+  name: "SUB $N",
   bytes: "d6 XX",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -3136,14 +3135,14 @@ opcodes.set(0xd6, {
     z80.regs.pc = inc16(z80.regs.pc);
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.sub8(z80.dbus);
+    z80.alu.sub(z80.dbus);
   },
 });
 
 // {n:215, x:3, y:2, z:7, p:1, q:0}
 // RST $Y*8
 opcodes.set(0xd7, {
-  name: "RST 0x10",
+  name: "RST 0X10",
   bytes: "d7",
   doc: "push PC, PC=p",
   group: "CPU control",
@@ -3205,7 +3204,7 @@ opcodes.set(0xd9, {
 // {n:218, x:3, y:3, z:2, p:1, q:1}
 // JP $CC,$nn
 opcodes.set(0xda, {
-  name: "JP C,$nn",
+  name: "JP C,$NN",
   bytes: "da XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3228,7 +3227,7 @@ opcodes.set(0xda, {
 // {n:219, x:3, y:3, z:3, p:1, q:1}
 // IN A,($n)
 opcodes.set(0xdb, {
-  name: "IN A,($n)",
+  name: "IN A,($N)",
   bytes: "db XX",
   group: "IO",
   fn: (z80) => {
@@ -3249,7 +3248,7 @@ opcodes.set(0xdb, {
 // {n:220, x:3, y:3, z:4, p:1, q:1}
 // CALL $CC,$nn
 opcodes.set(0xdc, {
-  name: "CALL C,$nn",
+  name: "CALL C,$NN",
   bytes: "dc XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3295,7 +3294,7 @@ opcodes.set(0xdd, {
 // {n:222, x:3, y:3, z:6, p:1, q:1}
 // $ALU $n
 opcodes.set(0xde, {
-  name: "sbc8 $n",
+  name: "SBC $N",
   bytes: "de XX",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -3304,14 +3303,14 @@ opcodes.set(0xde, {
     z80.regs.pc = inc16(z80.regs.pc);
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.sbc8(z80.dbus);
+    z80.alu.sbc(z80.dbus);
   },
 });
 
 // {n:223, x:3, y:3, z:7, p:1, q:1}
 // RST $Y*8
 opcodes.set(0xdf, {
-  name: "RST 0x18",
+  name: "RST 0X18",
   bytes: "df",
   doc: "push PC, PC=p",
   group: "CPU control",
@@ -3360,7 +3359,7 @@ opcodes.set(0xe0, {
 // {n:225, x:3, y:4, z:1, p:2, q:0}
 // POP $RP2
 opcodes.set(0xe1, {
-  name: "POP hl",
+  name: "POP HL",
   bytes: "e1",
   group: "Load 16bit",
   fn: (z80) => {
@@ -3380,7 +3379,7 @@ opcodes.set(0xe1, {
 // {n:226, x:3, y:4, z:2, p:2, q:0}
 // JP $CC,$nn
 opcodes.set(0xe2, {
-  name: "JP PO,$nn",
+  name: "JP PO,$NN",
   bytes: "e2 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3432,7 +3431,7 @@ opcodes.set(0xe3, {
 // {n:228, x:3, y:4, z:4, p:2, q:0}
 // CALL $CC,$nn
 opcodes.set(0xe4, {
-  name: "CALL PO,$nn",
+  name: "CALL PO,$NN",
   bytes: "e4 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3466,7 +3465,7 @@ opcodes.set(0xe4, {
 // {n:229, x:3, y:4, z:5, p:2, q:0}
 // PUSH $RP2
 opcodes.set(0xe5, {
-  name: "PUSH hl",
+  name: "PUSH HL",
   bytes: "e5",
   group: "Load 16bit",
   fn: (z80) => {
@@ -3488,7 +3487,7 @@ opcodes.set(0xe5, {
 // {n:230, x:3, y:4, z:6, p:2, q:0}
 // $ALU $n
 opcodes.set(0xe6, {
-  name: "and8 $n",
+  name: "AND $N",
   bytes: "e6 XX",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -3497,14 +3496,14 @@ opcodes.set(0xe6, {
     z80.regs.pc = inc16(z80.regs.pc);
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.and8(z80.dbus);
+    z80.alu.and(z80.dbus);
   },
 });
 
 // {n:231, x:3, y:4, z:7, p:2, q:0}
 // RST $Y*8
 opcodes.set(0xe7, {
-  name: "RST 0x20",
+  name: "RST 0X20",
   bytes: "e7",
   doc: "push PC, PC=p",
   group: "CPU control",
@@ -3566,7 +3565,7 @@ opcodes.set(0xe9, {
 // {n:234, x:3, y:5, z:2, p:2, q:1}
 // JP $CC,$nn
 opcodes.set(0xea, {
-  name: "JP PE,$nn",
+  name: "JP PE,$NN",
   bytes: "ea XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3601,7 +3600,7 @@ opcodes.set(0xeb, {
 // {n:236, x:3, y:5, z:4, p:2, q:1}
 // CALL $CC,$nn
 opcodes.set(0xec, {
-  name: "CALL PE,$nn",
+  name: "CALL PE,$NN",
   bytes: "ec XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3647,7 +3646,7 @@ opcodes.set(0xed, {
 // {n:238, x:3, y:5, z:6, p:2, q:1}
 // $ALU $n
 opcodes.set(0xee, {
-  name: "xor8 $n",
+  name: "XOR $N",
   bytes: "ee XX",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -3656,14 +3655,14 @@ opcodes.set(0xee, {
     z80.regs.pc = inc16(z80.regs.pc);
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.xor8(z80.dbus);
+    z80.alu.xor(z80.dbus);
   },
 });
 
 // {n:239, x:3, y:5, z:7, p:2, q:1}
 // RST $Y*8
 opcodes.set(0xef, {
-  name: "RST 0x28",
+  name: "RST 0X28",
   bytes: "ef",
   doc: "push PC, PC=p",
   group: "CPU control",
@@ -3712,7 +3711,7 @@ opcodes.set(0xf0, {
 // {n:241, x:3, y:6, z:1, p:3, q:0}
 // POP $RP2
 opcodes.set(0xf1, {
-  name: "POP af",
+  name: "POP AF",
   bytes: "f1",
   group: "Load 16bit",
   fn: (z80) => {
@@ -3732,7 +3731,7 @@ opcodes.set(0xf1, {
 // {n:242, x:3, y:6, z:2, p:3, q:0}
 // JP $CC,$nn
 opcodes.set(0xf2, {
-  name: "JP P,$nn",
+  name: "JP P,$NN",
   bytes: "f2 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3769,7 +3768,7 @@ opcodes.set(0xf3, {
 // {n:244, x:3, y:6, z:4, p:3, q:0}
 // CALL $CC,$nn
 opcodes.set(0xf4, {
-  name: "CALL P,$nn",
+  name: "CALL P,$NN",
   bytes: "f4 XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3803,7 +3802,7 @@ opcodes.set(0xf4, {
 // {n:245, x:3, y:6, z:5, p:3, q:0}
 // PUSH $RP2
 opcodes.set(0xf5, {
-  name: "PUSH af",
+  name: "PUSH AF",
   bytes: "f5",
   group: "Load 16bit",
   fn: (z80) => {
@@ -3825,7 +3824,7 @@ opcodes.set(0xf5, {
 // {n:246, x:3, y:6, z:6, p:3, q:0}
 // $ALU $n
 opcodes.set(0xf6, {
-  name: "or8 $n",
+  name: "OR $N",
   bytes: "f6 XX",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -3834,14 +3833,14 @@ opcodes.set(0xf6, {
     z80.regs.pc = inc16(z80.regs.pc);
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.or8(z80.dbus);
+    z80.alu.or(z80.dbus);
   },
 });
 
 // {n:247, x:3, y:6, z:7, p:3, q:0}
 // RST $Y*8
 opcodes.set(0xf7, {
-  name: "RST 0x30",
+  name: "RST 0X30",
   bytes: "f7",
   doc: "push PC, PC=p",
   group: "CPU control",
@@ -3903,7 +3902,7 @@ opcodes.set(0xf9, {
 // {n:250, x:3, y:7, z:2, p:3, q:1}
 // JP $CC,$nn
 opcodes.set(0xfa, {
-  name: "JP M,$nn",
+  name: "JP M,$NN",
   bytes: "fa XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3940,7 +3939,7 @@ opcodes.set(0xfb, {
 // {n:252, x:3, y:7, z:4, p:3, q:1}
 // CALL $CC,$nn
 opcodes.set(0xfc, {
-  name: "CALL M,$nn",
+  name: "CALL M,$NN",
   bytes: "fc XX XX",
   group: "Control flow",
   fn: (z80) => {
@@ -3986,7 +3985,7 @@ opcodes.set(0xfd, {
 // {n:254, x:3, y:7, z:6, p:3, q:1}
 // $ALU $n
 opcodes.set(0xfe, {
-  name: "cp8 $n",
+  name: "CP $N",
   bytes: "fe XX",
   group: "ALU 8bit",
   fn: (z80) => {
@@ -3995,14 +3994,14 @@ opcodes.set(0xfe, {
     z80.regs.pc = inc16(z80.regs.pc);
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.cp8(z80.dbus);
+    z80.alu.cp(z80.dbus);
   },
 });
 
 // {n:255, x:3, y:7, z:7, p:3, q:1}
 // RST $Y*8
 opcodes.set(0xff, {
-  name: "RST 0x38",
+  name: "RST 0X38",
   bytes: "ff",
   doc: "push PC, PC=p",
   group: "CPU control",
@@ -4027,7 +4026,7 @@ opcodes.set(0xff, {
 // {n:0, x:0, y:0, z:0, p:0, q:0}
 // $ROT $RZ
 opcodes.set(0xcb00, {
-  name: "rlc b",
+  name: "RLC B",
   bytes: "cb 00",
   doc: "Rotate left through carry b",
   group: "RT/SH 8bit",
@@ -4040,7 +4039,7 @@ opcodes.set(0xcb00, {
 // {n:1, x:0, y:0, z:1, p:0, q:0}
 // $ROT $RZ
 opcodes.set(0xcb01, {
-  name: "rlc c",
+  name: "RLC C",
   bytes: "cb 01",
   doc: "Rotate left through carry c",
   group: "RT/SH 8bit",
@@ -4053,7 +4052,7 @@ opcodes.set(0xcb01, {
 // {n:2, x:0, y:0, z:2, p:0, q:0}
 // $ROT $RZ
 opcodes.set(0xcb02, {
-  name: "rlc d",
+  name: "RLC D",
   bytes: "cb 02",
   doc: "Rotate left through carry d",
   group: "RT/SH 8bit",
@@ -4066,7 +4065,7 @@ opcodes.set(0xcb02, {
 // {n:3, x:0, y:0, z:3, p:0, q:0}
 // $ROT $RZ
 opcodes.set(0xcb03, {
-  name: "rlc e",
+  name: "RLC E",
   bytes: "cb 03",
   doc: "Rotate left through carry e",
   group: "RT/SH 8bit",
@@ -4079,7 +4078,7 @@ opcodes.set(0xcb03, {
 // {n:4, x:0, y:0, z:4, p:0, q:0}
 // $ROT $RZ
 opcodes.set(0xcb04, {
-  name: "rlc h",
+  name: "RLC H",
   bytes: "cb 04",
   doc: "Rotate left through carry h",
   group: "RT/SH 8bit",
@@ -4092,7 +4091,7 @@ opcodes.set(0xcb04, {
 // {n:5, x:0, y:0, z:5, p:0, q:0}
 // $ROT $RZ
 opcodes.set(0xcb05, {
-  name: "rlc l",
+  name: "RLC L",
   bytes: "cb 05",
   doc: "Rotate left through carry l",
   group: "RT/SH 8bit",
@@ -4105,7 +4104,7 @@ opcodes.set(0xcb05, {
 // {n:6, x:0, y:0, z:6, p:0, q:0}
 // $ROT (HL)
 opcodes.set(0xcb06, {
-  name: "rlc (HL)",
+  name: "RLC (HL)",
   bytes: "cb 06",
   doc: "Rotate left through carry (HL)",
   group: "RT/SH 8bit",
@@ -4125,7 +4124,7 @@ opcodes.set(0xcb06, {
 // {n:7, x:0, y:0, z:7, p:0, q:0}
 // $ROT $RZ
 opcodes.set(0xcb07, {
-  name: "rlc a",
+  name: "RLC A",
   bytes: "cb 07",
   doc: "Rotate left through carry a",
   group: "RT/SH 8bit",
@@ -4138,7 +4137,7 @@ opcodes.set(0xcb07, {
 // {n:8, x:0, y:1, z:0, p:0, q:1}
 // $ROT $RZ
 opcodes.set(0xcb08, {
-  name: "rrc b",
+  name: "RRC B",
   bytes: "cb 08",
   doc: "Rotate right through carry b",
   group: "RT/SH 8bit",
@@ -4151,7 +4150,7 @@ opcodes.set(0xcb08, {
 // {n:9, x:0, y:1, z:1, p:0, q:1}
 // $ROT $RZ
 opcodes.set(0xcb09, {
-  name: "rrc c",
+  name: "RRC C",
   bytes: "cb 09",
   doc: "Rotate right through carry c",
   group: "RT/SH 8bit",
@@ -4164,7 +4163,7 @@ opcodes.set(0xcb09, {
 // {n:10, x:0, y:1, z:2, p:0, q:1}
 // $ROT $RZ
 opcodes.set(0xcb0a, {
-  name: "rrc d",
+  name: "RRC D",
   bytes: "cb 0a",
   doc: "Rotate right through carry d",
   group: "RT/SH 8bit",
@@ -4177,7 +4176,7 @@ opcodes.set(0xcb0a, {
 // {n:11, x:0, y:1, z:3, p:0, q:1}
 // $ROT $RZ
 opcodes.set(0xcb0b, {
-  name: "rrc e",
+  name: "RRC E",
   bytes: "cb 0b",
   doc: "Rotate right through carry e",
   group: "RT/SH 8bit",
@@ -4190,7 +4189,7 @@ opcodes.set(0xcb0b, {
 // {n:12, x:0, y:1, z:4, p:0, q:1}
 // $ROT $RZ
 opcodes.set(0xcb0c, {
-  name: "rrc h",
+  name: "RRC H",
   bytes: "cb 0c",
   doc: "Rotate right through carry h",
   group: "RT/SH 8bit",
@@ -4203,7 +4202,7 @@ opcodes.set(0xcb0c, {
 // {n:13, x:0, y:1, z:5, p:0, q:1}
 // $ROT $RZ
 opcodes.set(0xcb0d, {
-  name: "rrc l",
+  name: "RRC L",
   bytes: "cb 0d",
   doc: "Rotate right through carry l",
   group: "RT/SH 8bit",
@@ -4216,7 +4215,7 @@ opcodes.set(0xcb0d, {
 // {n:14, x:0, y:1, z:6, p:0, q:1}
 // $ROT (HL)
 opcodes.set(0xcb0e, {
-  name: "rrc (HL)",
+  name: "RRC (HL)",
   bytes: "cb 0e",
   doc: "Rotate right through carry (HL)",
   group: "RT/SH 8bit",
@@ -4236,7 +4235,7 @@ opcodes.set(0xcb0e, {
 // {n:15, x:0, y:1, z:7, p:0, q:1}
 // $ROT $RZ
 opcodes.set(0xcb0f, {
-  name: "rrc a",
+  name: "RRC A",
   bytes: "cb 0f",
   doc: "Rotate right through carry a",
   group: "RT/SH 8bit",
@@ -4249,7 +4248,7 @@ opcodes.set(0xcb0f, {
 // {n:16, x:0, y:2, z:0, p:1, q:0}
 // $ROT $RZ
 opcodes.set(0xcb10, {
-  name: "rl b",
+  name: "RL B",
   bytes: "cb 10",
   doc: "Rotate left from carry b",
   group: "RT/SH 8bit",
@@ -4262,7 +4261,7 @@ opcodes.set(0xcb10, {
 // {n:17, x:0, y:2, z:1, p:1, q:0}
 // $ROT $RZ
 opcodes.set(0xcb11, {
-  name: "rl c",
+  name: "RL C",
   bytes: "cb 11",
   doc: "Rotate left from carry c",
   group: "RT/SH 8bit",
@@ -4275,7 +4274,7 @@ opcodes.set(0xcb11, {
 // {n:18, x:0, y:2, z:2, p:1, q:0}
 // $ROT $RZ
 opcodes.set(0xcb12, {
-  name: "rl d",
+  name: "RL D",
   bytes: "cb 12",
   doc: "Rotate left from carry d",
   group: "RT/SH 8bit",
@@ -4288,7 +4287,7 @@ opcodes.set(0xcb12, {
 // {n:19, x:0, y:2, z:3, p:1, q:0}
 // $ROT $RZ
 opcodes.set(0xcb13, {
-  name: "rl e",
+  name: "RL E",
   bytes: "cb 13",
   doc: "Rotate left from carry e",
   group: "RT/SH 8bit",
@@ -4301,7 +4300,7 @@ opcodes.set(0xcb13, {
 // {n:20, x:0, y:2, z:4, p:1, q:0}
 // $ROT $RZ
 opcodes.set(0xcb14, {
-  name: "rl h",
+  name: "RL H",
   bytes: "cb 14",
   doc: "Rotate left from carry h",
   group: "RT/SH 8bit",
@@ -4314,7 +4313,7 @@ opcodes.set(0xcb14, {
 // {n:21, x:0, y:2, z:5, p:1, q:0}
 // $ROT $RZ
 opcodes.set(0xcb15, {
-  name: "rl l",
+  name: "RL L",
   bytes: "cb 15",
   doc: "Rotate left from carry l",
   group: "RT/SH 8bit",
@@ -4327,7 +4326,7 @@ opcodes.set(0xcb15, {
 // {n:22, x:0, y:2, z:6, p:1, q:0}
 // $ROT (HL)
 opcodes.set(0xcb16, {
-  name: "rl (HL)",
+  name: "RL (HL)",
   bytes: "cb 16",
   doc: "Rotate left from carry (HL)",
   group: "RT/SH 8bit",
@@ -4347,7 +4346,7 @@ opcodes.set(0xcb16, {
 // {n:23, x:0, y:2, z:7, p:1, q:0}
 // $ROT $RZ
 opcodes.set(0xcb17, {
-  name: "rl a",
+  name: "RL A",
   bytes: "cb 17",
   doc: "Rotate left from carry a",
   group: "RT/SH 8bit",
@@ -4360,7 +4359,7 @@ opcodes.set(0xcb17, {
 // {n:24, x:0, y:3, z:0, p:1, q:1}
 // $ROT $RZ
 opcodes.set(0xcb18, {
-  name: "rr b",
+  name: "RR B",
   bytes: "cb 18",
   doc: "Rotate right from carry b",
   group: "RT/SH 8bit",
@@ -4373,7 +4372,7 @@ opcodes.set(0xcb18, {
 // {n:25, x:0, y:3, z:1, p:1, q:1}
 // $ROT $RZ
 opcodes.set(0xcb19, {
-  name: "rr c",
+  name: "RR C",
   bytes: "cb 19",
   doc: "Rotate right from carry c",
   group: "RT/SH 8bit",
@@ -4386,7 +4385,7 @@ opcodes.set(0xcb19, {
 // {n:26, x:0, y:3, z:2, p:1, q:1}
 // $ROT $RZ
 opcodes.set(0xcb1a, {
-  name: "rr d",
+  name: "RR D",
   bytes: "cb 1a",
   doc: "Rotate right from carry d",
   group: "RT/SH 8bit",
@@ -4399,7 +4398,7 @@ opcodes.set(0xcb1a, {
 // {n:27, x:0, y:3, z:3, p:1, q:1}
 // $ROT $RZ
 opcodes.set(0xcb1b, {
-  name: "rr e",
+  name: "RR E",
   bytes: "cb 1b",
   doc: "Rotate right from carry e",
   group: "RT/SH 8bit",
@@ -4412,7 +4411,7 @@ opcodes.set(0xcb1b, {
 // {n:28, x:0, y:3, z:4, p:1, q:1}
 // $ROT $RZ
 opcodes.set(0xcb1c, {
-  name: "rr h",
+  name: "RR H",
   bytes: "cb 1c",
   doc: "Rotate right from carry h",
   group: "RT/SH 8bit",
@@ -4425,7 +4424,7 @@ opcodes.set(0xcb1c, {
 // {n:29, x:0, y:3, z:5, p:1, q:1}
 // $ROT $RZ
 opcodes.set(0xcb1d, {
-  name: "rr l",
+  name: "RR L",
   bytes: "cb 1d",
   doc: "Rotate right from carry l",
   group: "RT/SH 8bit",
@@ -4438,7 +4437,7 @@ opcodes.set(0xcb1d, {
 // {n:30, x:0, y:3, z:6, p:1, q:1}
 // $ROT (HL)
 opcodes.set(0xcb1e, {
-  name: "rr (HL)",
+  name: "RR (HL)",
   bytes: "cb 1e",
   doc: "Rotate right from carry (HL)",
   group: "RT/SH 8bit",
@@ -4458,7 +4457,7 @@ opcodes.set(0xcb1e, {
 // {n:31, x:0, y:3, z:7, p:1, q:1}
 // $ROT $RZ
 opcodes.set(0xcb1f, {
-  name: "rr a",
+  name: "RR A",
   bytes: "cb 1f",
   doc: "Rotate right from carry a",
   group: "RT/SH 8bit",
@@ -4471,7 +4470,7 @@ opcodes.set(0xcb1f, {
 // {n:32, x:0, y:4, z:0, p:2, q:0}
 // $ROT $RZ
 opcodes.set(0xcb20, {
-  name: "sla b",
+  name: "SLA B",
   bytes: "cb 20",
   doc: "Shift left arithmetic b",
   group: "RT/SH 8bit",
@@ -4484,7 +4483,7 @@ opcodes.set(0xcb20, {
 // {n:33, x:0, y:4, z:1, p:2, q:0}
 // $ROT $RZ
 opcodes.set(0xcb21, {
-  name: "sla c",
+  name: "SLA C",
   bytes: "cb 21",
   doc: "Shift left arithmetic c",
   group: "RT/SH 8bit",
@@ -4497,7 +4496,7 @@ opcodes.set(0xcb21, {
 // {n:34, x:0, y:4, z:2, p:2, q:0}
 // $ROT $RZ
 opcodes.set(0xcb22, {
-  name: "sla d",
+  name: "SLA D",
   bytes: "cb 22",
   doc: "Shift left arithmetic d",
   group: "RT/SH 8bit",
@@ -4510,7 +4509,7 @@ opcodes.set(0xcb22, {
 // {n:35, x:0, y:4, z:3, p:2, q:0}
 // $ROT $RZ
 opcodes.set(0xcb23, {
-  name: "sla e",
+  name: "SLA E",
   bytes: "cb 23",
   doc: "Shift left arithmetic e",
   group: "RT/SH 8bit",
@@ -4523,7 +4522,7 @@ opcodes.set(0xcb23, {
 // {n:36, x:0, y:4, z:4, p:2, q:0}
 // $ROT $RZ
 opcodes.set(0xcb24, {
-  name: "sla h",
+  name: "SLA H",
   bytes: "cb 24",
   doc: "Shift left arithmetic h",
   group: "RT/SH 8bit",
@@ -4536,7 +4535,7 @@ opcodes.set(0xcb24, {
 // {n:37, x:0, y:4, z:5, p:2, q:0}
 // $ROT $RZ
 opcodes.set(0xcb25, {
-  name: "sla l",
+  name: "SLA L",
   bytes: "cb 25",
   doc: "Shift left arithmetic l",
   group: "RT/SH 8bit",
@@ -4549,7 +4548,7 @@ opcodes.set(0xcb25, {
 // {n:38, x:0, y:4, z:6, p:2, q:0}
 // $ROT (HL)
 opcodes.set(0xcb26, {
-  name: "sla (HL)",
+  name: "SLA (HL)",
   bytes: "cb 26",
   doc: "Shift left arithmetic (HL)",
   group: "RT/SH 8bit",
@@ -4569,7 +4568,7 @@ opcodes.set(0xcb26, {
 // {n:39, x:0, y:4, z:7, p:2, q:0}
 // $ROT $RZ
 opcodes.set(0xcb27, {
-  name: "sla a",
+  name: "SLA A",
   bytes: "cb 27",
   doc: "Shift left arithmetic a",
   group: "RT/SH 8bit",
@@ -4582,7 +4581,7 @@ opcodes.set(0xcb27, {
 // {n:40, x:0, y:5, z:0, p:2, q:1}
 // $ROT $RZ
 opcodes.set(0xcb28, {
-  name: "sra b",
+  name: "SRA B",
   bytes: "cb 28",
   doc: "Shift right arithmetic b",
   group: "RT/SH 8bit",
@@ -4595,7 +4594,7 @@ opcodes.set(0xcb28, {
 // {n:41, x:0, y:5, z:1, p:2, q:1}
 // $ROT $RZ
 opcodes.set(0xcb29, {
-  name: "sra c",
+  name: "SRA C",
   bytes: "cb 29",
   doc: "Shift right arithmetic c",
   group: "RT/SH 8bit",
@@ -4608,7 +4607,7 @@ opcodes.set(0xcb29, {
 // {n:42, x:0, y:5, z:2, p:2, q:1}
 // $ROT $RZ
 opcodes.set(0xcb2a, {
-  name: "sra d",
+  name: "SRA D",
   bytes: "cb 2a",
   doc: "Shift right arithmetic d",
   group: "RT/SH 8bit",
@@ -4621,7 +4620,7 @@ opcodes.set(0xcb2a, {
 // {n:43, x:0, y:5, z:3, p:2, q:1}
 // $ROT $RZ
 opcodes.set(0xcb2b, {
-  name: "sra e",
+  name: "SRA E",
   bytes: "cb 2b",
   doc: "Shift right arithmetic e",
   group: "RT/SH 8bit",
@@ -4634,7 +4633,7 @@ opcodes.set(0xcb2b, {
 // {n:44, x:0, y:5, z:4, p:2, q:1}
 // $ROT $RZ
 opcodes.set(0xcb2c, {
-  name: "sra h",
+  name: "SRA H",
   bytes: "cb 2c",
   doc: "Shift right arithmetic h",
   group: "RT/SH 8bit",
@@ -4647,7 +4646,7 @@ opcodes.set(0xcb2c, {
 // {n:45, x:0, y:5, z:5, p:2, q:1}
 // $ROT $RZ
 opcodes.set(0xcb2d, {
-  name: "sra l",
+  name: "SRA L",
   bytes: "cb 2d",
   doc: "Shift right arithmetic l",
   group: "RT/SH 8bit",
@@ -4660,7 +4659,7 @@ opcodes.set(0xcb2d, {
 // {n:46, x:0, y:5, z:6, p:2, q:1}
 // $ROT (HL)
 opcodes.set(0xcb2e, {
-  name: "sra (HL)",
+  name: "SRA (HL)",
   bytes: "cb 2e",
   doc: "Shift right arithmetic (HL)",
   group: "RT/SH 8bit",
@@ -4680,7 +4679,7 @@ opcodes.set(0xcb2e, {
 // {n:47, x:0, y:5, z:7, p:2, q:1}
 // $ROT $RZ
 opcodes.set(0xcb2f, {
-  name: "sra a",
+  name: "SRA A",
   bytes: "cb 2f",
   doc: "Shift right arithmetic a",
   group: "RT/SH 8bit",
@@ -4693,7 +4692,7 @@ opcodes.set(0xcb2f, {
 // {n:48, x:0, y:6, z:0, p:3, q:0}
 // $ROT $RZ
 opcodes.set(0xcb30, {
-  name: "sll b",
+  name: "SLL B",
   bytes: "cb 30",
   doc: "Shift left logical b",
   group: "RT/SH 8bit",
@@ -4706,7 +4705,7 @@ opcodes.set(0xcb30, {
 // {n:49, x:0, y:6, z:1, p:3, q:0}
 // $ROT $RZ
 opcodes.set(0xcb31, {
-  name: "sll c",
+  name: "SLL C",
   bytes: "cb 31",
   doc: "Shift left logical c",
   group: "RT/SH 8bit",
@@ -4719,7 +4718,7 @@ opcodes.set(0xcb31, {
 // {n:50, x:0, y:6, z:2, p:3, q:0}
 // $ROT $RZ
 opcodes.set(0xcb32, {
-  name: "sll d",
+  name: "SLL D",
   bytes: "cb 32",
   doc: "Shift left logical d",
   group: "RT/SH 8bit",
@@ -4732,7 +4731,7 @@ opcodes.set(0xcb32, {
 // {n:51, x:0, y:6, z:3, p:3, q:0}
 // $ROT $RZ
 opcodes.set(0xcb33, {
-  name: "sll e",
+  name: "SLL E",
   bytes: "cb 33",
   doc: "Shift left logical e",
   group: "RT/SH 8bit",
@@ -4745,7 +4744,7 @@ opcodes.set(0xcb33, {
 // {n:52, x:0, y:6, z:4, p:3, q:0}
 // $ROT $RZ
 opcodes.set(0xcb34, {
-  name: "sll h",
+  name: "SLL H",
   bytes: "cb 34",
   doc: "Shift left logical h",
   group: "RT/SH 8bit",
@@ -4758,7 +4757,7 @@ opcodes.set(0xcb34, {
 // {n:53, x:0, y:6, z:5, p:3, q:0}
 // $ROT $RZ
 opcodes.set(0xcb35, {
-  name: "sll l",
+  name: "SLL L",
   bytes: "cb 35",
   doc: "Shift left logical l",
   group: "RT/SH 8bit",
@@ -4771,7 +4770,7 @@ opcodes.set(0xcb35, {
 // {n:54, x:0, y:6, z:6, p:3, q:0}
 // $ROT (HL)
 opcodes.set(0xcb36, {
-  name: "sll (HL)",
+  name: "SLL (HL)",
   bytes: "cb 36",
   doc: "Shift left logical (HL)",
   group: "RT/SH 8bit",
@@ -4791,7 +4790,7 @@ opcodes.set(0xcb36, {
 // {n:55, x:0, y:6, z:7, p:3, q:0}
 // $ROT $RZ
 opcodes.set(0xcb37, {
-  name: "sll a",
+  name: "SLL A",
   bytes: "cb 37",
   doc: "Shift left logical a",
   group: "RT/SH 8bit",
@@ -4804,7 +4803,7 @@ opcodes.set(0xcb37, {
 // {n:56, x:0, y:7, z:0, p:3, q:1}
 // $ROT $RZ
 opcodes.set(0xcb38, {
-  name: "srl b",
+  name: "SRL B",
   bytes: "cb 38",
   doc: "Shift right logical b",
   group: "RT/SH 8bit",
@@ -4817,7 +4816,7 @@ opcodes.set(0xcb38, {
 // {n:57, x:0, y:7, z:1, p:3, q:1}
 // $ROT $RZ
 opcodes.set(0xcb39, {
-  name: "srl c",
+  name: "SRL C",
   bytes: "cb 39",
   doc: "Shift right logical c",
   group: "RT/SH 8bit",
@@ -4830,7 +4829,7 @@ opcodes.set(0xcb39, {
 // {n:58, x:0, y:7, z:2, p:3, q:1}
 // $ROT $RZ
 opcodes.set(0xcb3a, {
-  name: "srl d",
+  name: "SRL D",
   bytes: "cb 3a",
   doc: "Shift right logical d",
   group: "RT/SH 8bit",
@@ -4843,7 +4842,7 @@ opcodes.set(0xcb3a, {
 // {n:59, x:0, y:7, z:3, p:3, q:1}
 // $ROT $RZ
 opcodes.set(0xcb3b, {
-  name: "srl e",
+  name: "SRL E",
   bytes: "cb 3b",
   doc: "Shift right logical e",
   group: "RT/SH 8bit",
@@ -4856,7 +4855,7 @@ opcodes.set(0xcb3b, {
 // {n:60, x:0, y:7, z:4, p:3, q:1}
 // $ROT $RZ
 opcodes.set(0xcb3c, {
-  name: "srl h",
+  name: "SRL H",
   bytes: "cb 3c",
   doc: "Shift right logical h",
   group: "RT/SH 8bit",
@@ -4869,7 +4868,7 @@ opcodes.set(0xcb3c, {
 // {n:61, x:0, y:7, z:5, p:3, q:1}
 // $ROT $RZ
 opcodes.set(0xcb3d, {
-  name: "srl l",
+  name: "SRL L",
   bytes: "cb 3d",
   doc: "Shift right logical l",
   group: "RT/SH 8bit",
@@ -4882,7 +4881,7 @@ opcodes.set(0xcb3d, {
 // {n:62, x:0, y:7, z:6, p:3, q:1}
 // $ROT (HL)
 opcodes.set(0xcb3e, {
-  name: "srl (HL)",
+  name: "SRL (HL)",
   bytes: "cb 3e",
   doc: "Shift right logical (HL)",
   group: "RT/SH 8bit",
@@ -4902,7 +4901,7 @@ opcodes.set(0xcb3e, {
 // {n:63, x:0, y:7, z:7, p:3, q:1}
 // $ROT $RZ
 opcodes.set(0xcb3f, {
-  name: "srl a",
+  name: "SRL A",
   bytes: "cb 3f",
   doc: "Shift right logical a",
   group: "RT/SH 8bit",
@@ -4915,7 +4914,7 @@ opcodes.set(0xcb3f, {
 // {n:64, x:1, y:0, z:0, p:0, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb40, {
-  name: "BIT 0,b",
+  name: "BIT 0,B",
   bytes: "cb 40",
   doc: "f.Z = bit 0 in register b2",
   group: "Set",
@@ -4928,7 +4927,7 @@ opcodes.set(0xcb40, {
 // {n:65, x:1, y:0, z:1, p:0, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb41, {
-  name: "BIT 0,c",
+  name: "BIT 0,C",
   bytes: "cb 41",
   doc: "f.Z = bit 0 in register c2",
   group: "Set",
@@ -4941,7 +4940,7 @@ opcodes.set(0xcb41, {
 // {n:66, x:1, y:0, z:2, p:0, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb42, {
-  name: "BIT 0,d",
+  name: "BIT 0,D",
   bytes: "cb 42",
   doc: "f.Z = bit 0 in register d2",
   group: "Set",
@@ -4954,7 +4953,7 @@ opcodes.set(0xcb42, {
 // {n:67, x:1, y:0, z:3, p:0, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb43, {
-  name: "BIT 0,e",
+  name: "BIT 0,E",
   bytes: "cb 43",
   doc: "f.Z = bit 0 in register e2",
   group: "Set",
@@ -4967,7 +4966,7 @@ opcodes.set(0xcb43, {
 // {n:68, x:1, y:0, z:4, p:0, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb44, {
-  name: "BIT 0,h",
+  name: "BIT 0,H",
   bytes: "cb 44",
   doc: "f.Z = bit 0 in register h2",
   group: "Set",
@@ -4980,7 +4979,7 @@ opcodes.set(0xcb44, {
 // {n:69, x:1, y:0, z:5, p:0, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb45, {
-  name: "BIT 0,l",
+  name: "BIT 0,L",
   bytes: "cb 45",
   doc: "f.Z = bit 0 in register l2",
   group: "Set",
@@ -5010,7 +5009,7 @@ opcodes.set(0xcb46, {
 // {n:71, x:1, y:0, z:7, p:0, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb47, {
-  name: "BIT 0,a",
+  name: "BIT 0,A",
   bytes: "cb 47",
   doc: "f.Z = bit 0 in register a2",
   group: "Set",
@@ -5023,7 +5022,7 @@ opcodes.set(0xcb47, {
 // {n:72, x:1, y:1, z:0, p:0, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb48, {
-  name: "BIT 1,b",
+  name: "BIT 1,B",
   bytes: "cb 48",
   doc: "f.Z = bit 1 in register b2",
   group: "Set",
@@ -5036,7 +5035,7 @@ opcodes.set(0xcb48, {
 // {n:73, x:1, y:1, z:1, p:0, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb49, {
-  name: "BIT 1,c",
+  name: "BIT 1,C",
   bytes: "cb 49",
   doc: "f.Z = bit 1 in register c2",
   group: "Set",
@@ -5049,7 +5048,7 @@ opcodes.set(0xcb49, {
 // {n:74, x:1, y:1, z:2, p:0, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb4a, {
-  name: "BIT 1,d",
+  name: "BIT 1,D",
   bytes: "cb 4a",
   doc: "f.Z = bit 1 in register d2",
   group: "Set",
@@ -5062,7 +5061,7 @@ opcodes.set(0xcb4a, {
 // {n:75, x:1, y:1, z:3, p:0, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb4b, {
-  name: "BIT 1,e",
+  name: "BIT 1,E",
   bytes: "cb 4b",
   doc: "f.Z = bit 1 in register e2",
   group: "Set",
@@ -5075,7 +5074,7 @@ opcodes.set(0xcb4b, {
 // {n:76, x:1, y:1, z:4, p:0, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb4c, {
-  name: "BIT 1,h",
+  name: "BIT 1,H",
   bytes: "cb 4c",
   doc: "f.Z = bit 1 in register h2",
   group: "Set",
@@ -5088,7 +5087,7 @@ opcodes.set(0xcb4c, {
 // {n:77, x:1, y:1, z:5, p:0, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb4d, {
-  name: "BIT 1,l",
+  name: "BIT 1,L",
   bytes: "cb 4d",
   doc: "f.Z = bit 1 in register l2",
   group: "Set",
@@ -5118,7 +5117,7 @@ opcodes.set(0xcb4e, {
 // {n:79, x:1, y:1, z:7, p:0, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb4f, {
-  name: "BIT 1,a",
+  name: "BIT 1,A",
   bytes: "cb 4f",
   doc: "f.Z = bit 1 in register a2",
   group: "Set",
@@ -5131,7 +5130,7 @@ opcodes.set(0xcb4f, {
 // {n:80, x:1, y:2, z:0, p:1, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb50, {
-  name: "BIT 2,b",
+  name: "BIT 2,B",
   bytes: "cb 50",
   doc: "f.Z = bit 2 in register b2",
   group: "Set",
@@ -5144,7 +5143,7 @@ opcodes.set(0xcb50, {
 // {n:81, x:1, y:2, z:1, p:1, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb51, {
-  name: "BIT 2,c",
+  name: "BIT 2,C",
   bytes: "cb 51",
   doc: "f.Z = bit 2 in register c2",
   group: "Set",
@@ -5157,7 +5156,7 @@ opcodes.set(0xcb51, {
 // {n:82, x:1, y:2, z:2, p:1, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb52, {
-  name: "BIT 2,d",
+  name: "BIT 2,D",
   bytes: "cb 52",
   doc: "f.Z = bit 2 in register d2",
   group: "Set",
@@ -5170,7 +5169,7 @@ opcodes.set(0xcb52, {
 // {n:83, x:1, y:2, z:3, p:1, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb53, {
-  name: "BIT 2,e",
+  name: "BIT 2,E",
   bytes: "cb 53",
   doc: "f.Z = bit 2 in register e2",
   group: "Set",
@@ -5183,7 +5182,7 @@ opcodes.set(0xcb53, {
 // {n:84, x:1, y:2, z:4, p:1, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb54, {
-  name: "BIT 2,h",
+  name: "BIT 2,H",
   bytes: "cb 54",
   doc: "f.Z = bit 2 in register h2",
   group: "Set",
@@ -5196,7 +5195,7 @@ opcodes.set(0xcb54, {
 // {n:85, x:1, y:2, z:5, p:1, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb55, {
-  name: "BIT 2,l",
+  name: "BIT 2,L",
   bytes: "cb 55",
   doc: "f.Z = bit 2 in register l2",
   group: "Set",
@@ -5226,7 +5225,7 @@ opcodes.set(0xcb56, {
 // {n:87, x:1, y:2, z:7, p:1, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb57, {
-  name: "BIT 2,a",
+  name: "BIT 2,A",
   bytes: "cb 57",
   doc: "f.Z = bit 2 in register a2",
   group: "Set",
@@ -5239,7 +5238,7 @@ opcodes.set(0xcb57, {
 // {n:88, x:1, y:3, z:0, p:1, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb58, {
-  name: "BIT 3,b",
+  name: "BIT 3,B",
   bytes: "cb 58",
   doc: "f.Z = bit 3 in register b2",
   group: "Set",
@@ -5252,7 +5251,7 @@ opcodes.set(0xcb58, {
 // {n:89, x:1, y:3, z:1, p:1, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb59, {
-  name: "BIT 3,c",
+  name: "BIT 3,C",
   bytes: "cb 59",
   doc: "f.Z = bit 3 in register c2",
   group: "Set",
@@ -5265,7 +5264,7 @@ opcodes.set(0xcb59, {
 // {n:90, x:1, y:3, z:2, p:1, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb5a, {
-  name: "BIT 3,d",
+  name: "BIT 3,D",
   bytes: "cb 5a",
   doc: "f.Z = bit 3 in register d2",
   group: "Set",
@@ -5278,7 +5277,7 @@ opcodes.set(0xcb5a, {
 // {n:91, x:1, y:3, z:3, p:1, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb5b, {
-  name: "BIT 3,e",
+  name: "BIT 3,E",
   bytes: "cb 5b",
   doc: "f.Z = bit 3 in register e2",
   group: "Set",
@@ -5291,7 +5290,7 @@ opcodes.set(0xcb5b, {
 // {n:92, x:1, y:3, z:4, p:1, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb5c, {
-  name: "BIT 3,h",
+  name: "BIT 3,H",
   bytes: "cb 5c",
   doc: "f.Z = bit 3 in register h2",
   group: "Set",
@@ -5304,7 +5303,7 @@ opcodes.set(0xcb5c, {
 // {n:93, x:1, y:3, z:5, p:1, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb5d, {
-  name: "BIT 3,l",
+  name: "BIT 3,L",
   bytes: "cb 5d",
   doc: "f.Z = bit 3 in register l2",
   group: "Set",
@@ -5334,7 +5333,7 @@ opcodes.set(0xcb5e, {
 // {n:95, x:1, y:3, z:7, p:1, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb5f, {
-  name: "BIT 3,a",
+  name: "BIT 3,A",
   bytes: "cb 5f",
   doc: "f.Z = bit 3 in register a2",
   group: "Set",
@@ -5347,7 +5346,7 @@ opcodes.set(0xcb5f, {
 // {n:96, x:1, y:4, z:0, p:2, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb60, {
-  name: "BIT 4,b",
+  name: "BIT 4,B",
   bytes: "cb 60",
   doc: "f.Z = bit 4 in register b2",
   group: "Set",
@@ -5360,7 +5359,7 @@ opcodes.set(0xcb60, {
 // {n:97, x:1, y:4, z:1, p:2, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb61, {
-  name: "BIT 4,c",
+  name: "BIT 4,C",
   bytes: "cb 61",
   doc: "f.Z = bit 4 in register c2",
   group: "Set",
@@ -5373,7 +5372,7 @@ opcodes.set(0xcb61, {
 // {n:98, x:1, y:4, z:2, p:2, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb62, {
-  name: "BIT 4,d",
+  name: "BIT 4,D",
   bytes: "cb 62",
   doc: "f.Z = bit 4 in register d2",
   group: "Set",
@@ -5386,7 +5385,7 @@ opcodes.set(0xcb62, {
 // {n:99, x:1, y:4, z:3, p:2, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb63, {
-  name: "BIT 4,e",
+  name: "BIT 4,E",
   bytes: "cb 63",
   doc: "f.Z = bit 4 in register e2",
   group: "Set",
@@ -5399,7 +5398,7 @@ opcodes.set(0xcb63, {
 // {n:100, x:1, y:4, z:4, p:2, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb64, {
-  name: "BIT 4,h",
+  name: "BIT 4,H",
   bytes: "cb 64",
   doc: "f.Z = bit 4 in register h2",
   group: "Set",
@@ -5412,7 +5411,7 @@ opcodes.set(0xcb64, {
 // {n:101, x:1, y:4, z:5, p:2, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb65, {
-  name: "BIT 4,l",
+  name: "BIT 4,L",
   bytes: "cb 65",
   doc: "f.Z = bit 4 in register l2",
   group: "Set",
@@ -5442,7 +5441,7 @@ opcodes.set(0xcb66, {
 // {n:103, x:1, y:4, z:7, p:2, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb67, {
-  name: "BIT 4,a",
+  name: "BIT 4,A",
   bytes: "cb 67",
   doc: "f.Z = bit 4 in register a2",
   group: "Set",
@@ -5455,7 +5454,7 @@ opcodes.set(0xcb67, {
 // {n:104, x:1, y:5, z:0, p:2, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb68, {
-  name: "BIT 5,b",
+  name: "BIT 5,B",
   bytes: "cb 68",
   doc: "f.Z = bit 5 in register b2",
   group: "Set",
@@ -5468,7 +5467,7 @@ opcodes.set(0xcb68, {
 // {n:105, x:1, y:5, z:1, p:2, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb69, {
-  name: "BIT 5,c",
+  name: "BIT 5,C",
   bytes: "cb 69",
   doc: "f.Z = bit 5 in register c2",
   group: "Set",
@@ -5481,7 +5480,7 @@ opcodes.set(0xcb69, {
 // {n:106, x:1, y:5, z:2, p:2, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb6a, {
-  name: "BIT 5,d",
+  name: "BIT 5,D",
   bytes: "cb 6a",
   doc: "f.Z = bit 5 in register d2",
   group: "Set",
@@ -5494,7 +5493,7 @@ opcodes.set(0xcb6a, {
 // {n:107, x:1, y:5, z:3, p:2, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb6b, {
-  name: "BIT 5,e",
+  name: "BIT 5,E",
   bytes: "cb 6b",
   doc: "f.Z = bit 5 in register e2",
   group: "Set",
@@ -5507,7 +5506,7 @@ opcodes.set(0xcb6b, {
 // {n:108, x:1, y:5, z:4, p:2, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb6c, {
-  name: "BIT 5,h",
+  name: "BIT 5,H",
   bytes: "cb 6c",
   doc: "f.Z = bit 5 in register h2",
   group: "Set",
@@ -5520,7 +5519,7 @@ opcodes.set(0xcb6c, {
 // {n:109, x:1, y:5, z:5, p:2, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb6d, {
-  name: "BIT 5,l",
+  name: "BIT 5,L",
   bytes: "cb 6d",
   doc: "f.Z = bit 5 in register l2",
   group: "Set",
@@ -5550,7 +5549,7 @@ opcodes.set(0xcb6e, {
 // {n:111, x:1, y:5, z:7, p:2, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb6f, {
-  name: "BIT 5,a",
+  name: "BIT 5,A",
   bytes: "cb 6f",
   doc: "f.Z = bit 5 in register a2",
   group: "Set",
@@ -5563,7 +5562,7 @@ opcodes.set(0xcb6f, {
 // {n:112, x:1, y:6, z:0, p:3, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb70, {
-  name: "BIT 6,b",
+  name: "BIT 6,B",
   bytes: "cb 70",
   doc: "f.Z = bit 6 in register b2",
   group: "Set",
@@ -5576,7 +5575,7 @@ opcodes.set(0xcb70, {
 // {n:113, x:1, y:6, z:1, p:3, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb71, {
-  name: "BIT 6,c",
+  name: "BIT 6,C",
   bytes: "cb 71",
   doc: "f.Z = bit 6 in register c2",
   group: "Set",
@@ -5589,7 +5588,7 @@ opcodes.set(0xcb71, {
 // {n:114, x:1, y:6, z:2, p:3, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb72, {
-  name: "BIT 6,d",
+  name: "BIT 6,D",
   bytes: "cb 72",
   doc: "f.Z = bit 6 in register d2",
   group: "Set",
@@ -5602,7 +5601,7 @@ opcodes.set(0xcb72, {
 // {n:115, x:1, y:6, z:3, p:3, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb73, {
-  name: "BIT 6,e",
+  name: "BIT 6,E",
   bytes: "cb 73",
   doc: "f.Z = bit 6 in register e2",
   group: "Set",
@@ -5615,7 +5614,7 @@ opcodes.set(0xcb73, {
 // {n:116, x:1, y:6, z:4, p:3, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb74, {
-  name: "BIT 6,h",
+  name: "BIT 6,H",
   bytes: "cb 74",
   doc: "f.Z = bit 6 in register h2",
   group: "Set",
@@ -5628,7 +5627,7 @@ opcodes.set(0xcb74, {
 // {n:117, x:1, y:6, z:5, p:3, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb75, {
-  name: "BIT 6,l",
+  name: "BIT 6,L",
   bytes: "cb 75",
   doc: "f.Z = bit 6 in register l2",
   group: "Set",
@@ -5658,7 +5657,7 @@ opcodes.set(0xcb76, {
 // {n:119, x:1, y:6, z:7, p:3, q:0}
 // BIT $NY, $RZ
 opcodes.set(0xcb77, {
-  name: "BIT 6,a",
+  name: "BIT 6,A",
   bytes: "cb 77",
   doc: "f.Z = bit 6 in register a2",
   group: "Set",
@@ -5671,7 +5670,7 @@ opcodes.set(0xcb77, {
 // {n:120, x:1, y:7, z:0, p:3, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb78, {
-  name: "BIT 7,b",
+  name: "BIT 7,B",
   bytes: "cb 78",
   doc: "f.Z = bit 7 in register b2",
   group: "Set",
@@ -5684,7 +5683,7 @@ opcodes.set(0xcb78, {
 // {n:121, x:1, y:7, z:1, p:3, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb79, {
-  name: "BIT 7,c",
+  name: "BIT 7,C",
   bytes: "cb 79",
   doc: "f.Z = bit 7 in register c2",
   group: "Set",
@@ -5697,7 +5696,7 @@ opcodes.set(0xcb79, {
 // {n:122, x:1, y:7, z:2, p:3, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb7a, {
-  name: "BIT 7,d",
+  name: "BIT 7,D",
   bytes: "cb 7a",
   doc: "f.Z = bit 7 in register d2",
   group: "Set",
@@ -5710,7 +5709,7 @@ opcodes.set(0xcb7a, {
 // {n:123, x:1, y:7, z:3, p:3, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb7b, {
-  name: "BIT 7,e",
+  name: "BIT 7,E",
   bytes: "cb 7b",
   doc: "f.Z = bit 7 in register e2",
   group: "Set",
@@ -5723,7 +5722,7 @@ opcodes.set(0xcb7b, {
 // {n:124, x:1, y:7, z:4, p:3, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb7c, {
-  name: "BIT 7,h",
+  name: "BIT 7,H",
   bytes: "cb 7c",
   doc: "f.Z = bit 7 in register h2",
   group: "Set",
@@ -5736,7 +5735,7 @@ opcodes.set(0xcb7c, {
 // {n:125, x:1, y:7, z:5, p:3, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb7d, {
-  name: "BIT 7,l",
+  name: "BIT 7,L",
   bytes: "cb 7d",
   doc: "f.Z = bit 7 in register l2",
   group: "Set",
@@ -5766,7 +5765,7 @@ opcodes.set(0xcb7e, {
 // {n:127, x:1, y:7, z:7, p:3, q:1}
 // BIT $NY, $RZ
 opcodes.set(0xcb7f, {
-  name: "BIT 7,a",
+  name: "BIT 7,A",
   bytes: "cb 7f",
   doc: "f.Z = bit 7 in register a2",
   group: "Set",
@@ -5779,7 +5778,7 @@ opcodes.set(0xcb7f, {
 // {n:128, x:2, y:0, z:0, p:0, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb80, {
-  name: "RES 0,b",
+  name: "RES 0,B",
   bytes: "cb 80",
   doc: "Reset bit 0 in register b2",
   group: "Set",
@@ -5792,7 +5791,7 @@ opcodes.set(0xcb80, {
 // {n:129, x:2, y:0, z:1, p:0, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb81, {
-  name: "RES 0,c",
+  name: "RES 0,C",
   bytes: "cb 81",
   doc: "Reset bit 0 in register c2",
   group: "Set",
@@ -5805,7 +5804,7 @@ opcodes.set(0xcb81, {
 // {n:130, x:2, y:0, z:2, p:0, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb82, {
-  name: "RES 0,d",
+  name: "RES 0,D",
   bytes: "cb 82",
   doc: "Reset bit 0 in register d2",
   group: "Set",
@@ -5818,7 +5817,7 @@ opcodes.set(0xcb82, {
 // {n:131, x:2, y:0, z:3, p:0, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb83, {
-  name: "RES 0,e",
+  name: "RES 0,E",
   bytes: "cb 83",
   doc: "Reset bit 0 in register e2",
   group: "Set",
@@ -5831,7 +5830,7 @@ opcodes.set(0xcb83, {
 // {n:132, x:2, y:0, z:4, p:0, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb84, {
-  name: "RES 0,h",
+  name: "RES 0,H",
   bytes: "cb 84",
   doc: "Reset bit 0 in register h2",
   group: "Set",
@@ -5844,7 +5843,7 @@ opcodes.set(0xcb84, {
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb85, {
-  name: "RES 0,l",
+  name: "RES 0,L",
   bytes: "cb 85",
   doc: "Reset bit 0 in register l2",
   group: "Set",
@@ -5877,7 +5876,7 @@ opcodes.set(0xcb86, {
 // {n:135, x:2, y:0, z:7, p:0, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb87, {
-  name: "RES 0,a",
+  name: "RES 0,A",
   bytes: "cb 87",
   doc: "Reset bit 0 in register a2",
   group: "Set",
@@ -5890,7 +5889,7 @@ opcodes.set(0xcb87, {
 // {n:136, x:2, y:1, z:0, p:0, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb88, {
-  name: "RES 1,b",
+  name: "RES 1,B",
   bytes: "cb 88",
   doc: "Reset bit 1 in register b2",
   group: "Set",
@@ -5903,7 +5902,7 @@ opcodes.set(0xcb88, {
 // {n:137, x:2, y:1, z:1, p:0, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb89, {
-  name: "RES 1,c",
+  name: "RES 1,C",
   bytes: "cb 89",
   doc: "Reset bit 1 in register c2",
   group: "Set",
@@ -5916,7 +5915,7 @@ opcodes.set(0xcb89, {
 // {n:138, x:2, y:1, z:2, p:0, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb8a, {
-  name: "RES 1,d",
+  name: "RES 1,D",
   bytes: "cb 8a",
   doc: "Reset bit 1 in register d2",
   group: "Set",
@@ -5929,7 +5928,7 @@ opcodes.set(0xcb8a, {
 // {n:139, x:2, y:1, z:3, p:0, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb8b, {
-  name: "RES 1,e",
+  name: "RES 1,E",
   bytes: "cb 8b",
   doc: "Reset bit 1 in register e2",
   group: "Set",
@@ -5942,7 +5941,7 @@ opcodes.set(0xcb8b, {
 // {n:140, x:2, y:1, z:4, p:0, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb8c, {
-  name: "RES 1,h",
+  name: "RES 1,H",
   bytes: "cb 8c",
   doc: "Reset bit 1 in register h2",
   group: "Set",
@@ -5955,7 +5954,7 @@ opcodes.set(0xcb8c, {
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb8d, {
-  name: "RES 1,l",
+  name: "RES 1,L",
   bytes: "cb 8d",
   doc: "Reset bit 1 in register l2",
   group: "Set",
@@ -5988,7 +5987,7 @@ opcodes.set(0xcb8e, {
 // {n:143, x:2, y:1, z:7, p:0, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb8f, {
-  name: "RES 1,a",
+  name: "RES 1,A",
   bytes: "cb 8f",
   doc: "Reset bit 1 in register a2",
   group: "Set",
@@ -6001,7 +6000,7 @@ opcodes.set(0xcb8f, {
 // {n:144, x:2, y:2, z:0, p:1, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb90, {
-  name: "RES 2,b",
+  name: "RES 2,B",
   bytes: "cb 90",
   doc: "Reset bit 2 in register b2",
   group: "Set",
@@ -6014,7 +6013,7 @@ opcodes.set(0xcb90, {
 // {n:145, x:2, y:2, z:1, p:1, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb91, {
-  name: "RES 2,c",
+  name: "RES 2,C",
   bytes: "cb 91",
   doc: "Reset bit 2 in register c2",
   group: "Set",
@@ -6027,7 +6026,7 @@ opcodes.set(0xcb91, {
 // {n:146, x:2, y:2, z:2, p:1, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb92, {
-  name: "RES 2,d",
+  name: "RES 2,D",
   bytes: "cb 92",
   doc: "Reset bit 2 in register d2",
   group: "Set",
@@ -6040,7 +6039,7 @@ opcodes.set(0xcb92, {
 // {n:147, x:2, y:2, z:3, p:1, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb93, {
-  name: "RES 2,e",
+  name: "RES 2,E",
   bytes: "cb 93",
   doc: "Reset bit 2 in register e2",
   group: "Set",
@@ -6053,7 +6052,7 @@ opcodes.set(0xcb93, {
 // {n:148, x:2, y:2, z:4, p:1, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb94, {
-  name: "RES 2,h",
+  name: "RES 2,H",
   bytes: "cb 94",
   doc: "Reset bit 2 in register h2",
   group: "Set",
@@ -6066,7 +6065,7 @@ opcodes.set(0xcb94, {
 // {n:149, x:2, y:2, z:5, p:1, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb95, {
-  name: "RES 2,l",
+  name: "RES 2,L",
   bytes: "cb 95",
   doc: "Reset bit 2 in register l2",
   group: "Set",
@@ -6099,7 +6098,7 @@ opcodes.set(0xcb96, {
 // {n:151, x:2, y:2, z:7, p:1, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcb97, {
-  name: "RES 2,a",
+  name: "RES 2,A",
   bytes: "cb 97",
   doc: "Reset bit 2 in register a2",
   group: "Set",
@@ -6112,7 +6111,7 @@ opcodes.set(0xcb97, {
 // {n:152, x:2, y:3, z:0, p:1, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb98, {
-  name: "RES 3,b",
+  name: "RES 3,B",
   bytes: "cb 98",
   doc: "Reset bit 3 in register b2",
   group: "Set",
@@ -6125,7 +6124,7 @@ opcodes.set(0xcb98, {
 // {n:153, x:2, y:3, z:1, p:1, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb99, {
-  name: "RES 3,c",
+  name: "RES 3,C",
   bytes: "cb 99",
   doc: "Reset bit 3 in register c2",
   group: "Set",
@@ -6138,7 +6137,7 @@ opcodes.set(0xcb99, {
 // {n:154, x:2, y:3, z:2, p:1, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb9a, {
-  name: "RES 3,d",
+  name: "RES 3,D",
   bytes: "cb 9a",
   doc: "Reset bit 3 in register d2",
   group: "Set",
@@ -6151,7 +6150,7 @@ opcodes.set(0xcb9a, {
 // {n:155, x:2, y:3, z:3, p:1, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb9b, {
-  name: "RES 3,e",
+  name: "RES 3,E",
   bytes: "cb 9b",
   doc: "Reset bit 3 in register e2",
   group: "Set",
@@ -6164,7 +6163,7 @@ opcodes.set(0xcb9b, {
 // {n:156, x:2, y:3, z:4, p:1, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb9c, {
-  name: "RES 3,h",
+  name: "RES 3,H",
   bytes: "cb 9c",
   doc: "Reset bit 3 in register h2",
   group: "Set",
@@ -6177,7 +6176,7 @@ opcodes.set(0xcb9c, {
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb9d, {
-  name: "RES 3,l",
+  name: "RES 3,L",
   bytes: "cb 9d",
   doc: "Reset bit 3 in register l2",
   group: "Set",
@@ -6210,7 +6209,7 @@ opcodes.set(0xcb9e, {
 // {n:159, x:2, y:3, z:7, p:1, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcb9f, {
-  name: "RES 3,a",
+  name: "RES 3,A",
   bytes: "cb 9f",
   doc: "Reset bit 3 in register a2",
   group: "Set",
@@ -6223,7 +6222,7 @@ opcodes.set(0xcb9f, {
 // {n:160, x:2, y:4, z:0, p:2, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcba0, {
-  name: "RES 4,b",
+  name: "RES 4,B",
   bytes: "cb a0",
   doc: "Reset bit 4 in register b2",
   group: "Set",
@@ -6236,7 +6235,7 @@ opcodes.set(0xcba0, {
 // {n:161, x:2, y:4, z:1, p:2, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcba1, {
-  name: "RES 4,c",
+  name: "RES 4,C",
   bytes: "cb a1",
   doc: "Reset bit 4 in register c2",
   group: "Set",
@@ -6249,7 +6248,7 @@ opcodes.set(0xcba1, {
 // {n:162, x:2, y:4, z:2, p:2, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcba2, {
-  name: "RES 4,d",
+  name: "RES 4,D",
   bytes: "cb a2",
   doc: "Reset bit 4 in register d2",
   group: "Set",
@@ -6262,7 +6261,7 @@ opcodes.set(0xcba2, {
 // {n:163, x:2, y:4, z:3, p:2, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcba3, {
-  name: "RES 4,e",
+  name: "RES 4,E",
   bytes: "cb a3",
   doc: "Reset bit 4 in register e2",
   group: "Set",
@@ -6275,7 +6274,7 @@ opcodes.set(0xcba3, {
 // {n:164, x:2, y:4, z:4, p:2, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcba4, {
-  name: "RES 4,h",
+  name: "RES 4,H",
   bytes: "cb a4",
   doc: "Reset bit 4 in register h2",
   group: "Set",
@@ -6288,7 +6287,7 @@ opcodes.set(0xcba4, {
 // {n:165, x:2, y:4, z:5, p:2, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcba5, {
-  name: "RES 4,l",
+  name: "RES 4,L",
   bytes: "cb a5",
   doc: "Reset bit 4 in register l2",
   group: "Set",
@@ -6321,7 +6320,7 @@ opcodes.set(0xcba6, {
 // {n:167, x:2, y:4, z:7, p:2, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcba7, {
-  name: "RES 4,a",
+  name: "RES 4,A",
   bytes: "cb a7",
   doc: "Reset bit 4 in register a2",
   group: "Set",
@@ -6334,7 +6333,7 @@ opcodes.set(0xcba7, {
 // {n:168, x:2, y:5, z:0, p:2, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcba8, {
-  name: "RES 5,b",
+  name: "RES 5,B",
   bytes: "cb a8",
   doc: "Reset bit 5 in register b2",
   group: "Set",
@@ -6347,7 +6346,7 @@ opcodes.set(0xcba8, {
 // {n:169, x:2, y:5, z:1, p:2, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcba9, {
-  name: "RES 5,c",
+  name: "RES 5,C",
   bytes: "cb a9",
   doc: "Reset bit 5 in register c2",
   group: "Set",
@@ -6360,7 +6359,7 @@ opcodes.set(0xcba9, {
 // {n:170, x:2, y:5, z:2, p:2, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbaa, {
-  name: "RES 5,d",
+  name: "RES 5,D",
   bytes: "cb aa",
   doc: "Reset bit 5 in register d2",
   group: "Set",
@@ -6373,7 +6372,7 @@ opcodes.set(0xcbaa, {
 // {n:171, x:2, y:5, z:3, p:2, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbab, {
-  name: "RES 5,e",
+  name: "RES 5,E",
   bytes: "cb ab",
   doc: "Reset bit 5 in register e2",
   group: "Set",
@@ -6386,7 +6385,7 @@ opcodes.set(0xcbab, {
 // {n:172, x:2, y:5, z:4, p:2, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbac, {
-  name: "RES 5,h",
+  name: "RES 5,H",
   bytes: "cb ac",
   doc: "Reset bit 5 in register h2",
   group: "Set",
@@ -6399,7 +6398,7 @@ opcodes.set(0xcbac, {
 // {n:173, x:2, y:5, z:5, p:2, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbad, {
-  name: "RES 5,l",
+  name: "RES 5,L",
   bytes: "cb ad",
   doc: "Reset bit 5 in register l2",
   group: "Set",
@@ -6432,7 +6431,7 @@ opcodes.set(0xcbae, {
 // {n:175, x:2, y:5, z:7, p:2, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbaf, {
-  name: "RES 5,a",
+  name: "RES 5,A",
   bytes: "cb af",
   doc: "Reset bit 5 in register a2",
   group: "Set",
@@ -6445,7 +6444,7 @@ opcodes.set(0xcbaf, {
 // {n:176, x:2, y:6, z:0, p:3, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcbb0, {
-  name: "RES 6,b",
+  name: "RES 6,B",
   bytes: "cb b0",
   doc: "Reset bit 6 in register b2",
   group: "Set",
@@ -6458,7 +6457,7 @@ opcodes.set(0xcbb0, {
 // {n:177, x:2, y:6, z:1, p:3, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcbb1, {
-  name: "RES 6,c",
+  name: "RES 6,C",
   bytes: "cb b1",
   doc: "Reset bit 6 in register c2",
   group: "Set",
@@ -6471,7 +6470,7 @@ opcodes.set(0xcbb1, {
 // {n:178, x:2, y:6, z:2, p:3, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcbb2, {
-  name: "RES 6,d",
+  name: "RES 6,D",
   bytes: "cb b2",
   doc: "Reset bit 6 in register d2",
   group: "Set",
@@ -6484,7 +6483,7 @@ opcodes.set(0xcbb2, {
 // {n:179, x:2, y:6, z:3, p:3, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcbb3, {
-  name: "RES 6,e",
+  name: "RES 6,E",
   bytes: "cb b3",
   doc: "Reset bit 6 in register e2",
   group: "Set",
@@ -6497,7 +6496,7 @@ opcodes.set(0xcbb3, {
 // {n:180, x:2, y:6, z:4, p:3, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcbb4, {
-  name: "RES 6,h",
+  name: "RES 6,H",
   bytes: "cb b4",
   doc: "Reset bit 6 in register h2",
   group: "Set",
@@ -6510,7 +6509,7 @@ opcodes.set(0xcbb4, {
 // {n:181, x:2, y:6, z:5, p:3, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcbb5, {
-  name: "RES 6,l",
+  name: "RES 6,L",
   bytes: "cb b5",
   doc: "Reset bit 6 in register l2",
   group: "Set",
@@ -6543,7 +6542,7 @@ opcodes.set(0xcbb6, {
 // {n:183, x:2, y:6, z:7, p:3, q:0}
 // RES $NY, $RZ
 opcodes.set(0xcbb7, {
-  name: "RES 6,a",
+  name: "RES 6,A",
   bytes: "cb b7",
   doc: "Reset bit 6 in register a2",
   group: "Set",
@@ -6556,7 +6555,7 @@ opcodes.set(0xcbb7, {
 // {n:184, x:2, y:7, z:0, p:3, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbb8, {
-  name: "RES 7,b",
+  name: "RES 7,B",
   bytes: "cb b8",
   doc: "Reset bit 7 in register b2",
   group: "Set",
@@ -6569,7 +6568,7 @@ opcodes.set(0xcbb8, {
 // {n:185, x:2, y:7, z:1, p:3, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbb9, {
-  name: "RES 7,c",
+  name: "RES 7,C",
   bytes: "cb b9",
   doc: "Reset bit 7 in register c2",
   group: "Set",
@@ -6582,7 +6581,7 @@ opcodes.set(0xcbb9, {
 // {n:186, x:2, y:7, z:2, p:3, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbba, {
-  name: "RES 7,d",
+  name: "RES 7,D",
   bytes: "cb ba",
   doc: "Reset bit 7 in register d2",
   group: "Set",
@@ -6595,7 +6594,7 @@ opcodes.set(0xcbba, {
 // {n:187, x:2, y:7, z:3, p:3, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbbb, {
-  name: "RES 7,e",
+  name: "RES 7,E",
   bytes: "cb bb",
   doc: "Reset bit 7 in register e2",
   group: "Set",
@@ -6608,7 +6607,7 @@ opcodes.set(0xcbbb, {
 // {n:188, x:2, y:7, z:4, p:3, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbbc, {
-  name: "RES 7,h",
+  name: "RES 7,H",
   bytes: "cb bc",
   doc: "Reset bit 7 in register h2",
   group: "Set",
@@ -6621,7 +6620,7 @@ opcodes.set(0xcbbc, {
 // {n:189, x:2, y:7, z:5, p:3, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbbd, {
-  name: "RES 7,l",
+  name: "RES 7,L",
   bytes: "cb bd",
   doc: "Reset bit 7 in register l2",
   group: "Set",
@@ -6654,7 +6653,7 @@ opcodes.set(0xcbbe, {
 // {n:191, x:2, y:7, z:7, p:3, q:1}
 // RES $NY, $RZ
 opcodes.set(0xcbbf, {
-  name: "RES 7,a",
+  name: "RES 7,A",
   bytes: "cb bf",
   doc: "Reset bit 7 in register a2",
   group: "Set",
@@ -6667,7 +6666,7 @@ opcodes.set(0xcbbf, {
 // {n:192, x:3, y:0, z:0, p:0, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbc0, {
-  name: "SET 0,b",
+  name: "SET 0,B",
   bytes: "cb c0",
   doc: "Set bit 0 in register b2",
   group: "Set",
@@ -6680,7 +6679,7 @@ opcodes.set(0xcbc0, {
 // {n:193, x:3, y:0, z:1, p:0, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbc1, {
-  name: "SET 0,c",
+  name: "SET 0,C",
   bytes: "cb c1",
   doc: "Set bit 0 in register c2",
   group: "Set",
@@ -6693,7 +6692,7 @@ opcodes.set(0xcbc1, {
 // {n:194, x:3, y:0, z:2, p:0, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbc2, {
-  name: "SET 0,d",
+  name: "SET 0,D",
   bytes: "cb c2",
   doc: "Set bit 0 in register d2",
   group: "Set",
@@ -6706,7 +6705,7 @@ opcodes.set(0xcbc2, {
 // {n:195, x:3, y:0, z:3, p:0, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbc3, {
-  name: "SET 0,e",
+  name: "SET 0,E",
   bytes: "cb c3",
   doc: "Set bit 0 in register e2",
   group: "Set",
@@ -6719,7 +6718,7 @@ opcodes.set(0xcbc3, {
 // {n:196, x:3, y:0, z:4, p:0, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbc4, {
-  name: "SET 0,h",
+  name: "SET 0,H",
   bytes: "cb c4",
   doc: "Set bit 0 in register h2",
   group: "Set",
@@ -6732,7 +6731,7 @@ opcodes.set(0xcbc4, {
 // {n:197, x:3, y:0, z:5, p:0, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbc5, {
-  name: "SET 0,l",
+  name: "SET 0,L",
   bytes: "cb c5",
   doc: "Set bit 0 in register l2",
   group: "Set",
@@ -6765,7 +6764,7 @@ opcodes.set(0xcbc6, {
 // {n:199, x:3, y:0, z:7, p:0, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbc7, {
-  name: "SET 0,a",
+  name: "SET 0,A",
   bytes: "cb c7",
   doc: "Set bit 0 in register a2",
   group: "Set",
@@ -6778,7 +6777,7 @@ opcodes.set(0xcbc7, {
 // {n:200, x:3, y:1, z:0, p:0, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbc8, {
-  name: "SET 1,b",
+  name: "SET 1,B",
   bytes: "cb c8",
   doc: "Set bit 1 in register b2",
   group: "Set",
@@ -6791,7 +6790,7 @@ opcodes.set(0xcbc8, {
 // {n:201, x:3, y:1, z:1, p:0, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbc9, {
-  name: "SET 1,c",
+  name: "SET 1,C",
   bytes: "cb c9",
   doc: "Set bit 1 in register c2",
   group: "Set",
@@ -6804,7 +6803,7 @@ opcodes.set(0xcbc9, {
 // {n:202, x:3, y:1, z:2, p:0, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbca, {
-  name: "SET 1,d",
+  name: "SET 1,D",
   bytes: "cb ca",
   doc: "Set bit 1 in register d2",
   group: "Set",
@@ -6817,7 +6816,7 @@ opcodes.set(0xcbca, {
 // {n:203, x:3, y:1, z:3, p:0, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbcb, {
-  name: "SET 1,e",
+  name: "SET 1,E",
   bytes: "cb cb",
   doc: "Set bit 1 in register e2",
   group: "Set",
@@ -6830,7 +6829,7 @@ opcodes.set(0xcbcb, {
 // {n:204, x:3, y:1, z:4, p:0, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbcc, {
-  name: "SET 1,h",
+  name: "SET 1,H",
   bytes: "cb cc",
   doc: "Set bit 1 in register h2",
   group: "Set",
@@ -6843,7 +6842,7 @@ opcodes.set(0xcbcc, {
 // {n:205, x:3, y:1, z:5, p:0, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbcd, {
-  name: "SET 1,l",
+  name: "SET 1,L",
   bytes: "cb cd",
   doc: "Set bit 1 in register l2",
   group: "Set",
@@ -6876,7 +6875,7 @@ opcodes.set(0xcbce, {
 // {n:207, x:3, y:1, z:7, p:0, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbcf, {
-  name: "SET 1,a",
+  name: "SET 1,A",
   bytes: "cb cf",
   doc: "Set bit 1 in register a2",
   group: "Set",
@@ -6889,7 +6888,7 @@ opcodes.set(0xcbcf, {
 // {n:208, x:3, y:2, z:0, p:1, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbd0, {
-  name: "SET 2,b",
+  name: "SET 2,B",
   bytes: "cb d0",
   doc: "Set bit 2 in register b2",
   group: "Set",
@@ -6902,7 +6901,7 @@ opcodes.set(0xcbd0, {
 // {n:209, x:3, y:2, z:1, p:1, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbd1, {
-  name: "SET 2,c",
+  name: "SET 2,C",
   bytes: "cb d1",
   doc: "Set bit 2 in register c2",
   group: "Set",
@@ -6915,7 +6914,7 @@ opcodes.set(0xcbd1, {
 // {n:210, x:3, y:2, z:2, p:1, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbd2, {
-  name: "SET 2,d",
+  name: "SET 2,D",
   bytes: "cb d2",
   doc: "Set bit 2 in register d2",
   group: "Set",
@@ -6928,7 +6927,7 @@ opcodes.set(0xcbd2, {
 // {n:211, x:3, y:2, z:3, p:1, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbd3, {
-  name: "SET 2,e",
+  name: "SET 2,E",
   bytes: "cb d3",
   doc: "Set bit 2 in register e2",
   group: "Set",
@@ -6941,7 +6940,7 @@ opcodes.set(0xcbd3, {
 // {n:212, x:3, y:2, z:4, p:1, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbd4, {
-  name: "SET 2,h",
+  name: "SET 2,H",
   bytes: "cb d4",
   doc: "Set bit 2 in register h2",
   group: "Set",
@@ -6954,7 +6953,7 @@ opcodes.set(0xcbd4, {
 // {n:213, x:3, y:2, z:5, p:1, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbd5, {
-  name: "SET 2,l",
+  name: "SET 2,L",
   bytes: "cb d5",
   doc: "Set bit 2 in register l2",
   group: "Set",
@@ -6987,7 +6986,7 @@ opcodes.set(0xcbd6, {
 // {n:215, x:3, y:2, z:7, p:1, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbd7, {
-  name: "SET 2,a",
+  name: "SET 2,A",
   bytes: "cb d7",
   doc: "Set bit 2 in register a2",
   group: "Set",
@@ -7000,7 +6999,7 @@ opcodes.set(0xcbd7, {
 // {n:216, x:3, y:3, z:0, p:1, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbd8, {
-  name: "SET 3,b",
+  name: "SET 3,B",
   bytes: "cb d8",
   doc: "Set bit 3 in register b2",
   group: "Set",
@@ -7013,7 +7012,7 @@ opcodes.set(0xcbd8, {
 // {n:217, x:3, y:3, z:1, p:1, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbd9, {
-  name: "SET 3,c",
+  name: "SET 3,C",
   bytes: "cb d9",
   doc: "Set bit 3 in register c2",
   group: "Set",
@@ -7026,7 +7025,7 @@ opcodes.set(0xcbd9, {
 // {n:218, x:3, y:3, z:2, p:1, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbda, {
-  name: "SET 3,d",
+  name: "SET 3,D",
   bytes: "cb da",
   doc: "Set bit 3 in register d2",
   group: "Set",
@@ -7039,7 +7038,7 @@ opcodes.set(0xcbda, {
 // {n:219, x:3, y:3, z:3, p:1, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbdb, {
-  name: "SET 3,e",
+  name: "SET 3,E",
   bytes: "cb db",
   doc: "Set bit 3 in register e2",
   group: "Set",
@@ -7052,7 +7051,7 @@ opcodes.set(0xcbdb, {
 // {n:220, x:3, y:3, z:4, p:1, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbdc, {
-  name: "SET 3,h",
+  name: "SET 3,H",
   bytes: "cb dc",
   doc: "Set bit 3 in register h2",
   group: "Set",
@@ -7065,7 +7064,7 @@ opcodes.set(0xcbdc, {
 // {n:221, x:3, y:3, z:5, p:1, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbdd, {
-  name: "SET 3,l",
+  name: "SET 3,L",
   bytes: "cb dd",
   doc: "Set bit 3 in register l2",
   group: "Set",
@@ -7098,7 +7097,7 @@ opcodes.set(0xcbde, {
 // {n:223, x:3, y:3, z:7, p:1, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbdf, {
-  name: "SET 3,a",
+  name: "SET 3,A",
   bytes: "cb df",
   doc: "Set bit 3 in register a2",
   group: "Set",
@@ -7111,7 +7110,7 @@ opcodes.set(0xcbdf, {
 // {n:224, x:3, y:4, z:0, p:2, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbe0, {
-  name: "SET 4,b",
+  name: "SET 4,B",
   bytes: "cb e0",
   doc: "Set bit 4 in register b2",
   group: "Set",
@@ -7124,7 +7123,7 @@ opcodes.set(0xcbe0, {
 // {n:225, x:3, y:4, z:1, p:2, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbe1, {
-  name: "SET 4,c",
+  name: "SET 4,C",
   bytes: "cb e1",
   doc: "Set bit 4 in register c2",
   group: "Set",
@@ -7137,7 +7136,7 @@ opcodes.set(0xcbe1, {
 // {n:226, x:3, y:4, z:2, p:2, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbe2, {
-  name: "SET 4,d",
+  name: "SET 4,D",
   bytes: "cb e2",
   doc: "Set bit 4 in register d2",
   group: "Set",
@@ -7150,7 +7149,7 @@ opcodes.set(0xcbe2, {
 // {n:227, x:3, y:4, z:3, p:2, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbe3, {
-  name: "SET 4,e",
+  name: "SET 4,E",
   bytes: "cb e3",
   doc: "Set bit 4 in register e2",
   group: "Set",
@@ -7163,7 +7162,7 @@ opcodes.set(0xcbe3, {
 // {n:228, x:3, y:4, z:4, p:2, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbe4, {
-  name: "SET 4,h",
+  name: "SET 4,H",
   bytes: "cb e4",
   doc: "Set bit 4 in register h2",
   group: "Set",
@@ -7176,7 +7175,7 @@ opcodes.set(0xcbe4, {
 // {n:229, x:3, y:4, z:5, p:2, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbe5, {
-  name: "SET 4,l",
+  name: "SET 4,L",
   bytes: "cb e5",
   doc: "Set bit 4 in register l2",
   group: "Set",
@@ -7209,7 +7208,7 @@ opcodes.set(0xcbe6, {
 // {n:231, x:3, y:4, z:7, p:2, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbe7, {
-  name: "SET 4,a",
+  name: "SET 4,A",
   bytes: "cb e7",
   doc: "Set bit 4 in register a2",
   group: "Set",
@@ -7222,7 +7221,7 @@ opcodes.set(0xcbe7, {
 // {n:232, x:3, y:5, z:0, p:2, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbe8, {
-  name: "SET 5,b",
+  name: "SET 5,B",
   bytes: "cb e8",
   doc: "Set bit 5 in register b2",
   group: "Set",
@@ -7235,7 +7234,7 @@ opcodes.set(0xcbe8, {
 // {n:233, x:3, y:5, z:1, p:2, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbe9, {
-  name: "SET 5,c",
+  name: "SET 5,C",
   bytes: "cb e9",
   doc: "Set bit 5 in register c2",
   group: "Set",
@@ -7248,7 +7247,7 @@ opcodes.set(0xcbe9, {
 // {n:234, x:3, y:5, z:2, p:2, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbea, {
-  name: "SET 5,d",
+  name: "SET 5,D",
   bytes: "cb ea",
   doc: "Set bit 5 in register d2",
   group: "Set",
@@ -7261,7 +7260,7 @@ opcodes.set(0xcbea, {
 // {n:235, x:3, y:5, z:3, p:2, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbeb, {
-  name: "SET 5,e",
+  name: "SET 5,E",
   bytes: "cb eb",
   doc: "Set bit 5 in register e2",
   group: "Set",
@@ -7274,7 +7273,7 @@ opcodes.set(0xcbeb, {
 // {n:236, x:3, y:5, z:4, p:2, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbec, {
-  name: "SET 5,h",
+  name: "SET 5,H",
   bytes: "cb ec",
   doc: "Set bit 5 in register h2",
   group: "Set",
@@ -7287,7 +7286,7 @@ opcodes.set(0xcbec, {
 // {n:237, x:3, y:5, z:5, p:2, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbed, {
-  name: "SET 5,l",
+  name: "SET 5,L",
   bytes: "cb ed",
   doc: "Set bit 5 in register l2",
   group: "Set",
@@ -7320,7 +7319,7 @@ opcodes.set(0xcbee, {
 // {n:239, x:3, y:5, z:7, p:2, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbef, {
-  name: "SET 5,a",
+  name: "SET 5,A",
   bytes: "cb ef",
   doc: "Set bit 5 in register a2",
   group: "Set",
@@ -7333,7 +7332,7 @@ opcodes.set(0xcbef, {
 // {n:240, x:3, y:6, z:0, p:3, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbf0, {
-  name: "SET 6,b",
+  name: "SET 6,B",
   bytes: "cb f0",
   doc: "Set bit 6 in register b2",
   group: "Set",
@@ -7346,7 +7345,7 @@ opcodes.set(0xcbf0, {
 // {n:241, x:3, y:6, z:1, p:3, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbf1, {
-  name: "SET 6,c",
+  name: "SET 6,C",
   bytes: "cb f1",
   doc: "Set bit 6 in register c2",
   group: "Set",
@@ -7359,7 +7358,7 @@ opcodes.set(0xcbf1, {
 // {n:242, x:3, y:6, z:2, p:3, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbf2, {
-  name: "SET 6,d",
+  name: "SET 6,D",
   bytes: "cb f2",
   doc: "Set bit 6 in register d2",
   group: "Set",
@@ -7372,7 +7371,7 @@ opcodes.set(0xcbf2, {
 // {n:243, x:3, y:6, z:3, p:3, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbf3, {
-  name: "SET 6,e",
+  name: "SET 6,E",
   bytes: "cb f3",
   doc: "Set bit 6 in register e2",
   group: "Set",
@@ -7385,7 +7384,7 @@ opcodes.set(0xcbf3, {
 // {n:244, x:3, y:6, z:4, p:3, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbf4, {
-  name: "SET 6,h",
+  name: "SET 6,H",
   bytes: "cb f4",
   doc: "Set bit 6 in register h2",
   group: "Set",
@@ -7398,7 +7397,7 @@ opcodes.set(0xcbf4, {
 // {n:245, x:3, y:6, z:5, p:3, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbf5, {
-  name: "SET 6,l",
+  name: "SET 6,L",
   bytes: "cb f5",
   doc: "Set bit 6 in register l2",
   group: "Set",
@@ -7431,7 +7430,7 @@ opcodes.set(0xcbf6, {
 // {n:247, x:3, y:6, z:7, p:3, q:0}
 // SET $NY, $RZ
 opcodes.set(0xcbf7, {
-  name: "SET 6,a",
+  name: "SET 6,A",
   bytes: "cb f7",
   doc: "Set bit 6 in register a2",
   group: "Set",
@@ -7444,7 +7443,7 @@ opcodes.set(0xcbf7, {
 // {n:248, x:3, y:7, z:0, p:3, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbf8, {
-  name: "SET 7,b",
+  name: "SET 7,B",
   bytes: "cb f8",
   doc: "Set bit 7 in register b2",
   group: "Set",
@@ -7457,7 +7456,7 @@ opcodes.set(0xcbf8, {
 // {n:249, x:3, y:7, z:1, p:3, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbf9, {
-  name: "SET 7,c",
+  name: "SET 7,C",
   bytes: "cb f9",
   doc: "Set bit 7 in register c2",
   group: "Set",
@@ -7470,7 +7469,7 @@ opcodes.set(0xcbf9, {
 // {n:250, x:3, y:7, z:2, p:3, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbfa, {
-  name: "SET 7,d",
+  name: "SET 7,D",
   bytes: "cb fa",
   doc: "Set bit 7 in register d2",
   group: "Set",
@@ -7483,7 +7482,7 @@ opcodes.set(0xcbfa, {
 // {n:251, x:3, y:7, z:3, p:3, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbfb, {
-  name: "SET 7,e",
+  name: "SET 7,E",
   bytes: "cb fb",
   doc: "Set bit 7 in register e2",
   group: "Set",
@@ -7496,7 +7495,7 @@ opcodes.set(0xcbfb, {
 // {n:252, x:3, y:7, z:4, p:3, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbfc, {
-  name: "SET 7,h",
+  name: "SET 7,H",
   bytes: "cb fc",
   doc: "Set bit 7 in register h2",
   group: "Set",
@@ -7509,7 +7508,7 @@ opcodes.set(0xcbfc, {
 // {n:253, x:3, y:7, z:5, p:3, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbfd, {
-  name: "SET 7,l",
+  name: "SET 7,L",
   bytes: "cb fd",
   doc: "Set bit 7 in register l2",
   group: "Set",
@@ -7542,7 +7541,7 @@ opcodes.set(0xcbfe, {
 // {n:255, x:3, y:7, z:7, p:3, q:1}
 // SET $NY, $RZ
 opcodes.set(0xcbff, {
-  name: "SET 7,a",
+  name: "SET 7,A",
   bytes: "cb ff",
   doc: "Set bit 7 in register a2",
   group: "Set",
@@ -7555,7 +7554,7 @@ opcodes.set(0xcbff, {
 // {n:9, x:0, y:1, z:1, p:0, q:1}
 // ADD $RI,$RP
 opcodes.set(0xdd09, {
-  name: "ADD ix,bc",
+  name: "ADD IX,BC",
   bytes: "dd 09",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -7568,7 +7567,7 @@ opcodes.set(0xdd09, {
 // {n:25, x:0, y:3, z:1, p:1, q:1}
 // ADD $RI,$RP
 opcodes.set(0xdd19, {
-  name: "ADD ix,de",
+  name: "ADD IX,DE",
   bytes: "dd 19",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -7581,7 +7580,7 @@ opcodes.set(0xdd19, {
 // {n:33, x:0, y:4, z:1, p:2, q:0}
 // LD $RP,$nn
 opcodes.set(0xdd21, {
-  name: "LD ix,$nn",
+  name: "LD IX,$NN",
   bytes: "dd 21 XX XX",
   doc: "ix=nn",
   group: "Load 16bit",
@@ -7602,7 +7601,7 @@ opcodes.set(0xdd21, {
 // {n:34, x:0, y:4, z:2, p:2, q:0}
 // LD ($nn),$RP
 opcodes.set(0xdd22, {
-  name: "LD ($nn),ix",
+  name: "LD ($NN),IX",
   bytes: "dd 22 XX XX",
   doc: "[nn]=ix",
   group: "Load 16bit",
@@ -7632,7 +7631,7 @@ opcodes.set(0xdd22, {
 // {n:35, x:0, y:4, z:3, p:2, q:0}
 // INC $RP
 opcodes.set(0xdd23, {
-  name: "INC ix",
+  name: "INC IX",
   bytes: "dd 23",
   doc: "$RDDP+=1",
   group: "ALU 16bit",
@@ -7646,7 +7645,7 @@ opcodes.set(0xdd23, {
 // {n:36, x:0, y:4, z:4, p:2, q:0}
 // INC $RY
 opcodes.set(0xdd24, {
-  name: "INC ixh",
+  name: "INC IXH",
   bytes: "dd 24",
   doc: "ixh+=1",
   group: "ALU 8bit",
@@ -7659,7 +7658,7 @@ opcodes.set(0xdd24, {
 // {n:37, x:0, y:4, z:5, p:2, q:0}
 // DEC $RY
 opcodes.set(0xdd25, {
-  name: "DEC ixh",
+  name: "DEC IXH",
   bytes: "dd 25",
   doc: "ixh-=1",
   group: "ALU 8bit",
@@ -7672,7 +7671,7 @@ opcodes.set(0xdd25, {
 // {n:38, x:0, y:4, z:6, p:2, q:0}
 // LD $RY,$n
 opcodes.set(0xdd26, {
-  name: "LD ixh,$n",
+  name: "LD IXH,$N",
   bytes: "dd 26 XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -7687,7 +7686,7 @@ opcodes.set(0xdd26, {
 // {n:41, x:0, y:5, z:1, p:2, q:1}
 // ADD $RI,$RP
 opcodes.set(0xdd29, {
-  name: "ADD ix,ix",
+  name: "ADD IX,IX",
   bytes: "dd 29",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -7700,7 +7699,7 @@ opcodes.set(0xdd29, {
 // {n:42, x:0, y:5, z:2, p:2, q:1}
 // LD $RP,($nn)
 opcodes.set(0xdd2a, {
-  name: "LD ix,($nn)",
+  name: "LD IX,($NN)",
   bytes: "dd 2a XX XX",
   doc: "ix=($nn)",
   group: "Load 16bit",
@@ -7730,7 +7729,7 @@ opcodes.set(0xdd2a, {
 // {n:43, x:0, y:5, z:3, p:2, q:1}
 // DEC $RP
 opcodes.set(0xdd2b, {
-  name: "DEC ix",
+  name: "DEC IX",
   bytes: "dd 2b",
   doc: "ix-=1",
   group: "ALU 16bit",
@@ -7744,7 +7743,7 @@ opcodes.set(0xdd2b, {
 // {n:44, x:0, y:5, z:4, p:2, q:1}
 // INC $RY
 opcodes.set(0xdd2c, {
-  name: "INC ixl",
+  name: "INC IXL",
   bytes: "dd 2c",
   doc: "ixl+=1",
   group: "ALU 8bit",
@@ -7757,7 +7756,7 @@ opcodes.set(0xdd2c, {
 // {n:45, x:0, y:5, z:5, p:2, q:1}
 // DEC $RY
 opcodes.set(0xdd2d, {
-  name: "DEC ixl",
+  name: "DEC IXL",
   bytes: "dd 2d",
   doc: "ixl-=1",
   group: "ALU 8bit",
@@ -7770,7 +7769,7 @@ opcodes.set(0xdd2d, {
 // {n:46, x:0, y:5, z:6, p:2, q:1}
 // LD $RY,$n
 opcodes.set(0xdd2e, {
-  name: "LD ixl,$n",
+  name: "LD IXL,$N",
   bytes: "dd 2e XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -7785,7 +7784,7 @@ opcodes.set(0xdd2e, {
 // {n:52, x:0, y:6, z:4, p:3, q:0}
 // INC ($RI+dd)
 opcodes.set(0xdd34, {
-  name: "INC (ix+dd)",
+  name: "INC (IX+DD)",
   bytes: "dd 34",
   doc: "Increment (ix+dd)",
   group: "ALU 8bit",
@@ -7810,7 +7809,7 @@ opcodes.set(0xdd34, {
 // {n:53, x:0, y:6, z:5, p:3, q:0}
 // DEC ($RI+dd)
 opcodes.set(0xdd35, {
-  name: "DEC (ix+dd)",
+  name: "DEC (IX+DD)",
   bytes: "dd 35",
   doc: "Decrement (ix+dd)",
   group: "ALU 8bit",
@@ -7835,7 +7834,7 @@ opcodes.set(0xdd35, {
 // {n:54, x:0, y:6, z:6, p:3, q:0}
 // LD ($RI+dd),$n
 opcodes.set(0xdd36, {
-  name: "LD (ix+dd),$n",
+  name: "LD (IX+DD),$N",
   bytes: "dd 36 XX",
   doc: "(ix+dd)=n",
   group: "Load 8bit",
@@ -7859,7 +7858,7 @@ opcodes.set(0xdd36, {
 // {n:57, x:0, y:7, z:1, p:3, q:1}
 // ADD $RI,$RP
 opcodes.set(0xdd39, {
-  name: "ADD ix,sp",
+  name: "ADD IX,SP",
   bytes: "dd 39",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -7872,7 +7871,7 @@ opcodes.set(0xdd39, {
 // {n:68, x:1, y:0, z:4, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd44, {
-  name: "LD b,ixh",
+  name: "LD B,IXH",
   bytes: "dd 44",
   group: "Load 8bit",
   fn: (z80) => {
@@ -7884,7 +7883,7 @@ opcodes.set(0xdd44, {
 // {n:69, x:1, y:0, z:5, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd45, {
-  name: "LD b,ixl",
+  name: "LD B,IXL",
   bytes: "dd 45",
   group: "Load 8bit",
   fn: (z80) => {
@@ -7896,7 +7895,7 @@ opcodes.set(0xdd45, {
 // {n:70, x:1, y:0, z:6, p:0, q:0}
 // LD $RRY,($RI+dd)
 opcodes.set(0xdd46, {
-  name: "LD b,(ix+dd)",
+  name: "LD B,(IX+DD)",
   bytes: "dd 46",
   doc: "b=(ix+dd)",
   group: "Load 8bit",
@@ -7917,7 +7916,7 @@ opcodes.set(0xdd46, {
 // {n:76, x:1, y:1, z:4, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd4c, {
-  name: "LD c,ixh",
+  name: "LD C,IXH",
   bytes: "dd 4c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -7929,7 +7928,7 @@ opcodes.set(0xdd4c, {
 // {n:77, x:1, y:1, z:5, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd4d, {
-  name: "LD c,ixl",
+  name: "LD C,IXL",
   bytes: "dd 4d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -7941,7 +7940,7 @@ opcodes.set(0xdd4d, {
 // {n:78, x:1, y:1, z:6, p:0, q:1}
 // LD $RRY,($RI+dd)
 opcodes.set(0xdd4e, {
-  name: "LD c,(ix+dd)",
+  name: "LD C,(IX+DD)",
   bytes: "dd 4e",
   doc: "c=(ix+dd)",
   group: "Load 8bit",
@@ -7962,7 +7961,7 @@ opcodes.set(0xdd4e, {
 // {n:84, x:1, y:2, z:4, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd54, {
-  name: "LD d,ixh",
+  name: "LD D,IXH",
   bytes: "dd 54",
   group: "Load 8bit",
   fn: (z80) => {
@@ -7974,7 +7973,7 @@ opcodes.set(0xdd54, {
 // {n:85, x:1, y:2, z:5, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd55, {
-  name: "LD d,ixl",
+  name: "LD D,IXL",
   bytes: "dd 55",
   group: "Load 8bit",
   fn: (z80) => {
@@ -7986,7 +7985,7 @@ opcodes.set(0xdd55, {
 // {n:86, x:1, y:2, z:6, p:1, q:0}
 // LD $RRY,($RI+dd)
 opcodes.set(0xdd56, {
-  name: "LD d,(ix+dd)",
+  name: "LD D,(IX+DD)",
   bytes: "dd 56",
   doc: "d=(ix+dd)",
   group: "Load 8bit",
@@ -8007,7 +8006,7 @@ opcodes.set(0xdd56, {
 // {n:92, x:1, y:3, z:4, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd5c, {
-  name: "LD e,ixh",
+  name: "LD E,IXH",
   bytes: "dd 5c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8019,7 +8018,7 @@ opcodes.set(0xdd5c, {
 // {n:93, x:1, y:3, z:5, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd5d, {
-  name: "LD e,ixl",
+  name: "LD E,IXL",
   bytes: "dd 5d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8031,7 +8030,7 @@ opcodes.set(0xdd5d, {
 // {n:94, x:1, y:3, z:6, p:1, q:1}
 // LD $RRY,($RI+dd)
 opcodes.set(0xdd5e, {
-  name: "LD e,(ix+dd)",
+  name: "LD E,(IX+DD)",
   bytes: "dd 5e",
   doc: "e=(ix+dd)",
   group: "Load 8bit",
@@ -8052,7 +8051,7 @@ opcodes.set(0xdd5e, {
 // {n:96, x:1, y:4, z:0, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd60, {
-  name: "LD ixh,b",
+  name: "LD IXH,B",
   bytes: "dd 60",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8064,7 +8063,7 @@ opcodes.set(0xdd60, {
 // {n:97, x:1, y:4, z:1, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd61, {
-  name: "LD ixh,c",
+  name: "LD IXH,C",
   bytes: "dd 61",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8076,7 +8075,7 @@ opcodes.set(0xdd61, {
 // {n:98, x:1, y:4, z:2, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd62, {
-  name: "LD ixh,d",
+  name: "LD IXH,D",
   bytes: "dd 62",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8088,7 +8087,7 @@ opcodes.set(0xdd62, {
 // {n:99, x:1, y:4, z:3, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd63, {
-  name: "LD ixh,e",
+  name: "LD IXH,E",
   bytes: "dd 63",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8100,7 +8099,7 @@ opcodes.set(0xdd63, {
 // {n:100, x:1, y:4, z:4, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd64, {
-  name: "LD ixh,ixh",
+  name: "LD IXH,IXH",
   bytes: "dd 64",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8112,7 +8111,7 @@ opcodes.set(0xdd64, {
 // {n:101, x:1, y:4, z:5, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd65, {
-  name: "LD ixh,ixl",
+  name: "LD IXH,IXL",
   bytes: "dd 65",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8124,7 +8123,7 @@ opcodes.set(0xdd65, {
 // {n:102, x:1, y:4, z:6, p:2, q:0}
 // LD $RRY,($RI+dd)
 opcodes.set(0xdd66, {
-  name: "LD h,(ix+dd)",
+  name: "LD H,(IX+DD)",
   bytes: "dd 66",
   doc: "h=(ix+dd)",
   group: "Load 8bit",
@@ -8145,7 +8144,7 @@ opcodes.set(0xdd66, {
 // {n:103, x:1, y:4, z:7, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xdd67, {
-  name: "LD ixh,a",
+  name: "LD IXH,A",
   bytes: "dd 67",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8157,7 +8156,7 @@ opcodes.set(0xdd67, {
 // {n:104, x:1, y:5, z:0, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd68, {
-  name: "LD ixl,b",
+  name: "LD IXL,B",
   bytes: "dd 68",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8169,7 +8168,7 @@ opcodes.set(0xdd68, {
 // {n:105, x:1, y:5, z:1, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd69, {
-  name: "LD ixl,c",
+  name: "LD IXL,C",
   bytes: "dd 69",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8181,7 +8180,7 @@ opcodes.set(0xdd69, {
 // {n:106, x:1, y:5, z:2, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd6a, {
-  name: "LD ixl,d",
+  name: "LD IXL,D",
   bytes: "dd 6a",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8193,7 +8192,7 @@ opcodes.set(0xdd6a, {
 // {n:107, x:1, y:5, z:3, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd6b, {
-  name: "LD ixl,e",
+  name: "LD IXL,E",
   bytes: "dd 6b",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8205,7 +8204,7 @@ opcodes.set(0xdd6b, {
 // {n:108, x:1, y:5, z:4, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd6c, {
-  name: "LD ixl,ixh",
+  name: "LD IXL,IXH",
   bytes: "dd 6c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8217,7 +8216,7 @@ opcodes.set(0xdd6c, {
 // {n:109, x:1, y:5, z:5, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd6d, {
-  name: "LD ixl,ixl",
+  name: "LD IXL,IXL",
   bytes: "dd 6d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8229,7 +8228,7 @@ opcodes.set(0xdd6d, {
 // {n:110, x:1, y:5, z:6, p:2, q:1}
 // LD $RRY,($RI+dd)
 opcodes.set(0xdd6e, {
-  name: "LD l,(ix+dd)",
+  name: "LD L,(IX+DD)",
   bytes: "dd 6e",
   doc: "l=(ix+dd)",
   group: "Load 8bit",
@@ -8250,7 +8249,7 @@ opcodes.set(0xdd6e, {
 // {n:111, x:1, y:5, z:7, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd6f, {
-  name: "LD ixl,a",
+  name: "LD IXL,A",
   bytes: "dd 6f",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8262,7 +8261,7 @@ opcodes.set(0xdd6f, {
 // {n:112, x:1, y:6, z:0, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xdd70, {
-  name: "LD (ix+dd),b",
+  name: "LD (IX+DD),B",
   bytes: "dd 70",
   doc: "(ix+dd) = b",
   group: "Load 8bit",
@@ -8283,7 +8282,7 @@ opcodes.set(0xdd70, {
 // {n:113, x:1, y:6, z:1, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xdd71, {
-  name: "LD (ix+dd),c",
+  name: "LD (IX+DD),C",
   bytes: "dd 71",
   doc: "(ix+dd) = c",
   group: "Load 8bit",
@@ -8304,7 +8303,7 @@ opcodes.set(0xdd71, {
 // {n:114, x:1, y:6, z:2, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xdd72, {
-  name: "LD (ix+dd),d",
+  name: "LD (IX+DD),D",
   bytes: "dd 72",
   doc: "(ix+dd) = d",
   group: "Load 8bit",
@@ -8325,7 +8324,7 @@ opcodes.set(0xdd72, {
 // {n:115, x:1, y:6, z:3, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xdd73, {
-  name: "LD (ix+dd),e",
+  name: "LD (IX+DD),E",
   bytes: "dd 73",
   doc: "(ix+dd) = e",
   group: "Load 8bit",
@@ -8346,7 +8345,7 @@ opcodes.set(0xdd73, {
 // {n:116, x:1, y:6, z:4, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xdd74, {
-  name: "LD (ix+dd),h",
+  name: "LD (IX+DD),H",
   bytes: "dd 74",
   doc: "(ix+dd) = h",
   group: "Load 8bit",
@@ -8367,7 +8366,7 @@ opcodes.set(0xdd74, {
 // {n:117, x:1, y:6, z:5, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xdd75, {
-  name: "LD (ix+dd),l",
+  name: "LD (IX+DD),L",
   bytes: "dd 75",
   doc: "(ix+dd) = l",
   group: "Load 8bit",
@@ -8388,7 +8387,7 @@ opcodes.set(0xdd75, {
 // {n:119, x:1, y:6, z:7, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xdd77, {
-  name: "LD (ix+dd),a",
+  name: "LD (IX+DD),A",
   bytes: "dd 77",
   doc: "(ix+dd) = a",
   group: "Load 8bit",
@@ -8409,7 +8408,7 @@ opcodes.set(0xdd77, {
 // {n:124, x:1, y:7, z:4, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd7c, {
-  name: "LD a,ixh",
+  name: "LD A,IXH",
   bytes: "dd 7c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8421,7 +8420,7 @@ opcodes.set(0xdd7c, {
 // {n:125, x:1, y:7, z:5, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0xdd7d, {
-  name: "LD a,ixl",
+  name: "LD A,IXL",
   bytes: "dd 7d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -8433,7 +8432,7 @@ opcodes.set(0xdd7d, {
 // {n:126, x:1, y:7, z:6, p:3, q:1}
 // LD $RRY,($RI+dd)
 opcodes.set(0xdd7e, {
-  name: "LD a,(ix+dd)",
+  name: "LD A,(IX+DD)",
   bytes: "dd 7e",
   doc: "a=(ix+dd)",
   group: "Load 8bit",
@@ -8454,31 +8453,31 @@ opcodes.set(0xdd7e, {
 // {n:132, x:2, y:0, z:4, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0xdd84, {
-  name: "add8 ixh",
+  name: "ADD IXH",
   bytes: "dd 84",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.ixh);
+    z80.alu.add(z80.regs.ixh);
   },
 });
 
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0xdd85, {
-  name: "add8 ixl",
+  name: "ADD IXL",
   bytes: "dd 85",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.ixl);
+    z80.alu.add(z80.regs.ixl);
   },
 });
 
 // {n:134, x:2, y:0, z:6, p:0, q:0}
 // $ALU ($RI+dd)
 opcodes.set(0xdd86, {
-  name: "add8 (ix+dd)",
+  name: "ADD (IX+DD)",
   bytes: "dd 86",
   doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
@@ -8493,38 +8492,38 @@ opcodes.set(0xdd86, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.add8(z80.dbus);
+    z80.alu.add(z80.dbus);
   },
 });
 
 // {n:140, x:2, y:1, z:4, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0xdd8c, {
-  name: "adc8 ixh",
+  name: "ADC IXH",
   bytes: "dd 8c",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.ixh);
+    z80.alu.adc(z80.regs.ixh);
   },
 });
 
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0xdd8d, {
-  name: "adc8 ixl",
+  name: "ADC IXL",
   bytes: "dd 8d",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.ixl);
+    z80.alu.adc(z80.regs.ixl);
   },
 });
 
 // {n:142, x:2, y:1, z:6, p:0, q:1}
 // $ALU ($RI+dd)
 opcodes.set(0xdd8e, {
-  name: "adc8 (ix+dd)",
+  name: "ADC (IX+DD)",
   bytes: "dd 8e",
   doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
@@ -8539,38 +8538,38 @@ opcodes.set(0xdd8e, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.adc8(z80.dbus);
+    z80.alu.adc(z80.dbus);
   },
 });
 
 // {n:148, x:2, y:2, z:4, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0xdd94, {
-  name: "sub8 ixh",
+  name: "SUB IXH",
   bytes: "dd 94",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.ixh);
+    z80.alu.sub(z80.regs.ixh);
   },
 });
 
 // {n:149, x:2, y:2, z:5, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0xdd95, {
-  name: "sub8 ixl",
+  name: "SUB IXL",
   bytes: "dd 95",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.ixl);
+    z80.alu.sub(z80.regs.ixl);
   },
 });
 
 // {n:150, x:2, y:2, z:6, p:1, q:0}
 // $ALU ($RI+dd)
 opcodes.set(0xdd96, {
-  name: "sub8 (ix+dd)",
+  name: "SUB (IX+DD)",
   bytes: "dd 96",
   doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
@@ -8585,38 +8584,38 @@ opcodes.set(0xdd96, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.sub8(z80.dbus);
+    z80.alu.sub(z80.dbus);
   },
 });
 
 // {n:156, x:2, y:3, z:4, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0xdd9c, {
-  name: "sbc8 ixh",
+  name: "SBC IXH",
   bytes: "dd 9c",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.ixh);
+    z80.alu.sbc(z80.regs.ixh);
   },
 });
 
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0xdd9d, {
-  name: "sbc8 ixl",
+  name: "SBC IXL",
   bytes: "dd 9d",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.ixl);
+    z80.alu.sbc(z80.regs.ixl);
   },
 });
 
 // {n:158, x:2, y:3, z:6, p:1, q:1}
 // $ALU ($RI+dd)
 opcodes.set(0xdd9e, {
-  name: "sbc8 (ix+dd)",
+  name: "SBC (IX+DD)",
   bytes: "dd 9e",
   doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
@@ -8631,38 +8630,38 @@ opcodes.set(0xdd9e, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.sbc8(z80.dbus);
+    z80.alu.sbc(z80.dbus);
   },
 });
 
 // {n:164, x:2, y:4, z:4, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xdda4, {
-  name: "and8 ixh",
+  name: "AND IXH",
   bytes: "dd a4",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.ixh);
+    z80.alu.and(z80.regs.ixh);
   },
 });
 
 // {n:165, x:2, y:4, z:5, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xdda5, {
-  name: "and8 ixl",
+  name: "AND IXL",
   bytes: "dd a5",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.ixl);
+    z80.alu.and(z80.regs.ixl);
   },
 });
 
 // {n:166, x:2, y:4, z:6, p:2, q:0}
 // $ALU ($RI+dd)
 opcodes.set(0xdda6, {
-  name: "and8 (ix+dd)",
+  name: "AND (IX+DD)",
   bytes: "dd a6",
   doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
@@ -8677,38 +8676,38 @@ opcodes.set(0xdda6, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.and8(z80.dbus);
+    z80.alu.and(z80.dbus);
   },
 });
 
 // {n:172, x:2, y:5, z:4, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xddac, {
-  name: "xor8 ixh",
+  name: "XOR IXH",
   bytes: "dd ac",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.ixh);
+    z80.alu.xor(z80.regs.ixh);
   },
 });
 
 // {n:173, x:2, y:5, z:5, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xddad, {
-  name: "xor8 ixl",
+  name: "XOR IXL",
   bytes: "dd ad",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.ixl);
+    z80.alu.xor(z80.regs.ixl);
   },
 });
 
 // {n:174, x:2, y:5, z:6, p:2, q:1}
 // $ALU ($RI+dd)
 opcodes.set(0xddae, {
-  name: "xor8 (ix+dd)",
+  name: "XOR (IX+DD)",
   bytes: "dd ae",
   doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
@@ -8723,38 +8722,38 @@ opcodes.set(0xddae, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.xor8(z80.dbus);
+    z80.alu.xor(z80.dbus);
   },
 });
 
 // {n:180, x:2, y:6, z:4, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xddb4, {
-  name: "or8 ixh",
+  name: "OR IXH",
   bytes: "dd b4",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.ixh);
+    z80.alu.or(z80.regs.ixh);
   },
 });
 
 // {n:181, x:2, y:6, z:5, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xddb5, {
-  name: "or8 ixl",
+  name: "OR IXL",
   bytes: "dd b5",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.ixl);
+    z80.alu.or(z80.regs.ixl);
   },
 });
 
 // {n:182, x:2, y:6, z:6, p:3, q:0}
 // $ALU ($RI+dd)
 opcodes.set(0xddb6, {
-  name: "or8 (ix+dd)",
+  name: "OR (IX+DD)",
   bytes: "dd b6",
   doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
@@ -8769,38 +8768,38 @@ opcodes.set(0xddb6, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.or8(z80.dbus);
+    z80.alu.or(z80.dbus);
   },
 });
 
 // {n:188, x:2, y:7, z:4, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xddbc, {
-  name: "cp8 ixh",
+  name: "CP IXH",
   bytes: "dd bc",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.ixh);
+    z80.alu.cp(z80.regs.ixh);
   },
 });
 
 // {n:189, x:2, y:7, z:5, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xddbd, {
-  name: "cp8 ixl",
+  name: "CP IXL",
   bytes: "dd bd",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.ixl);
+    z80.alu.cp(z80.regs.ixl);
   },
 });
 
 // {n:190, x:2, y:7, z:6, p:3, q:1}
 // $ALU ($RI+dd)
 opcodes.set(0xddbe, {
-  name: "cp8 (ix+dd)",
+  name: "CP (IX+DD)",
   bytes: "dd be",
   doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
@@ -8815,7 +8814,7 @@ opcodes.set(0xddbe, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.cp8(z80.dbus);
+    z80.alu.cp(z80.dbus);
   },
 });
 
@@ -8834,7 +8833,7 @@ opcodes.set(0xddcb, {
 // {n:225, x:3, y:4, z:1, p:2, q:0}
 // POP $RP2
 opcodes.set(0xdde1, {
-  name: "POP ix",
+  name: "POP IX",
   bytes: "dd e1",
   group: "Load 16bit",
   fn: (z80) => {
@@ -8854,7 +8853,7 @@ opcodes.set(0xdde1, {
 // {n:227, x:3, y:4, z:3, p:2, q:0}
 // EX (SP),$RI
 opcodes.set(0xdde3, {
-  name: "EX (SP),ix",
+  name: "EX (SP),IX",
   bytes: "dd e3",
   group: "Transfer",
   fn: (z80) => {
@@ -8883,7 +8882,7 @@ opcodes.set(0xdde3, {
 // {n:229, x:3, y:4, z:5, p:2, q:0}
 // PUSH $RP2
 opcodes.set(0xdde5, {
-  name: "PUSH ix",
+  name: "PUSH IX",
   bytes: "dd e5",
   group: "Load 16bit",
   fn: (z80) => {
@@ -8905,7 +8904,7 @@ opcodes.set(0xdde5, {
 // {n:233, x:3, y:5, z:1, p:2, q:1}
 // JP $RI
 opcodes.set(0xdde9, {
-  name: "JP ix",
+  name: "JP IX",
   bytes: "dd e9",
   doc: "JMP to ix",
   group: "Control flow",
@@ -8918,7 +8917,7 @@ opcodes.set(0xdde9, {
 // {n:249, x:3, y:7, z:1, p:3, q:1}
 // LD SP,$RI
 opcodes.set(0xddf9, {
-  name: "LD SP,ix",
+  name: "LD SP,IX",
   bytes: "dd f9",
   group: "Load 16bit",
   fn: (z80) => {
@@ -8931,7 +8930,7 @@ opcodes.set(0xddf9, {
 // {n:64, x:1, y:0, z:0, p:0, q:0}
 // IN $RY,(C)
 opcodes.set(0xed40, {
-  name: "IN b,(C)",
+  name: "IN B,(C)",
   bytes: "ed 40",
   group: "IO",
   fn: (z80) => {
@@ -8947,7 +8946,7 @@ opcodes.set(0xed40, {
 // {n:65, x:1, y:0, z:1, p:0, q:0}
 // OUT (C),$RY
 opcodes.set(0xed41, {
-  name: "OUT (C),b",
+  name: "OUT (C),B",
   bytes: "ed 41",
   group: "IO",
   fn: (z80) => {
@@ -8962,7 +8961,7 @@ opcodes.set(0xed41, {
 // {n:66, x:1, y:0, z:2, p:0, q:0}
 // SBC HL,$RP
 opcodes.set(0xed42, {
-  name: "SBC HL,bc",
+  name: "SBC HL,BC",
   bytes: "ed 42",
   doc: "16bit sub with carry",
   group: "ALU 16bit",
@@ -8976,7 +8975,7 @@ opcodes.set(0xed42, {
 // {n:67, x:1, y:0, z:3, p:0, q:0}
 // LD ($nn),$RP
 opcodes.set(0xed43, {
-  name: "LD ($nn),bc",
+  name: "LD ($NN),BC",
   bytes: "ed 43 XX XX",
   doc: "($nn)=bc",
   group: "Load 16bit",
@@ -9071,7 +9070,7 @@ opcodes.set(0xed47, {
 // {n:72, x:1, y:1, z:0, p:0, q:1}
 // IN $RY,(C)
 opcodes.set(0xed48, {
-  name: "IN c,(C)",
+  name: "IN C,(C)",
   bytes: "ed 48",
   group: "IO",
   fn: (z80) => {
@@ -9087,7 +9086,7 @@ opcodes.set(0xed48, {
 // {n:73, x:1, y:1, z:1, p:0, q:1}
 // OUT (C),$RY
 opcodes.set(0xed49, {
-  name: "OUT (C),c",
+  name: "OUT (C),C",
   bytes: "ed 49",
   group: "IO",
   fn: (z80) => {
@@ -9102,7 +9101,7 @@ opcodes.set(0xed49, {
 // {n:74, x:1, y:1, z:2, p:0, q:1}
 // ADC HL,$RP
 opcodes.set(0xed4a, {
-  name: "ADC HL,bc",
+  name: "ADC HL,BC",
   bytes: "ed 4a",
   doc: "16bit add with carry",
   group: "ALU 16bit",
@@ -9116,7 +9115,7 @@ opcodes.set(0xed4a, {
 // {n:75, x:1, y:1, z:3, p:0, q:1}
 // LD $RP,($nn)
 opcodes.set(0xed4b, {
-  name: "LD bc,($nn)",
+  name: "LD BC,($NN)",
   bytes: "ed 4b XX XX",
   doc: "bc=nn",
   group: "Load 16bit",
@@ -9212,7 +9211,7 @@ opcodes.set(0xed4f, {
 // {n:80, x:1, y:2, z:0, p:1, q:0}
 // IN $RY,(C)
 opcodes.set(0xed50, {
-  name: "IN d,(C)",
+  name: "IN D,(C)",
   bytes: "ed 50",
   group: "IO",
   fn: (z80) => {
@@ -9228,7 +9227,7 @@ opcodes.set(0xed50, {
 // {n:81, x:1, y:2, z:1, p:1, q:0}
 // OUT (C),$RY
 opcodes.set(0xed51, {
-  name: "OUT (C),d",
+  name: "OUT (C),D",
   bytes: "ed 51",
   group: "IO",
   fn: (z80) => {
@@ -9243,7 +9242,7 @@ opcodes.set(0xed51, {
 // {n:82, x:1, y:2, z:2, p:1, q:0}
 // SBC HL,$RP
 opcodes.set(0xed52, {
-  name: "SBC HL,de",
+  name: "SBC HL,DE",
   bytes: "ed 52",
   doc: "16bit sub with carry",
   group: "ALU 16bit",
@@ -9257,7 +9256,7 @@ opcodes.set(0xed52, {
 // {n:83, x:1, y:2, z:3, p:1, q:0}
 // LD ($nn),$RP
 opcodes.set(0xed53, {
-  name: "LD ($nn),de",
+  name: "LD ($NN),DE",
   bytes: "ed 53 XX XX",
   doc: "($nn)=de",
   group: "Load 16bit",
@@ -9354,7 +9353,7 @@ opcodes.set(0xed57, {
 // {n:88, x:1, y:3, z:0, p:1, q:1}
 // IN $RY,(C)
 opcodes.set(0xed58, {
-  name: "IN e,(C)",
+  name: "IN E,(C)",
   bytes: "ed 58",
   group: "IO",
   fn: (z80) => {
@@ -9370,7 +9369,7 @@ opcodes.set(0xed58, {
 // {n:89, x:1, y:3, z:1, p:1, q:1}
 // OUT (C),$RY
 opcodes.set(0xed59, {
-  name: "OUT (C),e",
+  name: "OUT (C),E",
   bytes: "ed 59",
   group: "IO",
   fn: (z80) => {
@@ -9385,7 +9384,7 @@ opcodes.set(0xed59, {
 // {n:90, x:1, y:3, z:2, p:1, q:1}
 // ADC HL,$RP
 opcodes.set(0xed5a, {
-  name: "ADC HL,de",
+  name: "ADC HL,DE",
   bytes: "ed 5a",
   doc: "16bit add with carry",
   group: "ALU 16bit",
@@ -9399,7 +9398,7 @@ opcodes.set(0xed5a, {
 // {n:91, x:1, y:3, z:3, p:1, q:1}
 // LD $RP,($nn)
 opcodes.set(0xed5b, {
-  name: "LD de,($nn)",
+  name: "LD DE,($NN)",
   bytes: "ed 5b XX XX",
   doc: "de=nn",
   group: "Load 16bit",
@@ -9496,7 +9495,7 @@ opcodes.set(0xed5f, {
 // {n:96, x:1, y:4, z:0, p:2, q:0}
 // IN $RY,(C)
 opcodes.set(0xed60, {
-  name: "IN h,(C)",
+  name: "IN H,(C)",
   bytes: "ed 60",
   group: "IO",
   fn: (z80) => {
@@ -9512,7 +9511,7 @@ opcodes.set(0xed60, {
 // {n:97, x:1, y:4, z:1, p:2, q:0}
 // OUT (C),$RY
 opcodes.set(0xed61, {
-  name: "OUT (C),h",
+  name: "OUT (C),H",
   bytes: "ed 61",
   group: "IO",
   fn: (z80) => {
@@ -9527,7 +9526,7 @@ opcodes.set(0xed61, {
 // {n:98, x:1, y:4, z:2, p:2, q:0}
 // SBC HL,$RP
 opcodes.set(0xed62, {
-  name: "SBC HL,hl",
+  name: "SBC HL,HL",
   bytes: "ed 62",
   doc: "16bit sub with carry",
   group: "ALU 16bit",
@@ -9541,7 +9540,7 @@ opcodes.set(0xed62, {
 // {n:99, x:1, y:4, z:3, p:2, q:0}
 // LD ($nn),$RP
 opcodes.set(0xed63, {
-  name: "LD ($nn),hl",
+  name: "LD ($NN),HL",
   bytes: "ed 63 XX XX",
   doc: "($nn)=hl",
   group: "Load 16bit",
@@ -9643,7 +9642,7 @@ opcodes.set(0xed67, {
 // {n:104, x:1, y:5, z:0, p:2, q:1}
 // IN $RY,(C)
 opcodes.set(0xed68, {
-  name: "IN l,(C)",
+  name: "IN L,(C)",
   bytes: "ed 68",
   group: "IO",
   fn: (z80) => {
@@ -9659,7 +9658,7 @@ opcodes.set(0xed68, {
 // {n:105, x:1, y:5, z:1, p:2, q:1}
 // OUT (C),$RY
 opcodes.set(0xed69, {
-  name: "OUT (C),l",
+  name: "OUT (C),L",
   bytes: "ed 69",
   group: "IO",
   fn: (z80) => {
@@ -9674,7 +9673,7 @@ opcodes.set(0xed69, {
 // {n:106, x:1, y:5, z:2, p:2, q:1}
 // ADC HL,$RP
 opcodes.set(0xed6a, {
-  name: "ADC HL,hl",
+  name: "ADC HL,HL",
   bytes: "ed 6a",
   doc: "16bit add with carry",
   group: "ALU 16bit",
@@ -9688,7 +9687,7 @@ opcodes.set(0xed6a, {
 // {n:107, x:1, y:5, z:3, p:2, q:1}
 // LD $RP,($nn)
 opcodes.set(0xed6b, {
-  name: "LD hl,($nn)",
+  name: "LD HL,($NN)",
   bytes: "ed 6b XX XX",
   doc: "hl=nn",
   group: "Load 16bit",
@@ -9821,7 +9820,7 @@ opcodes.set(0xed71, {
 // {n:114, x:1, y:6, z:2, p:3, q:0}
 // SBC HL,$RP
 opcodes.set(0xed72, {
-  name: "SBC HL,sp",
+  name: "SBC HL,SP",
   bytes: "ed 72",
   doc: "16bit sub with carry",
   group: "ALU 16bit",
@@ -9835,7 +9834,7 @@ opcodes.set(0xed72, {
 // {n:115, x:1, y:6, z:3, p:3, q:0}
 // LD ($nn),$RP
 opcodes.set(0xed73, {
-  name: "LD ($nn),sp",
+  name: "LD ($NN),SP",
   bytes: "ed 73 XX XX",
   doc: "($nn)=sp",
   group: "Load 16bit",
@@ -9916,7 +9915,7 @@ opcodes.set(0xed76, {
 // {n:120, x:1, y:7, z:0, p:3, q:1}
 // IN $RY,(C)
 opcodes.set(0xed78, {
-  name: "IN a,(C)",
+  name: "IN A,(C)",
   bytes: "ed 78",
   group: "IO",
   fn: (z80) => {
@@ -9932,7 +9931,7 @@ opcodes.set(0xed78, {
 // {n:121, x:1, y:7, z:1, p:3, q:1}
 // OUT (C),$RY
 opcodes.set(0xed79, {
-  name: "OUT (C),a",
+  name: "OUT (C),A",
   bytes: "ed 79",
   group: "IO",
   fn: (z80) => {
@@ -9947,7 +9946,7 @@ opcodes.set(0xed79, {
 // {n:122, x:1, y:7, z:2, p:3, q:1}
 // ADC HL,$RP
 opcodes.set(0xed7a, {
-  name: "ADC HL,sp",
+  name: "ADC HL,SP",
   bytes: "ed 7a",
   doc: "16bit add with carry",
   group: "ALU 16bit",
@@ -9961,7 +9960,7 @@ opcodes.set(0xed7a, {
 // {n:123, x:1, y:7, z:3, p:3, q:1}
 // LD $RP,($nn)
 opcodes.set(0xed7b, {
-  name: "LD sp,($nn)",
+  name: "LD SP,($NN)",
   bytes: "ed 7b XX XX",
   doc: "sp=nn",
   group: "Load 16bit",
@@ -10424,7 +10423,7 @@ opcodes.set(0xedbb, {
 // {n:9, x:0, y:1, z:1, p:0, q:1}
 // ADD $RI,$RP
 opcodes.set(0xfd09, {
-  name: "ADD iy,bc",
+  name: "ADD IY,BC",
   bytes: "fd 09",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -10437,7 +10436,7 @@ opcodes.set(0xfd09, {
 // {n:25, x:0, y:3, z:1, p:1, q:1}
 // ADD $RI,$RP
 opcodes.set(0xfd19, {
-  name: "ADD iy,de",
+  name: "ADD IY,DE",
   bytes: "fd 19",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -10450,7 +10449,7 @@ opcodes.set(0xfd19, {
 // {n:33, x:0, y:4, z:1, p:2, q:0}
 // LD $RP,$nn
 opcodes.set(0xfd21, {
-  name: "LD iy,$nn",
+  name: "LD IY,$NN",
   bytes: "fd 21 XX XX",
   doc: "iy=nn",
   group: "Load 16bit",
@@ -10471,7 +10470,7 @@ opcodes.set(0xfd21, {
 // {n:34, x:0, y:4, z:2, p:2, q:0}
 // LD ($nn),$RP
 opcodes.set(0xfd22, {
-  name: "LD ($nn),iy",
+  name: "LD ($NN),IY",
   bytes: "fd 22 XX XX",
   doc: "[nn]=iy",
   group: "Load 16bit",
@@ -10501,7 +10500,7 @@ opcodes.set(0xfd22, {
 // {n:35, x:0, y:4, z:3, p:2, q:0}
 // INC $RP
 opcodes.set(0xfd23, {
-  name: "INC iy",
+  name: "INC IY",
   bytes: "fd 23",
   doc: "$RDDP+=1",
   group: "ALU 16bit",
@@ -10515,7 +10514,7 @@ opcodes.set(0xfd23, {
 // {n:36, x:0, y:4, z:4, p:2, q:0}
 // INC $RY
 opcodes.set(0xfd24, {
-  name: "INC iyh",
+  name: "INC IYH",
   bytes: "fd 24",
   doc: "iyh+=1",
   group: "ALU 8bit",
@@ -10528,7 +10527,7 @@ opcodes.set(0xfd24, {
 // {n:37, x:0, y:4, z:5, p:2, q:0}
 // DEC $RY
 opcodes.set(0xfd25, {
-  name: "DEC iyh",
+  name: "DEC IYH",
   bytes: "fd 25",
   doc: "iyh-=1",
   group: "ALU 8bit",
@@ -10541,7 +10540,7 @@ opcodes.set(0xfd25, {
 // {n:38, x:0, y:4, z:6, p:2, q:0}
 // LD $RY,$n
 opcodes.set(0xfd26, {
-  name: "LD iyh,$n",
+  name: "LD IYH,$N",
   bytes: "fd 26 XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10556,7 +10555,7 @@ opcodes.set(0xfd26, {
 // {n:41, x:0, y:5, z:1, p:2, q:1}
 // ADD $RI,$RP
 opcodes.set(0xfd29, {
-  name: "ADD iy,iy",
+  name: "ADD IY,IY",
   bytes: "fd 29",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -10569,7 +10568,7 @@ opcodes.set(0xfd29, {
 // {n:42, x:0, y:5, z:2, p:2, q:1}
 // LD $RP,($nn)
 opcodes.set(0xfd2a, {
-  name: "LD iy,($nn)",
+  name: "LD IY,($NN)",
   bytes: "fd 2a XX XX",
   doc: "iy=($nn)",
   group: "Load 16bit",
@@ -10599,7 +10598,7 @@ opcodes.set(0xfd2a, {
 // {n:43, x:0, y:5, z:3, p:2, q:1}
 // DEC $RP
 opcodes.set(0xfd2b, {
-  name: "DEC iy",
+  name: "DEC IY",
   bytes: "fd 2b",
   doc: "iy-=1",
   group: "ALU 16bit",
@@ -10613,7 +10612,7 @@ opcodes.set(0xfd2b, {
 // {n:44, x:0, y:5, z:4, p:2, q:1}
 // INC $RY
 opcodes.set(0xfd2c, {
-  name: "INC iyl",
+  name: "INC IYL",
   bytes: "fd 2c",
   doc: "iyl+=1",
   group: "ALU 8bit",
@@ -10626,7 +10625,7 @@ opcodes.set(0xfd2c, {
 // {n:45, x:0, y:5, z:5, p:2, q:1}
 // DEC $RY
 opcodes.set(0xfd2d, {
-  name: "DEC iyl",
+  name: "DEC IYL",
   bytes: "fd 2d",
   doc: "iyl-=1",
   group: "ALU 8bit",
@@ -10639,7 +10638,7 @@ opcodes.set(0xfd2d, {
 // {n:46, x:0, y:5, z:6, p:2, q:1}
 // LD $RY,$n
 opcodes.set(0xfd2e, {
-  name: "LD iyl,$n",
+  name: "LD IYL,$N",
   bytes: "fd 2e XX",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10654,7 +10653,7 @@ opcodes.set(0xfd2e, {
 // {n:52, x:0, y:6, z:4, p:3, q:0}
 // INC ($RI+dd)
 opcodes.set(0xfd34, {
-  name: "INC (iy+dd)",
+  name: "INC (IY+DD)",
   bytes: "fd 34",
   doc: "Increment (iy+dd)",
   group: "ALU 8bit",
@@ -10679,7 +10678,7 @@ opcodes.set(0xfd34, {
 // {n:53, x:0, y:6, z:5, p:3, q:0}
 // DEC ($RI+dd)
 opcodes.set(0xfd35, {
-  name: "DEC (iy+dd)",
+  name: "DEC (IY+DD)",
   bytes: "fd 35",
   doc: "Decrement (iy+dd)",
   group: "ALU 8bit",
@@ -10704,7 +10703,7 @@ opcodes.set(0xfd35, {
 // {n:54, x:0, y:6, z:6, p:3, q:0}
 // LD ($RI+dd),$n
 opcodes.set(0xfd36, {
-  name: "LD (iy+dd),$n",
+  name: "LD (IY+DD),$N",
   bytes: "fd 36 XX",
   doc: "(iy+dd)=n",
   group: "Load 8bit",
@@ -10728,7 +10727,7 @@ opcodes.set(0xfd36, {
 // {n:57, x:0, y:7, z:1, p:3, q:1}
 // ADD $RI,$RP
 opcodes.set(0xfd39, {
-  name: "ADD iy,sp",
+  name: "ADD IY,SP",
   bytes: "fd 39",
   group: "ALU 16bit",
   fn: (z80) => {
@@ -10741,7 +10740,7 @@ opcodes.set(0xfd39, {
 // {n:68, x:1, y:0, z:4, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd44, {
-  name: "LD b,iyh",
+  name: "LD B,IYH",
   bytes: "fd 44",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10753,7 +10752,7 @@ opcodes.set(0xfd44, {
 // {n:69, x:1, y:0, z:5, p:0, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd45, {
-  name: "LD b,iyl",
+  name: "LD B,IYL",
   bytes: "fd 45",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10765,7 +10764,7 @@ opcodes.set(0xfd45, {
 // {n:70, x:1, y:0, z:6, p:0, q:0}
 // LD $RRY,($RI+dd)
 opcodes.set(0xfd46, {
-  name: "LD b,(iy+dd)",
+  name: "LD B,(IY+DD)",
   bytes: "fd 46",
   doc: "b=(iy+dd)",
   group: "Load 8bit",
@@ -10786,7 +10785,7 @@ opcodes.set(0xfd46, {
 // {n:76, x:1, y:1, z:4, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd4c, {
-  name: "LD c,iyh",
+  name: "LD C,IYH",
   bytes: "fd 4c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10798,7 +10797,7 @@ opcodes.set(0xfd4c, {
 // {n:77, x:1, y:1, z:5, p:0, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd4d, {
-  name: "LD c,iyl",
+  name: "LD C,IYL",
   bytes: "fd 4d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10810,7 +10809,7 @@ opcodes.set(0xfd4d, {
 // {n:78, x:1, y:1, z:6, p:0, q:1}
 // LD $RRY,($RI+dd)
 opcodes.set(0xfd4e, {
-  name: "LD c,(iy+dd)",
+  name: "LD C,(IY+DD)",
   bytes: "fd 4e",
   doc: "c=(iy+dd)",
   group: "Load 8bit",
@@ -10831,7 +10830,7 @@ opcodes.set(0xfd4e, {
 // {n:84, x:1, y:2, z:4, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd54, {
-  name: "LD d,iyh",
+  name: "LD D,IYH",
   bytes: "fd 54",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10843,7 +10842,7 @@ opcodes.set(0xfd54, {
 // {n:85, x:1, y:2, z:5, p:1, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd55, {
-  name: "LD d,iyl",
+  name: "LD D,IYL",
   bytes: "fd 55",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10855,7 +10854,7 @@ opcodes.set(0xfd55, {
 // {n:86, x:1, y:2, z:6, p:1, q:0}
 // LD $RRY,($RI+dd)
 opcodes.set(0xfd56, {
-  name: "LD d,(iy+dd)",
+  name: "LD D,(IY+DD)",
   bytes: "fd 56",
   doc: "d=(iy+dd)",
   group: "Load 8bit",
@@ -10876,7 +10875,7 @@ opcodes.set(0xfd56, {
 // {n:92, x:1, y:3, z:4, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd5c, {
-  name: "LD e,iyh",
+  name: "LD E,IYH",
   bytes: "fd 5c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10888,7 +10887,7 @@ opcodes.set(0xfd5c, {
 // {n:93, x:1, y:3, z:5, p:1, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd5d, {
-  name: "LD e,iyl",
+  name: "LD E,IYL",
   bytes: "fd 5d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10900,7 +10899,7 @@ opcodes.set(0xfd5d, {
 // {n:94, x:1, y:3, z:6, p:1, q:1}
 // LD $RRY,($RI+dd)
 opcodes.set(0xfd5e, {
-  name: "LD e,(iy+dd)",
+  name: "LD E,(IY+DD)",
   bytes: "fd 5e",
   doc: "e=(iy+dd)",
   group: "Load 8bit",
@@ -10921,7 +10920,7 @@ opcodes.set(0xfd5e, {
 // {n:96, x:1, y:4, z:0, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd60, {
-  name: "LD iyh,b",
+  name: "LD IYH,B",
   bytes: "fd 60",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10933,7 +10932,7 @@ opcodes.set(0xfd60, {
 // {n:97, x:1, y:4, z:1, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd61, {
-  name: "LD iyh,c",
+  name: "LD IYH,C",
   bytes: "fd 61",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10945,7 +10944,7 @@ opcodes.set(0xfd61, {
 // {n:98, x:1, y:4, z:2, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd62, {
-  name: "LD iyh,d",
+  name: "LD IYH,D",
   bytes: "fd 62",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10957,7 +10956,7 @@ opcodes.set(0xfd62, {
 // {n:99, x:1, y:4, z:3, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd63, {
-  name: "LD iyh,e",
+  name: "LD IYH,E",
   bytes: "fd 63",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10969,7 +10968,7 @@ opcodes.set(0xfd63, {
 // {n:100, x:1, y:4, z:4, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd64, {
-  name: "LD iyh,iyh",
+  name: "LD IYH,IYH",
   bytes: "fd 64",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10981,7 +10980,7 @@ opcodes.set(0xfd64, {
 // {n:101, x:1, y:4, z:5, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd65, {
-  name: "LD iyh,iyl",
+  name: "LD IYH,IYL",
   bytes: "fd 65",
   group: "Load 8bit",
   fn: (z80) => {
@@ -10993,7 +10992,7 @@ opcodes.set(0xfd65, {
 // {n:102, x:1, y:4, z:6, p:2, q:0}
 // LD $RRY,($RI+dd)
 opcodes.set(0xfd66, {
-  name: "LD h,(iy+dd)",
+  name: "LD H,(IY+DD)",
   bytes: "fd 66",
   doc: "h=(iy+dd)",
   group: "Load 8bit",
@@ -11014,7 +11013,7 @@ opcodes.set(0xfd66, {
 // {n:103, x:1, y:4, z:7, p:2, q:0}
 // LD $RY,$RZ
 opcodes.set(0xfd67, {
-  name: "LD iyh,a",
+  name: "LD IYH,A",
   bytes: "fd 67",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11026,7 +11025,7 @@ opcodes.set(0xfd67, {
 // {n:104, x:1, y:5, z:0, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd68, {
-  name: "LD iyl,b",
+  name: "LD IYL,B",
   bytes: "fd 68",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11038,7 +11037,7 @@ opcodes.set(0xfd68, {
 // {n:105, x:1, y:5, z:1, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd69, {
-  name: "LD iyl,c",
+  name: "LD IYL,C",
   bytes: "fd 69",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11050,7 +11049,7 @@ opcodes.set(0xfd69, {
 // {n:106, x:1, y:5, z:2, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd6a, {
-  name: "LD iyl,d",
+  name: "LD IYL,D",
   bytes: "fd 6a",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11062,7 +11061,7 @@ opcodes.set(0xfd6a, {
 // {n:107, x:1, y:5, z:3, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd6b, {
-  name: "LD iyl,e",
+  name: "LD IYL,E",
   bytes: "fd 6b",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11074,7 +11073,7 @@ opcodes.set(0xfd6b, {
 // {n:108, x:1, y:5, z:4, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd6c, {
-  name: "LD iyl,iyh",
+  name: "LD IYL,IYH",
   bytes: "fd 6c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11086,7 +11085,7 @@ opcodes.set(0xfd6c, {
 // {n:109, x:1, y:5, z:5, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd6d, {
-  name: "LD iyl,iyl",
+  name: "LD IYL,IYL",
   bytes: "fd 6d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11098,7 +11097,7 @@ opcodes.set(0xfd6d, {
 // {n:110, x:1, y:5, z:6, p:2, q:1}
 // LD $RRY,($RI+dd)
 opcodes.set(0xfd6e, {
-  name: "LD l,(iy+dd)",
+  name: "LD L,(IY+DD)",
   bytes: "fd 6e",
   doc: "l=(iy+dd)",
   group: "Load 8bit",
@@ -11119,7 +11118,7 @@ opcodes.set(0xfd6e, {
 // {n:111, x:1, y:5, z:7, p:2, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd6f, {
-  name: "LD iyl,a",
+  name: "LD IYL,A",
   bytes: "fd 6f",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11131,7 +11130,7 @@ opcodes.set(0xfd6f, {
 // {n:112, x:1, y:6, z:0, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xfd70, {
-  name: "LD (iy+dd),b",
+  name: "LD (IY+DD),B",
   bytes: "fd 70",
   doc: "(iy+dd) = b",
   group: "Load 8bit",
@@ -11152,7 +11151,7 @@ opcodes.set(0xfd70, {
 // {n:113, x:1, y:6, z:1, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xfd71, {
-  name: "LD (iy+dd),c",
+  name: "LD (IY+DD),C",
   bytes: "fd 71",
   doc: "(iy+dd) = c",
   group: "Load 8bit",
@@ -11173,7 +11172,7 @@ opcodes.set(0xfd71, {
 // {n:114, x:1, y:6, z:2, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xfd72, {
-  name: "LD (iy+dd),d",
+  name: "LD (IY+DD),D",
   bytes: "fd 72",
   doc: "(iy+dd) = d",
   group: "Load 8bit",
@@ -11194,7 +11193,7 @@ opcodes.set(0xfd72, {
 // {n:115, x:1, y:6, z:3, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xfd73, {
-  name: "LD (iy+dd),e",
+  name: "LD (IY+DD),E",
   bytes: "fd 73",
   doc: "(iy+dd) = e",
   group: "Load 8bit",
@@ -11215,7 +11214,7 @@ opcodes.set(0xfd73, {
 // {n:116, x:1, y:6, z:4, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xfd74, {
-  name: "LD (iy+dd),h",
+  name: "LD (IY+DD),H",
   bytes: "fd 74",
   doc: "(iy+dd) = h",
   group: "Load 8bit",
@@ -11236,7 +11235,7 @@ opcodes.set(0xfd74, {
 // {n:117, x:1, y:6, z:5, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xfd75, {
-  name: "LD (iy+dd),l",
+  name: "LD (IY+DD),L",
   bytes: "fd 75",
   doc: "(iy+dd) = l",
   group: "Load 8bit",
@@ -11257,7 +11256,7 @@ opcodes.set(0xfd75, {
 // {n:119, x:1, y:6, z:7, p:3, q:0}
 // LD ($RI+dd),$RRZ
 opcodes.set(0xfd77, {
-  name: "LD (iy+dd),a",
+  name: "LD (IY+DD),A",
   bytes: "fd 77",
   doc: "(iy+dd) = a",
   group: "Load 8bit",
@@ -11278,7 +11277,7 @@ opcodes.set(0xfd77, {
 // {n:124, x:1, y:7, z:4, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd7c, {
-  name: "LD a,iyh",
+  name: "LD A,IYH",
   bytes: "fd 7c",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11290,7 +11289,7 @@ opcodes.set(0xfd7c, {
 // {n:125, x:1, y:7, z:5, p:3, q:1}
 // LD $RY,$RZ
 opcodes.set(0xfd7d, {
-  name: "LD a,iyl",
+  name: "LD A,IYL",
   bytes: "fd 7d",
   group: "Load 8bit",
   fn: (z80) => {
@@ -11302,7 +11301,7 @@ opcodes.set(0xfd7d, {
 // {n:126, x:1, y:7, z:6, p:3, q:1}
 // LD $RRY,($RI+dd)
 opcodes.set(0xfd7e, {
-  name: "LD a,(iy+dd)",
+  name: "LD A,(IY+DD)",
   bytes: "fd 7e",
   doc: "a=(iy+dd)",
   group: "Load 8bit",
@@ -11323,31 +11322,31 @@ opcodes.set(0xfd7e, {
 // {n:132, x:2, y:0, z:4, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0xfd84, {
-  name: "add8 iyh",
+  name: "ADD IYH",
   bytes: "fd 84",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.iyh);
+    z80.alu.add(z80.regs.iyh);
   },
 });
 
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0xfd85, {
-  name: "add8 iyl",
+  name: "ADD IYL",
   bytes: "fd 85",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add8(z80.regs.iyl);
+    z80.alu.add(z80.regs.iyl);
   },
 });
 
 // {n:134, x:2, y:0, z:6, p:0, q:0}
 // $ALU ($RI+dd)
 opcodes.set(0xfd86, {
-  name: "add8 (iy+dd)",
+  name: "ADD (IY+DD)",
   bytes: "fd 86",
   doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
@@ -11362,38 +11361,38 @@ opcodes.set(0xfd86, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.add8(z80.dbus);
+    z80.alu.add(z80.dbus);
   },
 });
 
 // {n:140, x:2, y:1, z:4, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0xfd8c, {
-  name: "adc8 iyh",
+  name: "ADC IYH",
   bytes: "fd 8c",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.iyh);
+    z80.alu.adc(z80.regs.iyh);
   },
 });
 
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0xfd8d, {
-  name: "adc8 iyl",
+  name: "ADC IYL",
   bytes: "fd 8d",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc8(z80.regs.iyl);
+    z80.alu.adc(z80.regs.iyl);
   },
 });
 
 // {n:142, x:2, y:1, z:6, p:0, q:1}
 // $ALU ($RI+dd)
 opcodes.set(0xfd8e, {
-  name: "adc8 (iy+dd)",
+  name: "ADC (IY+DD)",
   bytes: "fd 8e",
   doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
@@ -11408,38 +11407,38 @@ opcodes.set(0xfd8e, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.adc8(z80.dbus);
+    z80.alu.adc(z80.dbus);
   },
 });
 
 // {n:148, x:2, y:2, z:4, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0xfd94, {
-  name: "sub8 iyh",
+  name: "SUB IYH",
   bytes: "fd 94",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.iyh);
+    z80.alu.sub(z80.regs.iyh);
   },
 });
 
 // {n:149, x:2, y:2, z:5, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0xfd95, {
-  name: "sub8 iyl",
+  name: "SUB IYL",
   bytes: "fd 95",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub8(z80.regs.iyl);
+    z80.alu.sub(z80.regs.iyl);
   },
 });
 
 // {n:150, x:2, y:2, z:6, p:1, q:0}
 // $ALU ($RI+dd)
 opcodes.set(0xfd96, {
-  name: "sub8 (iy+dd)",
+  name: "SUB (IY+DD)",
   bytes: "fd 96",
   doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
@@ -11454,38 +11453,38 @@ opcodes.set(0xfd96, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.sub8(z80.dbus);
+    z80.alu.sub(z80.dbus);
   },
 });
 
 // {n:156, x:2, y:3, z:4, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0xfd9c, {
-  name: "sbc8 iyh",
+  name: "SBC IYH",
   bytes: "fd 9c",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.iyh);
+    z80.alu.sbc(z80.regs.iyh);
   },
 });
 
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0xfd9d, {
-  name: "sbc8 iyl",
+  name: "SBC IYL",
   bytes: "fd 9d",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc8(z80.regs.iyl);
+    z80.alu.sbc(z80.regs.iyl);
   },
 });
 
 // {n:158, x:2, y:3, z:6, p:1, q:1}
 // $ALU ($RI+dd)
 opcodes.set(0xfd9e, {
-  name: "sbc8 (iy+dd)",
+  name: "SBC (IY+DD)",
   bytes: "fd 9e",
   doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
@@ -11500,38 +11499,38 @@ opcodes.set(0xfd9e, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.sbc8(z80.dbus);
+    z80.alu.sbc(z80.dbus);
   },
 });
 
 // {n:164, x:2, y:4, z:4, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xfda4, {
-  name: "and8 iyh",
+  name: "AND IYH",
   bytes: "fd a4",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.iyh);
+    z80.alu.and(z80.regs.iyh);
   },
 });
 
 // {n:165, x:2, y:4, z:5, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xfda5, {
-  name: "and8 iyl",
+  name: "AND IYL",
   bytes: "fd a5",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and8(z80.regs.iyl);
+    z80.alu.and(z80.regs.iyl);
   },
 });
 
 // {n:166, x:2, y:4, z:6, p:2, q:0}
 // $ALU ($RI+dd)
 opcodes.set(0xfda6, {
-  name: "and8 (iy+dd)",
+  name: "AND (IY+DD)",
   bytes: "fd a6",
   doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
@@ -11546,38 +11545,38 @@ opcodes.set(0xfda6, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.and8(z80.dbus);
+    z80.alu.and(z80.dbus);
   },
 });
 
 // {n:172, x:2, y:5, z:4, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xfdac, {
-  name: "xor8 iyh",
+  name: "XOR IYH",
   bytes: "fd ac",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.iyh);
+    z80.alu.xor(z80.regs.iyh);
   },
 });
 
 // {n:173, x:2, y:5, z:5, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xfdad, {
-  name: "xor8 iyl",
+  name: "XOR IYL",
   bytes: "fd ad",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor8(z80.regs.iyl);
+    z80.alu.xor(z80.regs.iyl);
   },
 });
 
 // {n:174, x:2, y:5, z:6, p:2, q:1}
 // $ALU ($RI+dd)
 opcodes.set(0xfdae, {
-  name: "xor8 (iy+dd)",
+  name: "XOR (IY+DD)",
   bytes: "fd ae",
   doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
@@ -11592,38 +11591,38 @@ opcodes.set(0xfdae, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.xor8(z80.dbus);
+    z80.alu.xor(z80.dbus);
   },
 });
 
 // {n:180, x:2, y:6, z:4, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xfdb4, {
-  name: "or8 iyh",
+  name: "OR IYH",
   bytes: "fd b4",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.iyh);
+    z80.alu.or(z80.regs.iyh);
   },
 });
 
 // {n:181, x:2, y:6, z:5, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xfdb5, {
-  name: "or8 iyl",
+  name: "OR IYL",
   bytes: "fd b5",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or8(z80.regs.iyl);
+    z80.alu.or(z80.regs.iyl);
   },
 });
 
 // {n:182, x:2, y:6, z:6, p:3, q:0}
 // $ALU ($RI+dd)
 opcodes.set(0xfdb6, {
-  name: "or8 (iy+dd)",
+  name: "OR (IY+DD)",
   bytes: "fd b6",
   doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
@@ -11638,38 +11637,38 @@ opcodes.set(0xfdb6, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.or8(z80.dbus);
+    z80.alu.or(z80.dbus);
   },
 });
 
 // {n:188, x:2, y:7, z:4, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xfdbc, {
-  name: "cp8 iyh",
+  name: "CP IYH",
   bytes: "fd bc",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.iyh);
+    z80.alu.cp(z80.regs.iyh);
   },
 });
 
 // {n:189, x:2, y:7, z:5, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xfdbd, {
-  name: "cp8 iyl",
+  name: "CP IYL",
   bytes: "fd bd",
   group: "ALU 8bit",
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp8(z80.regs.iyl);
+    z80.alu.cp(z80.regs.iyl);
   },
 });
 
 // {n:190, x:2, y:7, z:6, p:3, q:1}
 // $ALU ($RI+dd)
 opcodes.set(0xfdbe, {
-  name: "cp8 (iy+dd)",
+  name: "CP (IY+DD)",
   bytes: "fd be",
   doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
@@ -11684,7 +11683,7 @@ opcodes.set(0xfdbe, {
     z80.abus = z80.regs.wz;
     z80.dbus = z80.readByte(z80.abus);
     // overlapped: {action: "$ALU($DLATCH)"}
-    z80.alu.cp8(z80.dbus);
+    z80.alu.cp(z80.dbus);
   },
 });
 
@@ -11703,7 +11702,7 @@ opcodes.set(0xfdcb, {
 // {n:225, x:3, y:4, z:1, p:2, q:0}
 // POP $RP2
 opcodes.set(0xfde1, {
-  name: "POP iy",
+  name: "POP IY",
   bytes: "fd e1",
   group: "Load 16bit",
   fn: (z80) => {
@@ -11723,7 +11722,7 @@ opcodes.set(0xfde1, {
 // {n:227, x:3, y:4, z:3, p:2, q:0}
 // EX (SP),$RI
 opcodes.set(0xfde3, {
-  name: "EX (SP),iy",
+  name: "EX (SP),IY",
   bytes: "fd e3",
   group: "Transfer",
   fn: (z80) => {
@@ -11752,7 +11751,7 @@ opcodes.set(0xfde3, {
 // {n:229, x:3, y:4, z:5, p:2, q:0}
 // PUSH $RP2
 opcodes.set(0xfde5, {
-  name: "PUSH iy",
+  name: "PUSH IY",
   bytes: "fd e5",
   group: "Load 16bit",
   fn: (z80) => {
@@ -11774,7 +11773,7 @@ opcodes.set(0xfde5, {
 // {n:233, x:3, y:5, z:1, p:2, q:1}
 // JP $RI
 opcodes.set(0xfde9, {
-  name: "JP iy",
+  name: "JP IY",
   bytes: "fd e9",
   doc: "JMP to iy",
   group: "Control flow",
@@ -11787,7 +11786,7 @@ opcodes.set(0xfde9, {
 // {n:249, x:3, y:7, z:1, p:3, q:1}
 // LD SP,$RI
 opcodes.set(0xfdf9, {
-  name: "LD SP,iy",
+  name: "LD SP,IY",
   bytes: "fd f9",
   group: "Load 16bit",
   fn: (z80) => {
@@ -11800,7 +11799,7 @@ opcodes.set(0xfdf9, {
 // {n:0, x:0, y:0, z:0, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb00, {
-  name: "rlc (ix+dd),b",
+  name: "RLC (IX+DD),B",
   bytes: "dd cb 00",
   doc: "b = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11822,7 +11821,7 @@ opcodes.set(0xddcb00, {
 // {n:1, x:0, y:0, z:1, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb01, {
-  name: "rlc (ix+dd),c",
+  name: "RLC (IX+DD),C",
   bytes: "dd cb 01",
   doc: "c = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11844,7 +11843,7 @@ opcodes.set(0xddcb01, {
 // {n:2, x:0, y:0, z:2, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb02, {
-  name: "rlc (ix+dd),d",
+  name: "RLC (IX+DD),D",
   bytes: "dd cb 02",
   doc: "d = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11866,7 +11865,7 @@ opcodes.set(0xddcb02, {
 // {n:3, x:0, y:0, z:3, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb03, {
-  name: "rlc (ix+dd),e",
+  name: "RLC (IX+DD),E",
   bytes: "dd cb 03",
   doc: "e = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11888,7 +11887,7 @@ opcodes.set(0xddcb03, {
 // {n:4, x:0, y:0, z:4, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb04, {
-  name: "rlc (ix+dd),ixh",
+  name: "RLC (IX+DD),IXH",
   bytes: "dd cb 04",
   doc: "ixh = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11910,7 +11909,7 @@ opcodes.set(0xddcb04, {
 // {n:5, x:0, y:0, z:5, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb05, {
-  name: "rlc (ix+dd),ixl",
+  name: "RLC (IX+DD),IXL",
   bytes: "dd cb 05",
   doc: "ixl = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11932,7 +11931,7 @@ opcodes.set(0xddcb05, {
 // {n:7, x:0, y:0, z:7, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb07, {
-  name: "rlc (ix+dd),a",
+  name: "RLC (IX+DD),A",
   bytes: "dd cb 07",
   doc: "a = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11954,7 +11953,7 @@ opcodes.set(0xddcb07, {
 // {n:8, x:0, y:1, z:0, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb08, {
-  name: "rrc (ix+dd),b",
+  name: "RRC (IX+DD),B",
   bytes: "dd cb 08",
   doc: "b = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11976,7 +11975,7 @@ opcodes.set(0xddcb08, {
 // {n:9, x:0, y:1, z:1, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb09, {
-  name: "rrc (ix+dd),c",
+  name: "RRC (IX+DD),C",
   bytes: "dd cb 09",
   doc: "c = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -11998,7 +11997,7 @@ opcodes.set(0xddcb09, {
 // {n:10, x:0, y:1, z:2, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb0a, {
-  name: "rrc (ix+dd),d",
+  name: "RRC (IX+DD),D",
   bytes: "dd cb 0a",
   doc: "d = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12020,7 +12019,7 @@ opcodes.set(0xddcb0a, {
 // {n:11, x:0, y:1, z:3, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb0b, {
-  name: "rrc (ix+dd),e",
+  name: "RRC (IX+DD),E",
   bytes: "dd cb 0b",
   doc: "e = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12042,7 +12041,7 @@ opcodes.set(0xddcb0b, {
 // {n:12, x:0, y:1, z:4, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb0c, {
-  name: "rrc (ix+dd),ixh",
+  name: "RRC (IX+DD),IXH",
   bytes: "dd cb 0c",
   doc: "ixh = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12064,7 +12063,7 @@ opcodes.set(0xddcb0c, {
 // {n:13, x:0, y:1, z:5, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb0d, {
-  name: "rrc (ix+dd),ixl",
+  name: "RRC (IX+DD),IXL",
   bytes: "dd cb 0d",
   doc: "ixl = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12086,7 +12085,7 @@ opcodes.set(0xddcb0d, {
 // {n:15, x:0, y:1, z:7, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb0f, {
-  name: "rrc (ix+dd),a",
+  name: "RRC (IX+DD),A",
   bytes: "dd cb 0f",
   doc: "a = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12108,7 +12107,7 @@ opcodes.set(0xddcb0f, {
 // {n:16, x:0, y:2, z:0, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb10, {
-  name: "rl (ix+dd),b",
+  name: "RL (IX+DD),B",
   bytes: "dd cb 10",
   doc: "b = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12130,7 +12129,7 @@ opcodes.set(0xddcb10, {
 // {n:17, x:0, y:2, z:1, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb11, {
-  name: "rl (ix+dd),c",
+  name: "RL (IX+DD),C",
   bytes: "dd cb 11",
   doc: "c = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12152,7 +12151,7 @@ opcodes.set(0xddcb11, {
 // {n:18, x:0, y:2, z:2, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb12, {
-  name: "rl (ix+dd),d",
+  name: "RL (IX+DD),D",
   bytes: "dd cb 12",
   doc: "d = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12174,7 +12173,7 @@ opcodes.set(0xddcb12, {
 // {n:19, x:0, y:2, z:3, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb13, {
-  name: "rl (ix+dd),e",
+  name: "RL (IX+DD),E",
   bytes: "dd cb 13",
   doc: "e = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12196,7 +12195,7 @@ opcodes.set(0xddcb13, {
 // {n:20, x:0, y:2, z:4, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb14, {
-  name: "rl (ix+dd),ixh",
+  name: "RL (IX+DD),IXH",
   bytes: "dd cb 14",
   doc: "ixh = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12218,7 +12217,7 @@ opcodes.set(0xddcb14, {
 // {n:21, x:0, y:2, z:5, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb15, {
-  name: "rl (ix+dd),ixl",
+  name: "RL (IX+DD),IXL",
   bytes: "dd cb 15",
   doc: "ixl = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12240,7 +12239,7 @@ opcodes.set(0xddcb15, {
 // {n:23, x:0, y:2, z:7, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb17, {
-  name: "rl (ix+dd),a",
+  name: "RL (IX+DD),A",
   bytes: "dd cb 17",
   doc: "a = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12262,7 +12261,7 @@ opcodes.set(0xddcb17, {
 // {n:24, x:0, y:3, z:0, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb18, {
-  name: "rr (ix+dd),b",
+  name: "RR (IX+DD),B",
   bytes: "dd cb 18",
   doc: "b = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12284,7 +12283,7 @@ opcodes.set(0xddcb18, {
 // {n:25, x:0, y:3, z:1, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb19, {
-  name: "rr (ix+dd),c",
+  name: "RR (IX+DD),C",
   bytes: "dd cb 19",
   doc: "c = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12306,7 +12305,7 @@ opcodes.set(0xddcb19, {
 // {n:26, x:0, y:3, z:2, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb1a, {
-  name: "rr (ix+dd),d",
+  name: "RR (IX+DD),D",
   bytes: "dd cb 1a",
   doc: "d = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12328,7 +12327,7 @@ opcodes.set(0xddcb1a, {
 // {n:27, x:0, y:3, z:3, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb1b, {
-  name: "rr (ix+dd),e",
+  name: "RR (IX+DD),E",
   bytes: "dd cb 1b",
   doc: "e = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12350,7 +12349,7 @@ opcodes.set(0xddcb1b, {
 // {n:28, x:0, y:3, z:4, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb1c, {
-  name: "rr (ix+dd),ixh",
+  name: "RR (IX+DD),IXH",
   bytes: "dd cb 1c",
   doc: "ixh = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12372,7 +12371,7 @@ opcodes.set(0xddcb1c, {
 // {n:29, x:0, y:3, z:5, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb1d, {
-  name: "rr (ix+dd),ixl",
+  name: "RR (IX+DD),IXL",
   bytes: "dd cb 1d",
   doc: "ixl = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12394,7 +12393,7 @@ opcodes.set(0xddcb1d, {
 // {n:31, x:0, y:3, z:7, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb1f, {
-  name: "rr (ix+dd),a",
+  name: "RR (IX+DD),A",
   bytes: "dd cb 1f",
   doc: "a = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
@@ -12416,7 +12415,7 @@ opcodes.set(0xddcb1f, {
 // {n:32, x:0, y:4, z:0, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb20, {
-  name: "sla (ix+dd),b",
+  name: "SLA (IX+DD),B",
   bytes: "dd cb 20",
   doc: "b = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12438,7 +12437,7 @@ opcodes.set(0xddcb20, {
 // {n:33, x:0, y:4, z:1, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb21, {
-  name: "sla (ix+dd),c",
+  name: "SLA (IX+DD),C",
   bytes: "dd cb 21",
   doc: "c = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12460,7 +12459,7 @@ opcodes.set(0xddcb21, {
 // {n:34, x:0, y:4, z:2, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb22, {
-  name: "sla (ix+dd),d",
+  name: "SLA (IX+DD),D",
   bytes: "dd cb 22",
   doc: "d = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12482,7 +12481,7 @@ opcodes.set(0xddcb22, {
 // {n:35, x:0, y:4, z:3, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb23, {
-  name: "sla (ix+dd),e",
+  name: "SLA (IX+DD),E",
   bytes: "dd cb 23",
   doc: "e = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12504,7 +12503,7 @@ opcodes.set(0xddcb23, {
 // {n:36, x:0, y:4, z:4, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb24, {
-  name: "sla (ix+dd),ixh",
+  name: "SLA (IX+DD),IXH",
   bytes: "dd cb 24",
   doc: "ixh = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12526,7 +12525,7 @@ opcodes.set(0xddcb24, {
 // {n:37, x:0, y:4, z:5, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb25, {
-  name: "sla (ix+dd),ixl",
+  name: "SLA (IX+DD),IXL",
   bytes: "dd cb 25",
   doc: "ixl = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12548,7 +12547,7 @@ opcodes.set(0xddcb25, {
 // {n:39, x:0, y:4, z:7, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb27, {
-  name: "sla (ix+dd),a",
+  name: "SLA (IX+DD),A",
   bytes: "dd cb 27",
   doc: "a = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12570,7 +12569,7 @@ opcodes.set(0xddcb27, {
 // {n:40, x:0, y:5, z:0, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb28, {
-  name: "sra (ix+dd),b",
+  name: "SRA (IX+DD),B",
   bytes: "dd cb 28",
   doc: "b = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12592,7 +12591,7 @@ opcodes.set(0xddcb28, {
 // {n:41, x:0, y:5, z:1, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb29, {
-  name: "sra (ix+dd),c",
+  name: "SRA (IX+DD),C",
   bytes: "dd cb 29",
   doc: "c = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12614,7 +12613,7 @@ opcodes.set(0xddcb29, {
 // {n:42, x:0, y:5, z:2, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb2a, {
-  name: "sra (ix+dd),d",
+  name: "SRA (IX+DD),D",
   bytes: "dd cb 2a",
   doc: "d = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12636,7 +12635,7 @@ opcodes.set(0xddcb2a, {
 // {n:43, x:0, y:5, z:3, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb2b, {
-  name: "sra (ix+dd),e",
+  name: "SRA (IX+DD),E",
   bytes: "dd cb 2b",
   doc: "e = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12658,7 +12657,7 @@ opcodes.set(0xddcb2b, {
 // {n:44, x:0, y:5, z:4, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb2c, {
-  name: "sra (ix+dd),ixh",
+  name: "SRA (IX+DD),IXH",
   bytes: "dd cb 2c",
   doc: "ixh = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12680,7 +12679,7 @@ opcodes.set(0xddcb2c, {
 // {n:45, x:0, y:5, z:5, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb2d, {
-  name: "sra (ix+dd),ixl",
+  name: "SRA (IX+DD),IXL",
   bytes: "dd cb 2d",
   doc: "ixl = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12702,7 +12701,7 @@ opcodes.set(0xddcb2d, {
 // {n:47, x:0, y:5, z:7, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb2f, {
-  name: "sra (ix+dd),a",
+  name: "SRA (IX+DD),A",
   bytes: "dd cb 2f",
   doc: "a = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
@@ -12724,7 +12723,7 @@ opcodes.set(0xddcb2f, {
 // {n:48, x:0, y:6, z:0, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb30, {
-  name: "sll (ix+dd),b",
+  name: "SLL (IX+DD),B",
   bytes: "dd cb 30",
   doc: "b = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12746,7 +12745,7 @@ opcodes.set(0xddcb30, {
 // {n:49, x:0, y:6, z:1, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb31, {
-  name: "sll (ix+dd),c",
+  name: "SLL (IX+DD),C",
   bytes: "dd cb 31",
   doc: "c = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12768,7 +12767,7 @@ opcodes.set(0xddcb31, {
 // {n:50, x:0, y:6, z:2, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb32, {
-  name: "sll (ix+dd),d",
+  name: "SLL (IX+DD),D",
   bytes: "dd cb 32",
   doc: "d = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12790,7 +12789,7 @@ opcodes.set(0xddcb32, {
 // {n:51, x:0, y:6, z:3, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb33, {
-  name: "sll (ix+dd),e",
+  name: "SLL (IX+DD),E",
   bytes: "dd cb 33",
   doc: "e = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12812,7 +12811,7 @@ opcodes.set(0xddcb33, {
 // {n:52, x:0, y:6, z:4, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb34, {
-  name: "sll (ix+dd),ixh",
+  name: "SLL (IX+DD),IXH",
   bytes: "dd cb 34",
   doc: "ixh = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12834,7 +12833,7 @@ opcodes.set(0xddcb34, {
 // {n:53, x:0, y:6, z:5, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb35, {
-  name: "sll (ix+dd),ixl",
+  name: "SLL (IX+DD),IXL",
   bytes: "dd cb 35",
   doc: "ixl = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12856,7 +12855,7 @@ opcodes.set(0xddcb35, {
 // {n:55, x:0, y:6, z:7, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb37, {
-  name: "sll (ix+dd),a",
+  name: "SLL (IX+DD),A",
   bytes: "dd cb 37",
   doc: "a = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12878,7 +12877,7 @@ opcodes.set(0xddcb37, {
 // {n:56, x:0, y:7, z:0, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb38, {
-  name: "srl (ix+dd),b",
+  name: "SRL (IX+DD),B",
   bytes: "dd cb 38",
   doc: "b = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12900,7 +12899,7 @@ opcodes.set(0xddcb38, {
 // {n:57, x:0, y:7, z:1, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb39, {
-  name: "srl (ix+dd),c",
+  name: "SRL (IX+DD),C",
   bytes: "dd cb 39",
   doc: "c = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12922,7 +12921,7 @@ opcodes.set(0xddcb39, {
 // {n:58, x:0, y:7, z:2, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb3a, {
-  name: "srl (ix+dd),d",
+  name: "SRL (IX+DD),D",
   bytes: "dd cb 3a",
   doc: "d = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12944,7 +12943,7 @@ opcodes.set(0xddcb3a, {
 // {n:59, x:0, y:7, z:3, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb3b, {
-  name: "srl (ix+dd),e",
+  name: "SRL (IX+DD),E",
   bytes: "dd cb 3b",
   doc: "e = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12966,7 +12965,7 @@ opcodes.set(0xddcb3b, {
 // {n:60, x:0, y:7, z:4, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb3c, {
-  name: "srl (ix+dd),ixh",
+  name: "SRL (IX+DD),IXH",
   bytes: "dd cb 3c",
   doc: "ixh = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -12988,7 +12987,7 @@ opcodes.set(0xddcb3c, {
 // {n:61, x:0, y:7, z:5, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb3d, {
-  name: "srl (ix+dd),ixl",
+  name: "SRL (IX+DD),IXL",
   bytes: "dd cb 3d",
   doc: "ixl = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -13010,7 +13009,7 @@ opcodes.set(0xddcb3d, {
 // {n:63, x:0, y:7, z:7, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xddcb3f, {
-  name: "srl (ix+dd),a",
+  name: "SRL (IX+DD),A",
   bytes: "dd cb 3f",
   doc: "a = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
@@ -13032,7 +13031,7 @@ opcodes.set(0xddcb3f, {
 // {n:70, x:1, y:0, z:6, p:0, q:0}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xddcb46, {
-  name: "BIT 0,(ix+dd)",
+  name: "BIT 0,(IX+DD)",
   bytes: "dd cb 46",
   doc: "f.Z = bit 0 of (ix+dd)",
   group: "Set",
@@ -13049,7 +13048,7 @@ opcodes.set(0xddcb46, {
 // {n:78, x:1, y:1, z:6, p:0, q:1}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xddcb4e, {
-  name: "BIT 1,(ix+dd)",
+  name: "BIT 1,(IX+DD)",
   bytes: "dd cb 4e",
   doc: "f.Z = bit 1 of (ix+dd)",
   group: "Set",
@@ -13066,7 +13065,7 @@ opcodes.set(0xddcb4e, {
 // {n:86, x:1, y:2, z:6, p:1, q:0}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xddcb56, {
-  name: "BIT 2,(ix+dd)",
+  name: "BIT 2,(IX+DD)",
   bytes: "dd cb 56",
   doc: "f.Z = bit 2 of (ix+dd)",
   group: "Set",
@@ -13083,7 +13082,7 @@ opcodes.set(0xddcb56, {
 // {n:94, x:1, y:3, z:6, p:1, q:1}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xddcb5e, {
-  name: "BIT 3,(ix+dd)",
+  name: "BIT 3,(IX+DD)",
   bytes: "dd cb 5e",
   doc: "f.Z = bit 3 of (ix+dd)",
   group: "Set",
@@ -13100,7 +13099,7 @@ opcodes.set(0xddcb5e, {
 // {n:102, x:1, y:4, z:6, p:2, q:0}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xddcb66, {
-  name: "BIT 4,(ix+dd)",
+  name: "BIT 4,(IX+DD)",
   bytes: "dd cb 66",
   doc: "f.Z = bit 4 of (ix+dd)",
   group: "Set",
@@ -13117,7 +13116,7 @@ opcodes.set(0xddcb66, {
 // {n:110, x:1, y:5, z:6, p:2, q:1}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xddcb6e, {
-  name: "BIT 5,(ix+dd)",
+  name: "BIT 5,(IX+DD)",
   bytes: "dd cb 6e",
   doc: "f.Z = bit 5 of (ix+dd)",
   group: "Set",
@@ -13134,7 +13133,7 @@ opcodes.set(0xddcb6e, {
 // {n:118, x:1, y:6, z:6, p:3, q:0}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xddcb76, {
-  name: "BIT 6,(ix+dd)",
+  name: "BIT 6,(IX+DD)",
   bytes: "dd cb 76",
   doc: "f.Z = bit 6 of (ix+dd)",
   group: "Set",
@@ -13151,7 +13150,7 @@ opcodes.set(0xddcb76, {
 // {n:126, x:1, y:7, z:6, p:3, q:1}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xddcb7e, {
-  name: "BIT 7,(ix+dd)",
+  name: "BIT 7,(IX+DD)",
   bytes: "dd cb 7e",
   doc: "f.Z = bit 7 of (ix+dd)",
   group: "Set",
@@ -13168,7 +13167,7 @@ opcodes.set(0xddcb7e, {
 // {n:128, x:2, y:0, z:0, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb80, {
-  name: "RES 0,(ix+dd),b",
+  name: "RES 0,(IX+DD),B",
   bytes: "dd cb 80",
   doc: "Reset bit 0 of (ix+dd) load into b",
   group: "Set",
@@ -13189,7 +13188,7 @@ opcodes.set(0xddcb80, {
 // {n:129, x:2, y:0, z:1, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb81, {
-  name: "RES 0,(ix+dd),c",
+  name: "RES 0,(IX+DD),C",
   bytes: "dd cb 81",
   doc: "Reset bit 0 of (ix+dd) load into c",
   group: "Set",
@@ -13210,7 +13209,7 @@ opcodes.set(0xddcb81, {
 // {n:130, x:2, y:0, z:2, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb82, {
-  name: "RES 0,(ix+dd),d",
+  name: "RES 0,(IX+DD),D",
   bytes: "dd cb 82",
   doc: "Reset bit 0 of (ix+dd) load into d",
   group: "Set",
@@ -13231,7 +13230,7 @@ opcodes.set(0xddcb82, {
 // {n:131, x:2, y:0, z:3, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb83, {
-  name: "RES 0,(ix+dd),e",
+  name: "RES 0,(IX+DD),E",
   bytes: "dd cb 83",
   doc: "Reset bit 0 of (ix+dd) load into e",
   group: "Set",
@@ -13252,7 +13251,7 @@ opcodes.set(0xddcb83, {
 // {n:132, x:2, y:0, z:4, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb84, {
-  name: "RES 0,(ix+dd),h",
+  name: "RES 0,(IX+DD),H",
   bytes: "dd cb 84",
   doc: "Reset bit 0 of (ix+dd) load into h",
   group: "Set",
@@ -13273,7 +13272,7 @@ opcodes.set(0xddcb84, {
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb85, {
-  name: "RES 0,(ix+dd),l",
+  name: "RES 0,(IX+DD),L",
   bytes: "dd cb 85",
   doc: "Reset bit 0 of (ix+dd) load into l",
   group: "Set",
@@ -13294,7 +13293,7 @@ opcodes.set(0xddcb85, {
 // {n:134, x:2, y:0, z:6, p:0, q:0}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcb86, {
-  name: "RES 0,(ix+dd),(ix+dd)",
+  name: "RES 0,(IX+DD),(IX+DD)",
   bytes: "dd cb 86",
   doc: "Reset bit 0 of (ix+dd) load into (ix+dd)",
   group: "Set",
@@ -13314,7 +13313,7 @@ opcodes.set(0xddcb86, {
 // {n:135, x:2, y:0, z:7, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb87, {
-  name: "RES 0,(ix+dd),a",
+  name: "RES 0,(IX+DD),A",
   bytes: "dd cb 87",
   doc: "Reset bit 0 of (ix+dd) load into a",
   group: "Set",
@@ -13335,7 +13334,7 @@ opcodes.set(0xddcb87, {
 // {n:136, x:2, y:1, z:0, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb88, {
-  name: "RES 1,(ix+dd),b",
+  name: "RES 1,(IX+DD),B",
   bytes: "dd cb 88",
   doc: "Reset bit 1 of (ix+dd) load into b",
   group: "Set",
@@ -13356,7 +13355,7 @@ opcodes.set(0xddcb88, {
 // {n:137, x:2, y:1, z:1, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb89, {
-  name: "RES 1,(ix+dd),c",
+  name: "RES 1,(IX+DD),C",
   bytes: "dd cb 89",
   doc: "Reset bit 1 of (ix+dd) load into c",
   group: "Set",
@@ -13377,7 +13376,7 @@ opcodes.set(0xddcb89, {
 // {n:138, x:2, y:1, z:2, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb8a, {
-  name: "RES 1,(ix+dd),d",
+  name: "RES 1,(IX+DD),D",
   bytes: "dd cb 8a",
   doc: "Reset bit 1 of (ix+dd) load into d",
   group: "Set",
@@ -13398,7 +13397,7 @@ opcodes.set(0xddcb8a, {
 // {n:139, x:2, y:1, z:3, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb8b, {
-  name: "RES 1,(ix+dd),e",
+  name: "RES 1,(IX+DD),E",
   bytes: "dd cb 8b",
   doc: "Reset bit 1 of (ix+dd) load into e",
   group: "Set",
@@ -13419,7 +13418,7 @@ opcodes.set(0xddcb8b, {
 // {n:140, x:2, y:1, z:4, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb8c, {
-  name: "RES 1,(ix+dd),h",
+  name: "RES 1,(IX+DD),H",
   bytes: "dd cb 8c",
   doc: "Reset bit 1 of (ix+dd) load into h",
   group: "Set",
@@ -13440,7 +13439,7 @@ opcodes.set(0xddcb8c, {
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb8d, {
-  name: "RES 1,(ix+dd),l",
+  name: "RES 1,(IX+DD),L",
   bytes: "dd cb 8d",
   doc: "Reset bit 1 of (ix+dd) load into l",
   group: "Set",
@@ -13461,7 +13460,7 @@ opcodes.set(0xddcb8d, {
 // {n:142, x:2, y:1, z:6, p:0, q:1}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcb8e, {
-  name: "RES 1,(ix+dd),(ix+dd)",
+  name: "RES 1,(IX+DD),(IX+DD)",
   bytes: "dd cb 8e",
   doc: "Reset bit 1 of (ix+dd) load into (ix+dd)",
   group: "Set",
@@ -13481,7 +13480,7 @@ opcodes.set(0xddcb8e, {
 // {n:143, x:2, y:1, z:7, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb8f, {
-  name: "RES 1,(ix+dd),a",
+  name: "RES 1,(IX+DD),A",
   bytes: "dd cb 8f",
   doc: "Reset bit 1 of (ix+dd) load into a",
   group: "Set",
@@ -13502,7 +13501,7 @@ opcodes.set(0xddcb8f, {
 // {n:144, x:2, y:2, z:0, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb90, {
-  name: "RES 2,(ix+dd),b",
+  name: "RES 2,(IX+DD),B",
   bytes: "dd cb 90",
   doc: "Reset bit 2 of (ix+dd) load into b",
   group: "Set",
@@ -13523,7 +13522,7 @@ opcodes.set(0xddcb90, {
 // {n:145, x:2, y:2, z:1, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb91, {
-  name: "RES 2,(ix+dd),c",
+  name: "RES 2,(IX+DD),C",
   bytes: "dd cb 91",
   doc: "Reset bit 2 of (ix+dd) load into c",
   group: "Set",
@@ -13544,7 +13543,7 @@ opcodes.set(0xddcb91, {
 // {n:146, x:2, y:2, z:2, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb92, {
-  name: "RES 2,(ix+dd),d",
+  name: "RES 2,(IX+DD),D",
   bytes: "dd cb 92",
   doc: "Reset bit 2 of (ix+dd) load into d",
   group: "Set",
@@ -13565,7 +13564,7 @@ opcodes.set(0xddcb92, {
 // {n:147, x:2, y:2, z:3, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb93, {
-  name: "RES 2,(ix+dd),e",
+  name: "RES 2,(IX+DD),E",
   bytes: "dd cb 93",
   doc: "Reset bit 2 of (ix+dd) load into e",
   group: "Set",
@@ -13586,7 +13585,7 @@ opcodes.set(0xddcb93, {
 // {n:148, x:2, y:2, z:4, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb94, {
-  name: "RES 2,(ix+dd),h",
+  name: "RES 2,(IX+DD),H",
   bytes: "dd cb 94",
   doc: "Reset bit 2 of (ix+dd) load into h",
   group: "Set",
@@ -13607,7 +13606,7 @@ opcodes.set(0xddcb94, {
 // {n:149, x:2, y:2, z:5, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb95, {
-  name: "RES 2,(ix+dd),l",
+  name: "RES 2,(IX+DD),L",
   bytes: "dd cb 95",
   doc: "Reset bit 2 of (ix+dd) load into l",
   group: "Set",
@@ -13628,7 +13627,7 @@ opcodes.set(0xddcb95, {
 // {n:150, x:2, y:2, z:6, p:1, q:0}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcb96, {
-  name: "RES 2,(ix+dd),(ix+dd)",
+  name: "RES 2,(IX+DD),(IX+DD)",
   bytes: "dd cb 96",
   doc: "Reset bit 2 of (ix+dd) load into (ix+dd)",
   group: "Set",
@@ -13648,7 +13647,7 @@ opcodes.set(0xddcb96, {
 // {n:151, x:2, y:2, z:7, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb97, {
-  name: "RES 2,(ix+dd),a",
+  name: "RES 2,(IX+DD),A",
   bytes: "dd cb 97",
   doc: "Reset bit 2 of (ix+dd) load into a",
   group: "Set",
@@ -13669,7 +13668,7 @@ opcodes.set(0xddcb97, {
 // {n:152, x:2, y:3, z:0, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb98, {
-  name: "RES 3,(ix+dd),b",
+  name: "RES 3,(IX+DD),B",
   bytes: "dd cb 98",
   doc: "Reset bit 3 of (ix+dd) load into b",
   group: "Set",
@@ -13690,7 +13689,7 @@ opcodes.set(0xddcb98, {
 // {n:153, x:2, y:3, z:1, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb99, {
-  name: "RES 3,(ix+dd),c",
+  name: "RES 3,(IX+DD),C",
   bytes: "dd cb 99",
   doc: "Reset bit 3 of (ix+dd) load into c",
   group: "Set",
@@ -13711,7 +13710,7 @@ opcodes.set(0xddcb99, {
 // {n:154, x:2, y:3, z:2, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb9a, {
-  name: "RES 3,(ix+dd),d",
+  name: "RES 3,(IX+DD),D",
   bytes: "dd cb 9a",
   doc: "Reset bit 3 of (ix+dd) load into d",
   group: "Set",
@@ -13732,7 +13731,7 @@ opcodes.set(0xddcb9a, {
 // {n:155, x:2, y:3, z:3, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb9b, {
-  name: "RES 3,(ix+dd),e",
+  name: "RES 3,(IX+DD),E",
   bytes: "dd cb 9b",
   doc: "Reset bit 3 of (ix+dd) load into e",
   group: "Set",
@@ -13753,7 +13752,7 @@ opcodes.set(0xddcb9b, {
 // {n:156, x:2, y:3, z:4, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb9c, {
-  name: "RES 3,(ix+dd),h",
+  name: "RES 3,(IX+DD),H",
   bytes: "dd cb 9c",
   doc: "Reset bit 3 of (ix+dd) load into h",
   group: "Set",
@@ -13774,7 +13773,7 @@ opcodes.set(0xddcb9c, {
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb9d, {
-  name: "RES 3,(ix+dd),l",
+  name: "RES 3,(IX+DD),L",
   bytes: "dd cb 9d",
   doc: "Reset bit 3 of (ix+dd) load into l",
   group: "Set",
@@ -13795,7 +13794,7 @@ opcodes.set(0xddcb9d, {
 // {n:158, x:2, y:3, z:6, p:1, q:1}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcb9e, {
-  name: "RES 3,(ix+dd),(ix+dd)",
+  name: "RES 3,(IX+DD),(IX+DD)",
   bytes: "dd cb 9e",
   doc: "Reset bit 3 of (ix+dd) load into (ix+dd)",
   group: "Set",
@@ -13815,7 +13814,7 @@ opcodes.set(0xddcb9e, {
 // {n:159, x:2, y:3, z:7, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcb9f, {
-  name: "RES 3,(ix+dd),a",
+  name: "RES 3,(IX+DD),A",
   bytes: "dd cb 9f",
   doc: "Reset bit 3 of (ix+dd) load into a",
   group: "Set",
@@ -13836,7 +13835,7 @@ opcodes.set(0xddcb9f, {
 // {n:160, x:2, y:4, z:0, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba0, {
-  name: "RES 4,(ix+dd),b",
+  name: "RES 4,(IX+DD),B",
   bytes: "dd cb a0",
   doc: "Reset bit 4 of (ix+dd) load into b",
   group: "Set",
@@ -13857,7 +13856,7 @@ opcodes.set(0xddcba0, {
 // {n:161, x:2, y:4, z:1, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba1, {
-  name: "RES 4,(ix+dd),c",
+  name: "RES 4,(IX+DD),C",
   bytes: "dd cb a1",
   doc: "Reset bit 4 of (ix+dd) load into c",
   group: "Set",
@@ -13878,7 +13877,7 @@ opcodes.set(0xddcba1, {
 // {n:162, x:2, y:4, z:2, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba2, {
-  name: "RES 4,(ix+dd),d",
+  name: "RES 4,(IX+DD),D",
   bytes: "dd cb a2",
   doc: "Reset bit 4 of (ix+dd) load into d",
   group: "Set",
@@ -13899,7 +13898,7 @@ opcodes.set(0xddcba2, {
 // {n:163, x:2, y:4, z:3, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba3, {
-  name: "RES 4,(ix+dd),e",
+  name: "RES 4,(IX+DD),E",
   bytes: "dd cb a3",
   doc: "Reset bit 4 of (ix+dd) load into e",
   group: "Set",
@@ -13920,7 +13919,7 @@ opcodes.set(0xddcba3, {
 // {n:164, x:2, y:4, z:4, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba4, {
-  name: "RES 4,(ix+dd),h",
+  name: "RES 4,(IX+DD),H",
   bytes: "dd cb a4",
   doc: "Reset bit 4 of (ix+dd) load into h",
   group: "Set",
@@ -13941,7 +13940,7 @@ opcodes.set(0xddcba4, {
 // {n:165, x:2, y:4, z:5, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba5, {
-  name: "RES 4,(ix+dd),l",
+  name: "RES 4,(IX+DD),L",
   bytes: "dd cb a5",
   doc: "Reset bit 4 of (ix+dd) load into l",
   group: "Set",
@@ -13962,7 +13961,7 @@ opcodes.set(0xddcba5, {
 // {n:166, x:2, y:4, z:6, p:2, q:0}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcba6, {
-  name: "RES 4,(ix+dd),(ix+dd)",
+  name: "RES 4,(IX+DD),(IX+DD)",
   bytes: "dd cb a6",
   doc: "Reset bit 4 of (ix+dd) load into (ix+dd)",
   group: "Set",
@@ -13982,7 +13981,7 @@ opcodes.set(0xddcba6, {
 // {n:167, x:2, y:4, z:7, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba7, {
-  name: "RES 4,(ix+dd),a",
+  name: "RES 4,(IX+DD),A",
   bytes: "dd cb a7",
   doc: "Reset bit 4 of (ix+dd) load into a",
   group: "Set",
@@ -14003,7 +14002,7 @@ opcodes.set(0xddcba7, {
 // {n:168, x:2, y:5, z:0, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba8, {
-  name: "RES 5,(ix+dd),b",
+  name: "RES 5,(IX+DD),B",
   bytes: "dd cb a8",
   doc: "Reset bit 5 of (ix+dd) load into b",
   group: "Set",
@@ -14024,7 +14023,7 @@ opcodes.set(0xddcba8, {
 // {n:169, x:2, y:5, z:1, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcba9, {
-  name: "RES 5,(ix+dd),c",
+  name: "RES 5,(IX+DD),C",
   bytes: "dd cb a9",
   doc: "Reset bit 5 of (ix+dd) load into c",
   group: "Set",
@@ -14045,7 +14044,7 @@ opcodes.set(0xddcba9, {
 // {n:170, x:2, y:5, z:2, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbaa, {
-  name: "RES 5,(ix+dd),d",
+  name: "RES 5,(IX+DD),D",
   bytes: "dd cb aa",
   doc: "Reset bit 5 of (ix+dd) load into d",
   group: "Set",
@@ -14066,7 +14065,7 @@ opcodes.set(0xddcbaa, {
 // {n:171, x:2, y:5, z:3, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbab, {
-  name: "RES 5,(ix+dd),e",
+  name: "RES 5,(IX+DD),E",
   bytes: "dd cb ab",
   doc: "Reset bit 5 of (ix+dd) load into e",
   group: "Set",
@@ -14087,7 +14086,7 @@ opcodes.set(0xddcbab, {
 // {n:172, x:2, y:5, z:4, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbac, {
-  name: "RES 5,(ix+dd),h",
+  name: "RES 5,(IX+DD),H",
   bytes: "dd cb ac",
   doc: "Reset bit 5 of (ix+dd) load into h",
   group: "Set",
@@ -14108,7 +14107,7 @@ opcodes.set(0xddcbac, {
 // {n:173, x:2, y:5, z:5, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbad, {
-  name: "RES 5,(ix+dd),l",
+  name: "RES 5,(IX+DD),L",
   bytes: "dd cb ad",
   doc: "Reset bit 5 of (ix+dd) load into l",
   group: "Set",
@@ -14129,7 +14128,7 @@ opcodes.set(0xddcbad, {
 // {n:174, x:2, y:5, z:6, p:2, q:1}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbae, {
-  name: "RES 5,(ix+dd),(ix+dd)",
+  name: "RES 5,(IX+DD),(IX+DD)",
   bytes: "dd cb ae",
   doc: "Reset bit 5 of (ix+dd) load into (ix+dd)",
   group: "Set",
@@ -14149,7 +14148,7 @@ opcodes.set(0xddcbae, {
 // {n:175, x:2, y:5, z:7, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbaf, {
-  name: "RES 5,(ix+dd),a",
+  name: "RES 5,(IX+DD),A",
   bytes: "dd cb af",
   doc: "Reset bit 5 of (ix+dd) load into a",
   group: "Set",
@@ -14170,7 +14169,7 @@ opcodes.set(0xddcbaf, {
 // {n:176, x:2, y:6, z:0, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb0, {
-  name: "RES 6,(ix+dd),b",
+  name: "RES 6,(IX+DD),B",
   bytes: "dd cb b0",
   doc: "Reset bit 6 of (ix+dd) load into b",
   group: "Set",
@@ -14191,7 +14190,7 @@ opcodes.set(0xddcbb0, {
 // {n:177, x:2, y:6, z:1, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb1, {
-  name: "RES 6,(ix+dd),c",
+  name: "RES 6,(IX+DD),C",
   bytes: "dd cb b1",
   doc: "Reset bit 6 of (ix+dd) load into c",
   group: "Set",
@@ -14212,7 +14211,7 @@ opcodes.set(0xddcbb1, {
 // {n:178, x:2, y:6, z:2, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb2, {
-  name: "RES 6,(ix+dd),d",
+  name: "RES 6,(IX+DD),D",
   bytes: "dd cb b2",
   doc: "Reset bit 6 of (ix+dd) load into d",
   group: "Set",
@@ -14233,7 +14232,7 @@ opcodes.set(0xddcbb2, {
 // {n:179, x:2, y:6, z:3, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb3, {
-  name: "RES 6,(ix+dd),e",
+  name: "RES 6,(IX+DD),E",
   bytes: "dd cb b3",
   doc: "Reset bit 6 of (ix+dd) load into e",
   group: "Set",
@@ -14254,7 +14253,7 @@ opcodes.set(0xddcbb3, {
 // {n:180, x:2, y:6, z:4, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb4, {
-  name: "RES 6,(ix+dd),h",
+  name: "RES 6,(IX+DD),H",
   bytes: "dd cb b4",
   doc: "Reset bit 6 of (ix+dd) load into h",
   group: "Set",
@@ -14275,7 +14274,7 @@ opcodes.set(0xddcbb4, {
 // {n:181, x:2, y:6, z:5, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb5, {
-  name: "RES 6,(ix+dd),l",
+  name: "RES 6,(IX+DD),L",
   bytes: "dd cb b5",
   doc: "Reset bit 6 of (ix+dd) load into l",
   group: "Set",
@@ -14296,7 +14295,7 @@ opcodes.set(0xddcbb5, {
 // {n:182, x:2, y:6, z:6, p:3, q:0}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbb6, {
-  name: "RES 6,(ix+dd),(ix+dd)",
+  name: "RES 6,(IX+DD),(IX+DD)",
   bytes: "dd cb b6",
   doc: "Reset bit 6 of (ix+dd) load into (ix+dd)",
   group: "Set",
@@ -14316,7 +14315,7 @@ opcodes.set(0xddcbb6, {
 // {n:183, x:2, y:6, z:7, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb7, {
-  name: "RES 6,(ix+dd),a",
+  name: "RES 6,(IX+DD),A",
   bytes: "dd cb b7",
   doc: "Reset bit 6 of (ix+dd) load into a",
   group: "Set",
@@ -14337,7 +14336,7 @@ opcodes.set(0xddcbb7, {
 // {n:184, x:2, y:7, z:0, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb8, {
-  name: "RES 7,(ix+dd),b",
+  name: "RES 7,(IX+DD),B",
   bytes: "dd cb b8",
   doc: "Reset bit 7 of (ix+dd) load into b",
   group: "Set",
@@ -14358,7 +14357,7 @@ opcodes.set(0xddcbb8, {
 // {n:185, x:2, y:7, z:1, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbb9, {
-  name: "RES 7,(ix+dd),c",
+  name: "RES 7,(IX+DD),C",
   bytes: "dd cb b9",
   doc: "Reset bit 7 of (ix+dd) load into c",
   group: "Set",
@@ -14379,7 +14378,7 @@ opcodes.set(0xddcbb9, {
 // {n:186, x:2, y:7, z:2, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbba, {
-  name: "RES 7,(ix+dd),d",
+  name: "RES 7,(IX+DD),D",
   bytes: "dd cb ba",
   doc: "Reset bit 7 of (ix+dd) load into d",
   group: "Set",
@@ -14400,7 +14399,7 @@ opcodes.set(0xddcbba, {
 // {n:187, x:2, y:7, z:3, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbbb, {
-  name: "RES 7,(ix+dd),e",
+  name: "RES 7,(IX+DD),E",
   bytes: "dd cb bb",
   doc: "Reset bit 7 of (ix+dd) load into e",
   group: "Set",
@@ -14421,7 +14420,7 @@ opcodes.set(0xddcbbb, {
 // {n:188, x:2, y:7, z:4, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbbc, {
-  name: "RES 7,(ix+dd),h",
+  name: "RES 7,(IX+DD),H",
   bytes: "dd cb bc",
   doc: "Reset bit 7 of (ix+dd) load into h",
   group: "Set",
@@ -14442,7 +14441,7 @@ opcodes.set(0xddcbbc, {
 // {n:189, x:2, y:7, z:5, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbbd, {
-  name: "RES 7,(ix+dd),l",
+  name: "RES 7,(IX+DD),L",
   bytes: "dd cb bd",
   doc: "Reset bit 7 of (ix+dd) load into l",
   group: "Set",
@@ -14463,7 +14462,7 @@ opcodes.set(0xddcbbd, {
 // {n:190, x:2, y:7, z:6, p:3, q:1}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbbe, {
-  name: "RES 7,(ix+dd),(ix+dd)",
+  name: "RES 7,(IX+DD),(IX+DD)",
   bytes: "dd cb be",
   doc: "Reset bit 7 of (ix+dd) load into (ix+dd)",
   group: "Set",
@@ -14483,7 +14482,7 @@ opcodes.set(0xddcbbe, {
 // {n:191, x:2, y:7, z:7, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbbf, {
-  name: "RES 7,(ix+dd),a",
+  name: "RES 7,(IX+DD),A",
   bytes: "dd cb bf",
   doc: "Reset bit 7 of (ix+dd) load into a",
   group: "Set",
@@ -14504,7 +14503,7 @@ opcodes.set(0xddcbbf, {
 // {n:192, x:3, y:0, z:0, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc0, {
-  name: "SET 0,(ix+dd),b",
+  name: "SET 0,(IX+DD),B",
   bytes: "dd cb c0",
   doc: "ld b, (set 0, (ix+dd))",
   group: "Set",
@@ -14525,7 +14524,7 @@ opcodes.set(0xddcbc0, {
 // {n:193, x:3, y:0, z:1, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc1, {
-  name: "SET 0,(ix+dd),c",
+  name: "SET 0,(IX+DD),C",
   bytes: "dd cb c1",
   doc: "ld c, (set 0, (ix+dd))",
   group: "Set",
@@ -14546,7 +14545,7 @@ opcodes.set(0xddcbc1, {
 // {n:194, x:3, y:0, z:2, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc2, {
-  name: "SET 0,(ix+dd),d",
+  name: "SET 0,(IX+DD),D",
   bytes: "dd cb c2",
   doc: "ld d, (set 0, (ix+dd))",
   group: "Set",
@@ -14567,7 +14566,7 @@ opcodes.set(0xddcbc2, {
 // {n:195, x:3, y:0, z:3, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc3, {
-  name: "SET 0,(ix+dd),e",
+  name: "SET 0,(IX+DD),E",
   bytes: "dd cb c3",
   doc: "ld e, (set 0, (ix+dd))",
   group: "Set",
@@ -14588,7 +14587,7 @@ opcodes.set(0xddcbc3, {
 // {n:196, x:3, y:0, z:4, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc4, {
-  name: "SET 0,(ix+dd),h",
+  name: "SET 0,(IX+DD),H",
   bytes: "dd cb c4",
   doc: "ld h, (set 0, (ix+dd))",
   group: "Set",
@@ -14609,7 +14608,7 @@ opcodes.set(0xddcbc4, {
 // {n:197, x:3, y:0, z:5, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc5, {
-  name: "SET 0,(ix+dd),l",
+  name: "SET 0,(IX+DD),L",
   bytes: "dd cb c5",
   doc: "ld l, (set 0, (ix+dd))",
   group: "Set",
@@ -14630,7 +14629,7 @@ opcodes.set(0xddcbc5, {
 // {n:198, x:3, y:0, z:6, p:0, q:0}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbc6, {
-  name: "SET 0,(ix+dd),(ix+dd)",
+  name: "SET 0,(IX+DD),(IX+DD)",
   bytes: "dd cb c6",
   doc: "ld (ix+dd), (set 0, (ix+dd))",
   group: "Set",
@@ -14650,7 +14649,7 @@ opcodes.set(0xddcbc6, {
 // {n:199, x:3, y:0, z:7, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc7, {
-  name: "SET 0,(ix+dd),a",
+  name: "SET 0,(IX+DD),A",
   bytes: "dd cb c7",
   doc: "ld a, (set 0, (ix+dd))",
   group: "Set",
@@ -14671,7 +14670,7 @@ opcodes.set(0xddcbc7, {
 // {n:200, x:3, y:1, z:0, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc8, {
-  name: "SET 1,(ix+dd),b",
+  name: "SET 1,(IX+DD),B",
   bytes: "dd cb c8",
   doc: "ld b, (set 1, (ix+dd))",
   group: "Set",
@@ -14692,7 +14691,7 @@ opcodes.set(0xddcbc8, {
 // {n:201, x:3, y:1, z:1, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbc9, {
-  name: "SET 1,(ix+dd),c",
+  name: "SET 1,(IX+DD),C",
   bytes: "dd cb c9",
   doc: "ld c, (set 1, (ix+dd))",
   group: "Set",
@@ -14713,7 +14712,7 @@ opcodes.set(0xddcbc9, {
 // {n:202, x:3, y:1, z:2, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbca, {
-  name: "SET 1,(ix+dd),d",
+  name: "SET 1,(IX+DD),D",
   bytes: "dd cb ca",
   doc: "ld d, (set 1, (ix+dd))",
   group: "Set",
@@ -14734,7 +14733,7 @@ opcodes.set(0xddcbca, {
 // {n:203, x:3, y:1, z:3, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbcb, {
-  name: "SET 1,(ix+dd),e",
+  name: "SET 1,(IX+DD),E",
   bytes: "dd cb cb",
   doc: "ld e, (set 1, (ix+dd))",
   group: "Set",
@@ -14755,7 +14754,7 @@ opcodes.set(0xddcbcb, {
 // {n:204, x:3, y:1, z:4, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbcc, {
-  name: "SET 1,(ix+dd),h",
+  name: "SET 1,(IX+DD),H",
   bytes: "dd cb cc",
   doc: "ld h, (set 1, (ix+dd))",
   group: "Set",
@@ -14776,7 +14775,7 @@ opcodes.set(0xddcbcc, {
 // {n:205, x:3, y:1, z:5, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbcd, {
-  name: "SET 1,(ix+dd),l",
+  name: "SET 1,(IX+DD),L",
   bytes: "dd cb cd",
   doc: "ld l, (set 1, (ix+dd))",
   group: "Set",
@@ -14797,7 +14796,7 @@ opcodes.set(0xddcbcd, {
 // {n:206, x:3, y:1, z:6, p:0, q:1}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbce, {
-  name: "SET 1,(ix+dd),(ix+dd)",
+  name: "SET 1,(IX+DD),(IX+DD)",
   bytes: "dd cb ce",
   doc: "ld (ix+dd), (set 1, (ix+dd))",
   group: "Set",
@@ -14817,7 +14816,7 @@ opcodes.set(0xddcbce, {
 // {n:207, x:3, y:1, z:7, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbcf, {
-  name: "SET 1,(ix+dd),a",
+  name: "SET 1,(IX+DD),A",
   bytes: "dd cb cf",
   doc: "ld a, (set 1, (ix+dd))",
   group: "Set",
@@ -14838,7 +14837,7 @@ opcodes.set(0xddcbcf, {
 // {n:208, x:3, y:2, z:0, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd0, {
-  name: "SET 2,(ix+dd),b",
+  name: "SET 2,(IX+DD),B",
   bytes: "dd cb d0",
   doc: "ld b, (set 2, (ix+dd))",
   group: "Set",
@@ -14859,7 +14858,7 @@ opcodes.set(0xddcbd0, {
 // {n:209, x:3, y:2, z:1, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd1, {
-  name: "SET 2,(ix+dd),c",
+  name: "SET 2,(IX+DD),C",
   bytes: "dd cb d1",
   doc: "ld c, (set 2, (ix+dd))",
   group: "Set",
@@ -14880,7 +14879,7 @@ opcodes.set(0xddcbd1, {
 // {n:210, x:3, y:2, z:2, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd2, {
-  name: "SET 2,(ix+dd),d",
+  name: "SET 2,(IX+DD),D",
   bytes: "dd cb d2",
   doc: "ld d, (set 2, (ix+dd))",
   group: "Set",
@@ -14901,7 +14900,7 @@ opcodes.set(0xddcbd2, {
 // {n:211, x:3, y:2, z:3, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd3, {
-  name: "SET 2,(ix+dd),e",
+  name: "SET 2,(IX+DD),E",
   bytes: "dd cb d3",
   doc: "ld e, (set 2, (ix+dd))",
   group: "Set",
@@ -14922,7 +14921,7 @@ opcodes.set(0xddcbd3, {
 // {n:212, x:3, y:2, z:4, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd4, {
-  name: "SET 2,(ix+dd),h",
+  name: "SET 2,(IX+DD),H",
   bytes: "dd cb d4",
   doc: "ld h, (set 2, (ix+dd))",
   group: "Set",
@@ -14943,7 +14942,7 @@ opcodes.set(0xddcbd4, {
 // {n:213, x:3, y:2, z:5, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd5, {
-  name: "SET 2,(ix+dd),l",
+  name: "SET 2,(IX+DD),L",
   bytes: "dd cb d5",
   doc: "ld l, (set 2, (ix+dd))",
   group: "Set",
@@ -14964,7 +14963,7 @@ opcodes.set(0xddcbd5, {
 // {n:214, x:3, y:2, z:6, p:1, q:0}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbd6, {
-  name: "SET 2,(ix+dd),(ix+dd)",
+  name: "SET 2,(IX+DD),(IX+DD)",
   bytes: "dd cb d6",
   doc: "ld (ix+dd), (set 2, (ix+dd))",
   group: "Set",
@@ -14984,7 +14983,7 @@ opcodes.set(0xddcbd6, {
 // {n:215, x:3, y:2, z:7, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd7, {
-  name: "SET 2,(ix+dd),a",
+  name: "SET 2,(IX+DD),A",
   bytes: "dd cb d7",
   doc: "ld a, (set 2, (ix+dd))",
   group: "Set",
@@ -15005,7 +15004,7 @@ opcodes.set(0xddcbd7, {
 // {n:216, x:3, y:3, z:0, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd8, {
-  name: "SET 3,(ix+dd),b",
+  name: "SET 3,(IX+DD),B",
   bytes: "dd cb d8",
   doc: "ld b, (set 3, (ix+dd))",
   group: "Set",
@@ -15026,7 +15025,7 @@ opcodes.set(0xddcbd8, {
 // {n:217, x:3, y:3, z:1, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbd9, {
-  name: "SET 3,(ix+dd),c",
+  name: "SET 3,(IX+DD),C",
   bytes: "dd cb d9",
   doc: "ld c, (set 3, (ix+dd))",
   group: "Set",
@@ -15047,7 +15046,7 @@ opcodes.set(0xddcbd9, {
 // {n:218, x:3, y:3, z:2, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbda, {
-  name: "SET 3,(ix+dd),d",
+  name: "SET 3,(IX+DD),D",
   bytes: "dd cb da",
   doc: "ld d, (set 3, (ix+dd))",
   group: "Set",
@@ -15068,7 +15067,7 @@ opcodes.set(0xddcbda, {
 // {n:219, x:3, y:3, z:3, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbdb, {
-  name: "SET 3,(ix+dd),e",
+  name: "SET 3,(IX+DD),E",
   bytes: "dd cb db",
   doc: "ld e, (set 3, (ix+dd))",
   group: "Set",
@@ -15089,7 +15088,7 @@ opcodes.set(0xddcbdb, {
 // {n:220, x:3, y:3, z:4, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbdc, {
-  name: "SET 3,(ix+dd),h",
+  name: "SET 3,(IX+DD),H",
   bytes: "dd cb dc",
   doc: "ld h, (set 3, (ix+dd))",
   group: "Set",
@@ -15110,7 +15109,7 @@ opcodes.set(0xddcbdc, {
 // {n:221, x:3, y:3, z:5, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbdd, {
-  name: "SET 3,(ix+dd),l",
+  name: "SET 3,(IX+DD),L",
   bytes: "dd cb dd",
   doc: "ld l, (set 3, (ix+dd))",
   group: "Set",
@@ -15131,7 +15130,7 @@ opcodes.set(0xddcbdd, {
 // {n:222, x:3, y:3, z:6, p:1, q:1}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbde, {
-  name: "SET 3,(ix+dd),(ix+dd)",
+  name: "SET 3,(IX+DD),(IX+DD)",
   bytes: "dd cb de",
   doc: "ld (ix+dd), (set 3, (ix+dd))",
   group: "Set",
@@ -15151,7 +15150,7 @@ opcodes.set(0xddcbde, {
 // {n:223, x:3, y:3, z:7, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbdf, {
-  name: "SET 3,(ix+dd),a",
+  name: "SET 3,(IX+DD),A",
   bytes: "dd cb df",
   doc: "ld a, (set 3, (ix+dd))",
   group: "Set",
@@ -15172,7 +15171,7 @@ opcodes.set(0xddcbdf, {
 // {n:224, x:3, y:4, z:0, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe0, {
-  name: "SET 4,(ix+dd),b",
+  name: "SET 4,(IX+DD),B",
   bytes: "dd cb e0",
   doc: "ld b, (set 4, (ix+dd))",
   group: "Set",
@@ -15193,7 +15192,7 @@ opcodes.set(0xddcbe0, {
 // {n:225, x:3, y:4, z:1, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe1, {
-  name: "SET 4,(ix+dd),c",
+  name: "SET 4,(IX+DD),C",
   bytes: "dd cb e1",
   doc: "ld c, (set 4, (ix+dd))",
   group: "Set",
@@ -15214,7 +15213,7 @@ opcodes.set(0xddcbe1, {
 // {n:226, x:3, y:4, z:2, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe2, {
-  name: "SET 4,(ix+dd),d",
+  name: "SET 4,(IX+DD),D",
   bytes: "dd cb e2",
   doc: "ld d, (set 4, (ix+dd))",
   group: "Set",
@@ -15235,7 +15234,7 @@ opcodes.set(0xddcbe2, {
 // {n:227, x:3, y:4, z:3, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe3, {
-  name: "SET 4,(ix+dd),e",
+  name: "SET 4,(IX+DD),E",
   bytes: "dd cb e3",
   doc: "ld e, (set 4, (ix+dd))",
   group: "Set",
@@ -15256,7 +15255,7 @@ opcodes.set(0xddcbe3, {
 // {n:228, x:3, y:4, z:4, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe4, {
-  name: "SET 4,(ix+dd),h",
+  name: "SET 4,(IX+DD),H",
   bytes: "dd cb e4",
   doc: "ld h, (set 4, (ix+dd))",
   group: "Set",
@@ -15277,7 +15276,7 @@ opcodes.set(0xddcbe4, {
 // {n:229, x:3, y:4, z:5, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe5, {
-  name: "SET 4,(ix+dd),l",
+  name: "SET 4,(IX+DD),L",
   bytes: "dd cb e5",
   doc: "ld l, (set 4, (ix+dd))",
   group: "Set",
@@ -15298,7 +15297,7 @@ opcodes.set(0xddcbe5, {
 // {n:230, x:3, y:4, z:6, p:2, q:0}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbe6, {
-  name: "SET 4,(ix+dd),(ix+dd)",
+  name: "SET 4,(IX+DD),(IX+DD)",
   bytes: "dd cb e6",
   doc: "ld (ix+dd), (set 4, (ix+dd))",
   group: "Set",
@@ -15318,7 +15317,7 @@ opcodes.set(0xddcbe6, {
 // {n:231, x:3, y:4, z:7, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe7, {
-  name: "SET 4,(ix+dd),a",
+  name: "SET 4,(IX+DD),A",
   bytes: "dd cb e7",
   doc: "ld a, (set 4, (ix+dd))",
   group: "Set",
@@ -15339,7 +15338,7 @@ opcodes.set(0xddcbe7, {
 // {n:232, x:3, y:5, z:0, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe8, {
-  name: "SET 5,(ix+dd),b",
+  name: "SET 5,(IX+DD),B",
   bytes: "dd cb e8",
   doc: "ld b, (set 5, (ix+dd))",
   group: "Set",
@@ -15360,7 +15359,7 @@ opcodes.set(0xddcbe8, {
 // {n:233, x:3, y:5, z:1, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbe9, {
-  name: "SET 5,(ix+dd),c",
+  name: "SET 5,(IX+DD),C",
   bytes: "dd cb e9",
   doc: "ld c, (set 5, (ix+dd))",
   group: "Set",
@@ -15381,7 +15380,7 @@ opcodes.set(0xddcbe9, {
 // {n:234, x:3, y:5, z:2, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbea, {
-  name: "SET 5,(ix+dd),d",
+  name: "SET 5,(IX+DD),D",
   bytes: "dd cb ea",
   doc: "ld d, (set 5, (ix+dd))",
   group: "Set",
@@ -15402,7 +15401,7 @@ opcodes.set(0xddcbea, {
 // {n:235, x:3, y:5, z:3, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbeb, {
-  name: "SET 5,(ix+dd),e",
+  name: "SET 5,(IX+DD),E",
   bytes: "dd cb eb",
   doc: "ld e, (set 5, (ix+dd))",
   group: "Set",
@@ -15423,7 +15422,7 @@ opcodes.set(0xddcbeb, {
 // {n:236, x:3, y:5, z:4, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbec, {
-  name: "SET 5,(ix+dd),h",
+  name: "SET 5,(IX+DD),H",
   bytes: "dd cb ec",
   doc: "ld h, (set 5, (ix+dd))",
   group: "Set",
@@ -15444,7 +15443,7 @@ opcodes.set(0xddcbec, {
 // {n:237, x:3, y:5, z:5, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbed, {
-  name: "SET 5,(ix+dd),l",
+  name: "SET 5,(IX+DD),L",
   bytes: "dd cb ed",
   doc: "ld l, (set 5, (ix+dd))",
   group: "Set",
@@ -15465,7 +15464,7 @@ opcodes.set(0xddcbed, {
 // {n:238, x:3, y:5, z:6, p:2, q:1}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbee, {
-  name: "SET 5,(ix+dd),(ix+dd)",
+  name: "SET 5,(IX+DD),(IX+DD)",
   bytes: "dd cb ee",
   doc: "ld (ix+dd), (set 5, (ix+dd))",
   group: "Set",
@@ -15485,7 +15484,7 @@ opcodes.set(0xddcbee, {
 // {n:239, x:3, y:5, z:7, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbef, {
-  name: "SET 5,(ix+dd),a",
+  name: "SET 5,(IX+DD),A",
   bytes: "dd cb ef",
   doc: "ld a, (set 5, (ix+dd))",
   group: "Set",
@@ -15506,7 +15505,7 @@ opcodes.set(0xddcbef, {
 // {n:240, x:3, y:6, z:0, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf0, {
-  name: "SET 6,(ix+dd),b",
+  name: "SET 6,(IX+DD),B",
   bytes: "dd cb f0",
   doc: "ld b, (set 6, (ix+dd))",
   group: "Set",
@@ -15527,7 +15526,7 @@ opcodes.set(0xddcbf0, {
 // {n:241, x:3, y:6, z:1, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf1, {
-  name: "SET 6,(ix+dd),c",
+  name: "SET 6,(IX+DD),C",
   bytes: "dd cb f1",
   doc: "ld c, (set 6, (ix+dd))",
   group: "Set",
@@ -15548,7 +15547,7 @@ opcodes.set(0xddcbf1, {
 // {n:242, x:3, y:6, z:2, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf2, {
-  name: "SET 6,(ix+dd),d",
+  name: "SET 6,(IX+DD),D",
   bytes: "dd cb f2",
   doc: "ld d, (set 6, (ix+dd))",
   group: "Set",
@@ -15569,7 +15568,7 @@ opcodes.set(0xddcbf2, {
 // {n:243, x:3, y:6, z:3, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf3, {
-  name: "SET 6,(ix+dd),e",
+  name: "SET 6,(IX+DD),E",
   bytes: "dd cb f3",
   doc: "ld e, (set 6, (ix+dd))",
   group: "Set",
@@ -15590,7 +15589,7 @@ opcodes.set(0xddcbf3, {
 // {n:244, x:3, y:6, z:4, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf4, {
-  name: "SET 6,(ix+dd),h",
+  name: "SET 6,(IX+DD),H",
   bytes: "dd cb f4",
   doc: "ld h, (set 6, (ix+dd))",
   group: "Set",
@@ -15611,7 +15610,7 @@ opcodes.set(0xddcbf4, {
 // {n:245, x:3, y:6, z:5, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf5, {
-  name: "SET 6,(ix+dd),l",
+  name: "SET 6,(IX+DD),L",
   bytes: "dd cb f5",
   doc: "ld l, (set 6, (ix+dd))",
   group: "Set",
@@ -15632,7 +15631,7 @@ opcodes.set(0xddcbf5, {
 // {n:246, x:3, y:6, z:6, p:3, q:0}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbf6, {
-  name: "SET 6,(ix+dd),(ix+dd)",
+  name: "SET 6,(IX+DD),(IX+DD)",
   bytes: "dd cb f6",
   doc: "ld (ix+dd), (set 6, (ix+dd))",
   group: "Set",
@@ -15652,7 +15651,7 @@ opcodes.set(0xddcbf6, {
 // {n:247, x:3, y:6, z:7, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf7, {
-  name: "SET 6,(ix+dd),a",
+  name: "SET 6,(IX+DD),A",
   bytes: "dd cb f7",
   doc: "ld a, (set 6, (ix+dd))",
   group: "Set",
@@ -15673,7 +15672,7 @@ opcodes.set(0xddcbf7, {
 // {n:248, x:3, y:7, z:0, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf8, {
-  name: "SET 7,(ix+dd),b",
+  name: "SET 7,(IX+DD),B",
   bytes: "dd cb f8",
   doc: "ld b, (set 7, (ix+dd))",
   group: "Set",
@@ -15694,7 +15693,7 @@ opcodes.set(0xddcbf8, {
 // {n:249, x:3, y:7, z:1, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbf9, {
-  name: "SET 7,(ix+dd),c",
+  name: "SET 7,(IX+DD),C",
   bytes: "dd cb f9",
   doc: "ld c, (set 7, (ix+dd))",
   group: "Set",
@@ -15715,7 +15714,7 @@ opcodes.set(0xddcbf9, {
 // {n:250, x:3, y:7, z:2, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbfa, {
-  name: "SET 7,(ix+dd),d",
+  name: "SET 7,(IX+DD),D",
   bytes: "dd cb fa",
   doc: "ld d, (set 7, (ix+dd))",
   group: "Set",
@@ -15736,7 +15735,7 @@ opcodes.set(0xddcbfa, {
 // {n:251, x:3, y:7, z:3, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbfb, {
-  name: "SET 7,(ix+dd),e",
+  name: "SET 7,(IX+DD),E",
   bytes: "dd cb fb",
   doc: "ld e, (set 7, (ix+dd))",
   group: "Set",
@@ -15757,7 +15756,7 @@ opcodes.set(0xddcbfb, {
 // {n:252, x:3, y:7, z:4, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbfc, {
-  name: "SET 7,(ix+dd),h",
+  name: "SET 7,(IX+DD),H",
   bytes: "dd cb fc",
   doc: "ld h, (set 7, (ix+dd))",
   group: "Set",
@@ -15778,7 +15777,7 @@ opcodes.set(0xddcbfc, {
 // {n:253, x:3, y:7, z:5, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbfd, {
-  name: "SET 7,(ix+dd),l",
+  name: "SET 7,(IX+DD),L",
   bytes: "dd cb fd",
   doc: "ld l, (set 7, (ix+dd))",
   group: "Set",
@@ -15799,7 +15798,7 @@ opcodes.set(0xddcbfd, {
 // {n:254, x:3, y:7, z:6, p:3, q:1}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xddcbfe, {
-  name: "SET 7,(ix+dd),(ix+dd)",
+  name: "SET 7,(IX+DD),(IX+DD)",
   bytes: "dd cb fe",
   doc: "ld (ix+dd), (set 7, (ix+dd))",
   group: "Set",
@@ -15819,7 +15818,7 @@ opcodes.set(0xddcbfe, {
 // {n:255, x:3, y:7, z:7, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xddcbff, {
-  name: "SET 7,(ix+dd),a",
+  name: "SET 7,(IX+DD),A",
   bytes: "dd cb ff",
   doc: "ld a, (set 7, (ix+dd))",
   group: "Set",
@@ -15840,7 +15839,7 @@ opcodes.set(0xddcbff, {
 // {n:0, x:0, y:0, z:0, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb00, {
-  name: "rlc (iy+dd),b",
+  name: "RLC (IY+DD),B",
   bytes: "fd cb 00",
   doc: "b = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -15862,7 +15861,7 @@ opcodes.set(0xfdcb00, {
 // {n:1, x:0, y:0, z:1, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb01, {
-  name: "rlc (iy+dd),c",
+  name: "RLC (IY+DD),C",
   bytes: "fd cb 01",
   doc: "c = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -15884,7 +15883,7 @@ opcodes.set(0xfdcb01, {
 // {n:2, x:0, y:0, z:2, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb02, {
-  name: "rlc (iy+dd),d",
+  name: "RLC (IY+DD),D",
   bytes: "fd cb 02",
   doc: "d = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -15906,7 +15905,7 @@ opcodes.set(0xfdcb02, {
 // {n:3, x:0, y:0, z:3, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb03, {
-  name: "rlc (iy+dd),e",
+  name: "RLC (IY+DD),E",
   bytes: "fd cb 03",
   doc: "e = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -15928,7 +15927,7 @@ opcodes.set(0xfdcb03, {
 // {n:4, x:0, y:0, z:4, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb04, {
-  name: "rlc (iy+dd),iyh",
+  name: "RLC (IY+DD),IYH",
   bytes: "fd cb 04",
   doc: "iyh = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -15950,7 +15949,7 @@ opcodes.set(0xfdcb04, {
 // {n:5, x:0, y:0, z:5, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb05, {
-  name: "rlc (iy+dd),iyl",
+  name: "RLC (IY+DD),IYL",
   bytes: "fd cb 05",
   doc: "iyl = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -15972,7 +15971,7 @@ opcodes.set(0xfdcb05, {
 // {n:7, x:0, y:0, z:7, p:0, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb07, {
-  name: "rlc (iy+dd),a",
+  name: "RLC (IY+DD),A",
   bytes: "fd cb 07",
   doc: "a = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -15994,7 +15993,7 @@ opcodes.set(0xfdcb07, {
 // {n:8, x:0, y:1, z:0, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb08, {
-  name: "rrc (iy+dd),b",
+  name: "RRC (IY+DD),B",
   bytes: "fd cb 08",
   doc: "b = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16016,7 +16015,7 @@ opcodes.set(0xfdcb08, {
 // {n:9, x:0, y:1, z:1, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb09, {
-  name: "rrc (iy+dd),c",
+  name: "RRC (IY+DD),C",
   bytes: "fd cb 09",
   doc: "c = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16038,7 +16037,7 @@ opcodes.set(0xfdcb09, {
 // {n:10, x:0, y:1, z:2, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb0a, {
-  name: "rrc (iy+dd),d",
+  name: "RRC (IY+DD),D",
   bytes: "fd cb 0a",
   doc: "d = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16060,7 +16059,7 @@ opcodes.set(0xfdcb0a, {
 // {n:11, x:0, y:1, z:3, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb0b, {
-  name: "rrc (iy+dd),e",
+  name: "RRC (IY+DD),E",
   bytes: "fd cb 0b",
   doc: "e = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16082,7 +16081,7 @@ opcodes.set(0xfdcb0b, {
 // {n:12, x:0, y:1, z:4, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb0c, {
-  name: "rrc (iy+dd),iyh",
+  name: "RRC (IY+DD),IYH",
   bytes: "fd cb 0c",
   doc: "iyh = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16104,7 +16103,7 @@ opcodes.set(0xfdcb0c, {
 // {n:13, x:0, y:1, z:5, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb0d, {
-  name: "rrc (iy+dd),iyl",
+  name: "RRC (IY+DD),IYL",
   bytes: "fd cb 0d",
   doc: "iyl = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16126,7 +16125,7 @@ opcodes.set(0xfdcb0d, {
 // {n:15, x:0, y:1, z:7, p:0, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb0f, {
-  name: "rrc (iy+dd),a",
+  name: "RRC (IY+DD),A",
   bytes: "fd cb 0f",
   doc: "a = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16148,7 +16147,7 @@ opcodes.set(0xfdcb0f, {
 // {n:16, x:0, y:2, z:0, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb10, {
-  name: "rl (iy+dd),b",
+  name: "RL (IY+DD),B",
   bytes: "fd cb 10",
   doc: "b = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16170,7 +16169,7 @@ opcodes.set(0xfdcb10, {
 // {n:17, x:0, y:2, z:1, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb11, {
-  name: "rl (iy+dd),c",
+  name: "RL (IY+DD),C",
   bytes: "fd cb 11",
   doc: "c = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16192,7 +16191,7 @@ opcodes.set(0xfdcb11, {
 // {n:18, x:0, y:2, z:2, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb12, {
-  name: "rl (iy+dd),d",
+  name: "RL (IY+DD),D",
   bytes: "fd cb 12",
   doc: "d = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16214,7 +16213,7 @@ opcodes.set(0xfdcb12, {
 // {n:19, x:0, y:2, z:3, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb13, {
-  name: "rl (iy+dd),e",
+  name: "RL (IY+DD),E",
   bytes: "fd cb 13",
   doc: "e = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16236,7 +16235,7 @@ opcodes.set(0xfdcb13, {
 // {n:20, x:0, y:2, z:4, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb14, {
-  name: "rl (iy+dd),iyh",
+  name: "RL (IY+DD),IYH",
   bytes: "fd cb 14",
   doc: "iyh = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16258,7 +16257,7 @@ opcodes.set(0xfdcb14, {
 // {n:21, x:0, y:2, z:5, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb15, {
-  name: "rl (iy+dd),iyl",
+  name: "RL (IY+DD),IYL",
   bytes: "fd cb 15",
   doc: "iyl = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16280,7 +16279,7 @@ opcodes.set(0xfdcb15, {
 // {n:23, x:0, y:2, z:7, p:1, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb17, {
-  name: "rl (iy+dd),a",
+  name: "RL (IY+DD),A",
   bytes: "fd cb 17",
   doc: "a = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16302,7 +16301,7 @@ opcodes.set(0xfdcb17, {
 // {n:24, x:0, y:3, z:0, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb18, {
-  name: "rr (iy+dd),b",
+  name: "RR (IY+DD),B",
   bytes: "fd cb 18",
   doc: "b = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16324,7 +16323,7 @@ opcodes.set(0xfdcb18, {
 // {n:25, x:0, y:3, z:1, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb19, {
-  name: "rr (iy+dd),c",
+  name: "RR (IY+DD),C",
   bytes: "fd cb 19",
   doc: "c = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16346,7 +16345,7 @@ opcodes.set(0xfdcb19, {
 // {n:26, x:0, y:3, z:2, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb1a, {
-  name: "rr (iy+dd),d",
+  name: "RR (IY+DD),D",
   bytes: "fd cb 1a",
   doc: "d = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16368,7 +16367,7 @@ opcodes.set(0xfdcb1a, {
 // {n:27, x:0, y:3, z:3, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb1b, {
-  name: "rr (iy+dd),e",
+  name: "RR (IY+DD),E",
   bytes: "fd cb 1b",
   doc: "e = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16390,7 +16389,7 @@ opcodes.set(0xfdcb1b, {
 // {n:28, x:0, y:3, z:4, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb1c, {
-  name: "rr (iy+dd),iyh",
+  name: "RR (IY+DD),IYH",
   bytes: "fd cb 1c",
   doc: "iyh = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16412,7 +16411,7 @@ opcodes.set(0xfdcb1c, {
 // {n:29, x:0, y:3, z:5, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb1d, {
-  name: "rr (iy+dd),iyl",
+  name: "RR (IY+DD),IYL",
   bytes: "fd cb 1d",
   doc: "iyl = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16434,7 +16433,7 @@ opcodes.set(0xfdcb1d, {
 // {n:31, x:0, y:3, z:7, p:1, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb1f, {
-  name: "rr (iy+dd),a",
+  name: "RR (IY+DD),A",
   bytes: "fd cb 1f",
   doc: "a = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
@@ -16456,7 +16455,7 @@ opcodes.set(0xfdcb1f, {
 // {n:32, x:0, y:4, z:0, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb20, {
-  name: "sla (iy+dd),b",
+  name: "SLA (IY+DD),B",
   bytes: "fd cb 20",
   doc: "b = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16478,7 +16477,7 @@ opcodes.set(0xfdcb20, {
 // {n:33, x:0, y:4, z:1, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb21, {
-  name: "sla (iy+dd),c",
+  name: "SLA (IY+DD),C",
   bytes: "fd cb 21",
   doc: "c = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16500,7 +16499,7 @@ opcodes.set(0xfdcb21, {
 // {n:34, x:0, y:4, z:2, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb22, {
-  name: "sla (iy+dd),d",
+  name: "SLA (IY+DD),D",
   bytes: "fd cb 22",
   doc: "d = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16522,7 +16521,7 @@ opcodes.set(0xfdcb22, {
 // {n:35, x:0, y:4, z:3, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb23, {
-  name: "sla (iy+dd),e",
+  name: "SLA (IY+DD),E",
   bytes: "fd cb 23",
   doc: "e = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16544,7 +16543,7 @@ opcodes.set(0xfdcb23, {
 // {n:36, x:0, y:4, z:4, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb24, {
-  name: "sla (iy+dd),iyh",
+  name: "SLA (IY+DD),IYH",
   bytes: "fd cb 24",
   doc: "iyh = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16566,7 +16565,7 @@ opcodes.set(0xfdcb24, {
 // {n:37, x:0, y:4, z:5, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb25, {
-  name: "sla (iy+dd),iyl",
+  name: "SLA (IY+DD),IYL",
   bytes: "fd cb 25",
   doc: "iyl = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16588,7 +16587,7 @@ opcodes.set(0xfdcb25, {
 // {n:39, x:0, y:4, z:7, p:2, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb27, {
-  name: "sla (iy+dd),a",
+  name: "SLA (IY+DD),A",
   bytes: "fd cb 27",
   doc: "a = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16610,7 +16609,7 @@ opcodes.set(0xfdcb27, {
 // {n:40, x:0, y:5, z:0, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb28, {
-  name: "sra (iy+dd),b",
+  name: "SRA (IY+DD),B",
   bytes: "fd cb 28",
   doc: "b = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16632,7 +16631,7 @@ opcodes.set(0xfdcb28, {
 // {n:41, x:0, y:5, z:1, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb29, {
-  name: "sra (iy+dd),c",
+  name: "SRA (IY+DD),C",
   bytes: "fd cb 29",
   doc: "c = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16654,7 +16653,7 @@ opcodes.set(0xfdcb29, {
 // {n:42, x:0, y:5, z:2, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb2a, {
-  name: "sra (iy+dd),d",
+  name: "SRA (IY+DD),D",
   bytes: "fd cb 2a",
   doc: "d = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16676,7 +16675,7 @@ opcodes.set(0xfdcb2a, {
 // {n:43, x:0, y:5, z:3, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb2b, {
-  name: "sra (iy+dd),e",
+  name: "SRA (IY+DD),E",
   bytes: "fd cb 2b",
   doc: "e = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16698,7 +16697,7 @@ opcodes.set(0xfdcb2b, {
 // {n:44, x:0, y:5, z:4, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb2c, {
-  name: "sra (iy+dd),iyh",
+  name: "SRA (IY+DD),IYH",
   bytes: "fd cb 2c",
   doc: "iyh = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16720,7 +16719,7 @@ opcodes.set(0xfdcb2c, {
 // {n:45, x:0, y:5, z:5, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb2d, {
-  name: "sra (iy+dd),iyl",
+  name: "SRA (IY+DD),IYL",
   bytes: "fd cb 2d",
   doc: "iyl = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16742,7 +16741,7 @@ opcodes.set(0xfdcb2d, {
 // {n:47, x:0, y:5, z:7, p:2, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb2f, {
-  name: "sra (iy+dd),a",
+  name: "SRA (IY+DD),A",
   bytes: "fd cb 2f",
   doc: "a = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
@@ -16764,7 +16763,7 @@ opcodes.set(0xfdcb2f, {
 // {n:48, x:0, y:6, z:0, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb30, {
-  name: "sll (iy+dd),b",
+  name: "SLL (IY+DD),B",
   bytes: "fd cb 30",
   doc: "b = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16786,7 +16785,7 @@ opcodes.set(0xfdcb30, {
 // {n:49, x:0, y:6, z:1, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb31, {
-  name: "sll (iy+dd),c",
+  name: "SLL (IY+DD),C",
   bytes: "fd cb 31",
   doc: "c = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16808,7 +16807,7 @@ opcodes.set(0xfdcb31, {
 // {n:50, x:0, y:6, z:2, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb32, {
-  name: "sll (iy+dd),d",
+  name: "SLL (IY+DD),D",
   bytes: "fd cb 32",
   doc: "d = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16830,7 +16829,7 @@ opcodes.set(0xfdcb32, {
 // {n:51, x:0, y:6, z:3, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb33, {
-  name: "sll (iy+dd),e",
+  name: "SLL (IY+DD),E",
   bytes: "fd cb 33",
   doc: "e = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16852,7 +16851,7 @@ opcodes.set(0xfdcb33, {
 // {n:52, x:0, y:6, z:4, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb34, {
-  name: "sll (iy+dd),iyh",
+  name: "SLL (IY+DD),IYH",
   bytes: "fd cb 34",
   doc: "iyh = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16874,7 +16873,7 @@ opcodes.set(0xfdcb34, {
 // {n:53, x:0, y:6, z:5, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb35, {
-  name: "sll (iy+dd),iyl",
+  name: "SLL (IY+DD),IYL",
   bytes: "fd cb 35",
   doc: "iyl = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16896,7 +16895,7 @@ opcodes.set(0xfdcb35, {
 // {n:55, x:0, y:6, z:7, p:3, q:0}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb37, {
-  name: "sll (iy+dd),a",
+  name: "SLL (IY+DD),A",
   bytes: "fd cb 37",
   doc: "a = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16918,7 +16917,7 @@ opcodes.set(0xfdcb37, {
 // {n:56, x:0, y:7, z:0, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb38, {
-  name: "srl (iy+dd),b",
+  name: "SRL (IY+DD),B",
   bytes: "fd cb 38",
   doc: "b = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16940,7 +16939,7 @@ opcodes.set(0xfdcb38, {
 // {n:57, x:0, y:7, z:1, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb39, {
-  name: "srl (iy+dd),c",
+  name: "SRL (IY+DD),C",
   bytes: "fd cb 39",
   doc: "c = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16962,7 +16961,7 @@ opcodes.set(0xfdcb39, {
 // {n:58, x:0, y:7, z:2, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb3a, {
-  name: "srl (iy+dd),d",
+  name: "SRL (IY+DD),D",
   bytes: "fd cb 3a",
   doc: "d = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -16984,7 +16983,7 @@ opcodes.set(0xfdcb3a, {
 // {n:59, x:0, y:7, z:3, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb3b, {
-  name: "srl (iy+dd),e",
+  name: "SRL (IY+DD),E",
   bytes: "fd cb 3b",
   doc: "e = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -17006,7 +17005,7 @@ opcodes.set(0xfdcb3b, {
 // {n:60, x:0, y:7, z:4, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb3c, {
-  name: "srl (iy+dd),iyh",
+  name: "SRL (IY+DD),IYH",
   bytes: "fd cb 3c",
   doc: "iyh = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -17028,7 +17027,7 @@ opcodes.set(0xfdcb3c, {
 // {n:61, x:0, y:7, z:5, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb3d, {
-  name: "srl (iy+dd),iyl",
+  name: "SRL (IY+DD),IYL",
   bytes: "fd cb 3d",
   doc: "iyl = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -17050,7 +17049,7 @@ opcodes.set(0xfdcb3d, {
 // {n:63, x:0, y:7, z:7, p:3, q:1}
 // $ROT ($RI+dd),$RZ
 opcodes.set(0xfdcb3f, {
-  name: "srl (iy+dd),a",
+  name: "SRL (IY+DD),A",
   bytes: "fd cb 3f",
   doc: "a = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
@@ -17072,7 +17071,7 @@ opcodes.set(0xfdcb3f, {
 // {n:70, x:1, y:0, z:6, p:0, q:0}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xfdcb46, {
-  name: "BIT 0,(iy+dd)",
+  name: "BIT 0,(IY+DD)",
   bytes: "fd cb 46",
   doc: "f.Z = bit 0 of (iy+dd)",
   group: "Set",
@@ -17089,7 +17088,7 @@ opcodes.set(0xfdcb46, {
 // {n:78, x:1, y:1, z:6, p:0, q:1}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xfdcb4e, {
-  name: "BIT 1,(iy+dd)",
+  name: "BIT 1,(IY+DD)",
   bytes: "fd cb 4e",
   doc: "f.Z = bit 1 of (iy+dd)",
   group: "Set",
@@ -17106,7 +17105,7 @@ opcodes.set(0xfdcb4e, {
 // {n:86, x:1, y:2, z:6, p:1, q:0}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xfdcb56, {
-  name: "BIT 2,(iy+dd)",
+  name: "BIT 2,(IY+DD)",
   bytes: "fd cb 56",
   doc: "f.Z = bit 2 of (iy+dd)",
   group: "Set",
@@ -17123,7 +17122,7 @@ opcodes.set(0xfdcb56, {
 // {n:94, x:1, y:3, z:6, p:1, q:1}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xfdcb5e, {
-  name: "BIT 3,(iy+dd)",
+  name: "BIT 3,(IY+DD)",
   bytes: "fd cb 5e",
   doc: "f.Z = bit 3 of (iy+dd)",
   group: "Set",
@@ -17140,7 +17139,7 @@ opcodes.set(0xfdcb5e, {
 // {n:102, x:1, y:4, z:6, p:2, q:0}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xfdcb66, {
-  name: "BIT 4,(iy+dd)",
+  name: "BIT 4,(IY+DD)",
   bytes: "fd cb 66",
   doc: "f.Z = bit 4 of (iy+dd)",
   group: "Set",
@@ -17157,7 +17156,7 @@ opcodes.set(0xfdcb66, {
 // {n:110, x:1, y:5, z:6, p:2, q:1}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xfdcb6e, {
-  name: "BIT 5,(iy+dd)",
+  name: "BIT 5,(IY+DD)",
   bytes: "fd cb 6e",
   doc: "f.Z = bit 5 of (iy+dd)",
   group: "Set",
@@ -17174,7 +17173,7 @@ opcodes.set(0xfdcb6e, {
 // {n:118, x:1, y:6, z:6, p:3, q:0}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xfdcb76, {
-  name: "BIT 6,(iy+dd)",
+  name: "BIT 6,(IY+DD)",
   bytes: "fd cb 76",
   doc: "f.Z = bit 6 of (iy+dd)",
   group: "Set",
@@ -17191,7 +17190,7 @@ opcodes.set(0xfdcb76, {
 // {n:126, x:1, y:7, z:6, p:3, q:1}
 // BIT $NY, ($RI+dd)
 opcodes.set(0xfdcb7e, {
-  name: "BIT 7,(iy+dd)",
+  name: "BIT 7,(IY+DD)",
   bytes: "fd cb 7e",
   doc: "f.Z = bit 7 of (iy+dd)",
   group: "Set",
@@ -17208,7 +17207,7 @@ opcodes.set(0xfdcb7e, {
 // {n:128, x:2, y:0, z:0, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb80, {
-  name: "RES 0,(iy+dd),b",
+  name: "RES 0,(IY+DD),B",
   bytes: "fd cb 80",
   doc: "Reset bit 0 of (iy+dd) load into b",
   group: "Set",
@@ -17229,7 +17228,7 @@ opcodes.set(0xfdcb80, {
 // {n:129, x:2, y:0, z:1, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb81, {
-  name: "RES 0,(iy+dd),c",
+  name: "RES 0,(IY+DD),C",
   bytes: "fd cb 81",
   doc: "Reset bit 0 of (iy+dd) load into c",
   group: "Set",
@@ -17250,7 +17249,7 @@ opcodes.set(0xfdcb81, {
 // {n:130, x:2, y:0, z:2, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb82, {
-  name: "RES 0,(iy+dd),d",
+  name: "RES 0,(IY+DD),D",
   bytes: "fd cb 82",
   doc: "Reset bit 0 of (iy+dd) load into d",
   group: "Set",
@@ -17271,7 +17270,7 @@ opcodes.set(0xfdcb82, {
 // {n:131, x:2, y:0, z:3, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb83, {
-  name: "RES 0,(iy+dd),e",
+  name: "RES 0,(IY+DD),E",
   bytes: "fd cb 83",
   doc: "Reset bit 0 of (iy+dd) load into e",
   group: "Set",
@@ -17292,7 +17291,7 @@ opcodes.set(0xfdcb83, {
 // {n:132, x:2, y:0, z:4, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb84, {
-  name: "RES 0,(iy+dd),h",
+  name: "RES 0,(IY+DD),H",
   bytes: "fd cb 84",
   doc: "Reset bit 0 of (iy+dd) load into h",
   group: "Set",
@@ -17313,7 +17312,7 @@ opcodes.set(0xfdcb84, {
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb85, {
-  name: "RES 0,(iy+dd),l",
+  name: "RES 0,(IY+DD),L",
   bytes: "fd cb 85",
   doc: "Reset bit 0 of (iy+dd) load into l",
   group: "Set",
@@ -17334,7 +17333,7 @@ opcodes.set(0xfdcb85, {
 // {n:134, x:2, y:0, z:6, p:0, q:0}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcb86, {
-  name: "RES 0,(iy+dd),(iy+dd)",
+  name: "RES 0,(IY+DD),(IY+DD)",
   bytes: "fd cb 86",
   doc: "Reset bit 0 of (iy+dd) load into (iy+dd)",
   group: "Set",
@@ -17354,7 +17353,7 @@ opcodes.set(0xfdcb86, {
 // {n:135, x:2, y:0, z:7, p:0, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb87, {
-  name: "RES 0,(iy+dd),a",
+  name: "RES 0,(IY+DD),A",
   bytes: "fd cb 87",
   doc: "Reset bit 0 of (iy+dd) load into a",
   group: "Set",
@@ -17375,7 +17374,7 @@ opcodes.set(0xfdcb87, {
 // {n:136, x:2, y:1, z:0, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb88, {
-  name: "RES 1,(iy+dd),b",
+  name: "RES 1,(IY+DD),B",
   bytes: "fd cb 88",
   doc: "Reset bit 1 of (iy+dd) load into b",
   group: "Set",
@@ -17396,7 +17395,7 @@ opcodes.set(0xfdcb88, {
 // {n:137, x:2, y:1, z:1, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb89, {
-  name: "RES 1,(iy+dd),c",
+  name: "RES 1,(IY+DD),C",
   bytes: "fd cb 89",
   doc: "Reset bit 1 of (iy+dd) load into c",
   group: "Set",
@@ -17417,7 +17416,7 @@ opcodes.set(0xfdcb89, {
 // {n:138, x:2, y:1, z:2, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb8a, {
-  name: "RES 1,(iy+dd),d",
+  name: "RES 1,(IY+DD),D",
   bytes: "fd cb 8a",
   doc: "Reset bit 1 of (iy+dd) load into d",
   group: "Set",
@@ -17438,7 +17437,7 @@ opcodes.set(0xfdcb8a, {
 // {n:139, x:2, y:1, z:3, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb8b, {
-  name: "RES 1,(iy+dd),e",
+  name: "RES 1,(IY+DD),E",
   bytes: "fd cb 8b",
   doc: "Reset bit 1 of (iy+dd) load into e",
   group: "Set",
@@ -17459,7 +17458,7 @@ opcodes.set(0xfdcb8b, {
 // {n:140, x:2, y:1, z:4, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb8c, {
-  name: "RES 1,(iy+dd),h",
+  name: "RES 1,(IY+DD),H",
   bytes: "fd cb 8c",
   doc: "Reset bit 1 of (iy+dd) load into h",
   group: "Set",
@@ -17480,7 +17479,7 @@ opcodes.set(0xfdcb8c, {
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb8d, {
-  name: "RES 1,(iy+dd),l",
+  name: "RES 1,(IY+DD),L",
   bytes: "fd cb 8d",
   doc: "Reset bit 1 of (iy+dd) load into l",
   group: "Set",
@@ -17501,7 +17500,7 @@ opcodes.set(0xfdcb8d, {
 // {n:142, x:2, y:1, z:6, p:0, q:1}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcb8e, {
-  name: "RES 1,(iy+dd),(iy+dd)",
+  name: "RES 1,(IY+DD),(IY+DD)",
   bytes: "fd cb 8e",
   doc: "Reset bit 1 of (iy+dd) load into (iy+dd)",
   group: "Set",
@@ -17521,7 +17520,7 @@ opcodes.set(0xfdcb8e, {
 // {n:143, x:2, y:1, z:7, p:0, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb8f, {
-  name: "RES 1,(iy+dd),a",
+  name: "RES 1,(IY+DD),A",
   bytes: "fd cb 8f",
   doc: "Reset bit 1 of (iy+dd) load into a",
   group: "Set",
@@ -17542,7 +17541,7 @@ opcodes.set(0xfdcb8f, {
 // {n:144, x:2, y:2, z:0, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb90, {
-  name: "RES 2,(iy+dd),b",
+  name: "RES 2,(IY+DD),B",
   bytes: "fd cb 90",
   doc: "Reset bit 2 of (iy+dd) load into b",
   group: "Set",
@@ -17563,7 +17562,7 @@ opcodes.set(0xfdcb90, {
 // {n:145, x:2, y:2, z:1, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb91, {
-  name: "RES 2,(iy+dd),c",
+  name: "RES 2,(IY+DD),C",
   bytes: "fd cb 91",
   doc: "Reset bit 2 of (iy+dd) load into c",
   group: "Set",
@@ -17584,7 +17583,7 @@ opcodes.set(0xfdcb91, {
 // {n:146, x:2, y:2, z:2, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb92, {
-  name: "RES 2,(iy+dd),d",
+  name: "RES 2,(IY+DD),D",
   bytes: "fd cb 92",
   doc: "Reset bit 2 of (iy+dd) load into d",
   group: "Set",
@@ -17605,7 +17604,7 @@ opcodes.set(0xfdcb92, {
 // {n:147, x:2, y:2, z:3, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb93, {
-  name: "RES 2,(iy+dd),e",
+  name: "RES 2,(IY+DD),E",
   bytes: "fd cb 93",
   doc: "Reset bit 2 of (iy+dd) load into e",
   group: "Set",
@@ -17626,7 +17625,7 @@ opcodes.set(0xfdcb93, {
 // {n:148, x:2, y:2, z:4, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb94, {
-  name: "RES 2,(iy+dd),h",
+  name: "RES 2,(IY+DD),H",
   bytes: "fd cb 94",
   doc: "Reset bit 2 of (iy+dd) load into h",
   group: "Set",
@@ -17647,7 +17646,7 @@ opcodes.set(0xfdcb94, {
 // {n:149, x:2, y:2, z:5, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb95, {
-  name: "RES 2,(iy+dd),l",
+  name: "RES 2,(IY+DD),L",
   bytes: "fd cb 95",
   doc: "Reset bit 2 of (iy+dd) load into l",
   group: "Set",
@@ -17668,7 +17667,7 @@ opcodes.set(0xfdcb95, {
 // {n:150, x:2, y:2, z:6, p:1, q:0}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcb96, {
-  name: "RES 2,(iy+dd),(iy+dd)",
+  name: "RES 2,(IY+DD),(IY+DD)",
   bytes: "fd cb 96",
   doc: "Reset bit 2 of (iy+dd) load into (iy+dd)",
   group: "Set",
@@ -17688,7 +17687,7 @@ opcodes.set(0xfdcb96, {
 // {n:151, x:2, y:2, z:7, p:1, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb97, {
-  name: "RES 2,(iy+dd),a",
+  name: "RES 2,(IY+DD),A",
   bytes: "fd cb 97",
   doc: "Reset bit 2 of (iy+dd) load into a",
   group: "Set",
@@ -17709,7 +17708,7 @@ opcodes.set(0xfdcb97, {
 // {n:152, x:2, y:3, z:0, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb98, {
-  name: "RES 3,(iy+dd),b",
+  name: "RES 3,(IY+DD),B",
   bytes: "fd cb 98",
   doc: "Reset bit 3 of (iy+dd) load into b",
   group: "Set",
@@ -17730,7 +17729,7 @@ opcodes.set(0xfdcb98, {
 // {n:153, x:2, y:3, z:1, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb99, {
-  name: "RES 3,(iy+dd),c",
+  name: "RES 3,(IY+DD),C",
   bytes: "fd cb 99",
   doc: "Reset bit 3 of (iy+dd) load into c",
   group: "Set",
@@ -17751,7 +17750,7 @@ opcodes.set(0xfdcb99, {
 // {n:154, x:2, y:3, z:2, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb9a, {
-  name: "RES 3,(iy+dd),d",
+  name: "RES 3,(IY+DD),D",
   bytes: "fd cb 9a",
   doc: "Reset bit 3 of (iy+dd) load into d",
   group: "Set",
@@ -17772,7 +17771,7 @@ opcodes.set(0xfdcb9a, {
 // {n:155, x:2, y:3, z:3, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb9b, {
-  name: "RES 3,(iy+dd),e",
+  name: "RES 3,(IY+DD),E",
   bytes: "fd cb 9b",
   doc: "Reset bit 3 of (iy+dd) load into e",
   group: "Set",
@@ -17793,7 +17792,7 @@ opcodes.set(0xfdcb9b, {
 // {n:156, x:2, y:3, z:4, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb9c, {
-  name: "RES 3,(iy+dd),h",
+  name: "RES 3,(IY+DD),H",
   bytes: "fd cb 9c",
   doc: "Reset bit 3 of (iy+dd) load into h",
   group: "Set",
@@ -17814,7 +17813,7 @@ opcodes.set(0xfdcb9c, {
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb9d, {
-  name: "RES 3,(iy+dd),l",
+  name: "RES 3,(IY+DD),L",
   bytes: "fd cb 9d",
   doc: "Reset bit 3 of (iy+dd) load into l",
   group: "Set",
@@ -17835,7 +17834,7 @@ opcodes.set(0xfdcb9d, {
 // {n:158, x:2, y:3, z:6, p:1, q:1}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcb9e, {
-  name: "RES 3,(iy+dd),(iy+dd)",
+  name: "RES 3,(IY+DD),(IY+DD)",
   bytes: "fd cb 9e",
   doc: "Reset bit 3 of (iy+dd) load into (iy+dd)",
   group: "Set",
@@ -17855,7 +17854,7 @@ opcodes.set(0xfdcb9e, {
 // {n:159, x:2, y:3, z:7, p:1, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcb9f, {
-  name: "RES 3,(iy+dd),a",
+  name: "RES 3,(IY+DD),A",
   bytes: "fd cb 9f",
   doc: "Reset bit 3 of (iy+dd) load into a",
   group: "Set",
@@ -17876,7 +17875,7 @@ opcodes.set(0xfdcb9f, {
 // {n:160, x:2, y:4, z:0, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba0, {
-  name: "RES 4,(iy+dd),b",
+  name: "RES 4,(IY+DD),B",
   bytes: "fd cb a0",
   doc: "Reset bit 4 of (iy+dd) load into b",
   group: "Set",
@@ -17897,7 +17896,7 @@ opcodes.set(0xfdcba0, {
 // {n:161, x:2, y:4, z:1, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba1, {
-  name: "RES 4,(iy+dd),c",
+  name: "RES 4,(IY+DD),C",
   bytes: "fd cb a1",
   doc: "Reset bit 4 of (iy+dd) load into c",
   group: "Set",
@@ -17918,7 +17917,7 @@ opcodes.set(0xfdcba1, {
 // {n:162, x:2, y:4, z:2, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba2, {
-  name: "RES 4,(iy+dd),d",
+  name: "RES 4,(IY+DD),D",
   bytes: "fd cb a2",
   doc: "Reset bit 4 of (iy+dd) load into d",
   group: "Set",
@@ -17939,7 +17938,7 @@ opcodes.set(0xfdcba2, {
 // {n:163, x:2, y:4, z:3, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba3, {
-  name: "RES 4,(iy+dd),e",
+  name: "RES 4,(IY+DD),E",
   bytes: "fd cb a3",
   doc: "Reset bit 4 of (iy+dd) load into e",
   group: "Set",
@@ -17960,7 +17959,7 @@ opcodes.set(0xfdcba3, {
 // {n:164, x:2, y:4, z:4, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba4, {
-  name: "RES 4,(iy+dd),h",
+  name: "RES 4,(IY+DD),H",
   bytes: "fd cb a4",
   doc: "Reset bit 4 of (iy+dd) load into h",
   group: "Set",
@@ -17981,7 +17980,7 @@ opcodes.set(0xfdcba4, {
 // {n:165, x:2, y:4, z:5, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba5, {
-  name: "RES 4,(iy+dd),l",
+  name: "RES 4,(IY+DD),L",
   bytes: "fd cb a5",
   doc: "Reset bit 4 of (iy+dd) load into l",
   group: "Set",
@@ -18002,7 +18001,7 @@ opcodes.set(0xfdcba5, {
 // {n:166, x:2, y:4, z:6, p:2, q:0}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcba6, {
-  name: "RES 4,(iy+dd),(iy+dd)",
+  name: "RES 4,(IY+DD),(IY+DD)",
   bytes: "fd cb a6",
   doc: "Reset bit 4 of (iy+dd) load into (iy+dd)",
   group: "Set",
@@ -18022,7 +18021,7 @@ opcodes.set(0xfdcba6, {
 // {n:167, x:2, y:4, z:7, p:2, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba7, {
-  name: "RES 4,(iy+dd),a",
+  name: "RES 4,(IY+DD),A",
   bytes: "fd cb a7",
   doc: "Reset bit 4 of (iy+dd) load into a",
   group: "Set",
@@ -18043,7 +18042,7 @@ opcodes.set(0xfdcba7, {
 // {n:168, x:2, y:5, z:0, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba8, {
-  name: "RES 5,(iy+dd),b",
+  name: "RES 5,(IY+DD),B",
   bytes: "fd cb a8",
   doc: "Reset bit 5 of (iy+dd) load into b",
   group: "Set",
@@ -18064,7 +18063,7 @@ opcodes.set(0xfdcba8, {
 // {n:169, x:2, y:5, z:1, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcba9, {
-  name: "RES 5,(iy+dd),c",
+  name: "RES 5,(IY+DD),C",
   bytes: "fd cb a9",
   doc: "Reset bit 5 of (iy+dd) load into c",
   group: "Set",
@@ -18085,7 +18084,7 @@ opcodes.set(0xfdcba9, {
 // {n:170, x:2, y:5, z:2, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbaa, {
-  name: "RES 5,(iy+dd),d",
+  name: "RES 5,(IY+DD),D",
   bytes: "fd cb aa",
   doc: "Reset bit 5 of (iy+dd) load into d",
   group: "Set",
@@ -18106,7 +18105,7 @@ opcodes.set(0xfdcbaa, {
 // {n:171, x:2, y:5, z:3, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbab, {
-  name: "RES 5,(iy+dd),e",
+  name: "RES 5,(IY+DD),E",
   bytes: "fd cb ab",
   doc: "Reset bit 5 of (iy+dd) load into e",
   group: "Set",
@@ -18127,7 +18126,7 @@ opcodes.set(0xfdcbab, {
 // {n:172, x:2, y:5, z:4, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbac, {
-  name: "RES 5,(iy+dd),h",
+  name: "RES 5,(IY+DD),H",
   bytes: "fd cb ac",
   doc: "Reset bit 5 of (iy+dd) load into h",
   group: "Set",
@@ -18148,7 +18147,7 @@ opcodes.set(0xfdcbac, {
 // {n:173, x:2, y:5, z:5, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbad, {
-  name: "RES 5,(iy+dd),l",
+  name: "RES 5,(IY+DD),L",
   bytes: "fd cb ad",
   doc: "Reset bit 5 of (iy+dd) load into l",
   group: "Set",
@@ -18169,7 +18168,7 @@ opcodes.set(0xfdcbad, {
 // {n:174, x:2, y:5, z:6, p:2, q:1}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbae, {
-  name: "RES 5,(iy+dd),(iy+dd)",
+  name: "RES 5,(IY+DD),(IY+DD)",
   bytes: "fd cb ae",
   doc: "Reset bit 5 of (iy+dd) load into (iy+dd)",
   group: "Set",
@@ -18189,7 +18188,7 @@ opcodes.set(0xfdcbae, {
 // {n:175, x:2, y:5, z:7, p:2, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbaf, {
-  name: "RES 5,(iy+dd),a",
+  name: "RES 5,(IY+DD),A",
   bytes: "fd cb af",
   doc: "Reset bit 5 of (iy+dd) load into a",
   group: "Set",
@@ -18210,7 +18209,7 @@ opcodes.set(0xfdcbaf, {
 // {n:176, x:2, y:6, z:0, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb0, {
-  name: "RES 6,(iy+dd),b",
+  name: "RES 6,(IY+DD),B",
   bytes: "fd cb b0",
   doc: "Reset bit 6 of (iy+dd) load into b",
   group: "Set",
@@ -18231,7 +18230,7 @@ opcodes.set(0xfdcbb0, {
 // {n:177, x:2, y:6, z:1, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb1, {
-  name: "RES 6,(iy+dd),c",
+  name: "RES 6,(IY+DD),C",
   bytes: "fd cb b1",
   doc: "Reset bit 6 of (iy+dd) load into c",
   group: "Set",
@@ -18252,7 +18251,7 @@ opcodes.set(0xfdcbb1, {
 // {n:178, x:2, y:6, z:2, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb2, {
-  name: "RES 6,(iy+dd),d",
+  name: "RES 6,(IY+DD),D",
   bytes: "fd cb b2",
   doc: "Reset bit 6 of (iy+dd) load into d",
   group: "Set",
@@ -18273,7 +18272,7 @@ opcodes.set(0xfdcbb2, {
 // {n:179, x:2, y:6, z:3, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb3, {
-  name: "RES 6,(iy+dd),e",
+  name: "RES 6,(IY+DD),E",
   bytes: "fd cb b3",
   doc: "Reset bit 6 of (iy+dd) load into e",
   group: "Set",
@@ -18294,7 +18293,7 @@ opcodes.set(0xfdcbb3, {
 // {n:180, x:2, y:6, z:4, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb4, {
-  name: "RES 6,(iy+dd),h",
+  name: "RES 6,(IY+DD),H",
   bytes: "fd cb b4",
   doc: "Reset bit 6 of (iy+dd) load into h",
   group: "Set",
@@ -18315,7 +18314,7 @@ opcodes.set(0xfdcbb4, {
 // {n:181, x:2, y:6, z:5, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb5, {
-  name: "RES 6,(iy+dd),l",
+  name: "RES 6,(IY+DD),L",
   bytes: "fd cb b5",
   doc: "Reset bit 6 of (iy+dd) load into l",
   group: "Set",
@@ -18336,7 +18335,7 @@ opcodes.set(0xfdcbb5, {
 // {n:182, x:2, y:6, z:6, p:3, q:0}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbb6, {
-  name: "RES 6,(iy+dd),(iy+dd)",
+  name: "RES 6,(IY+DD),(IY+DD)",
   bytes: "fd cb b6",
   doc: "Reset bit 6 of (iy+dd) load into (iy+dd)",
   group: "Set",
@@ -18356,7 +18355,7 @@ opcodes.set(0xfdcbb6, {
 // {n:183, x:2, y:6, z:7, p:3, q:0}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb7, {
-  name: "RES 6,(iy+dd),a",
+  name: "RES 6,(IY+DD),A",
   bytes: "fd cb b7",
   doc: "Reset bit 6 of (iy+dd) load into a",
   group: "Set",
@@ -18377,7 +18376,7 @@ opcodes.set(0xfdcbb7, {
 // {n:184, x:2, y:7, z:0, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb8, {
-  name: "RES 7,(iy+dd),b",
+  name: "RES 7,(IY+DD),B",
   bytes: "fd cb b8",
   doc: "Reset bit 7 of (iy+dd) load into b",
   group: "Set",
@@ -18398,7 +18397,7 @@ opcodes.set(0xfdcbb8, {
 // {n:185, x:2, y:7, z:1, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbb9, {
-  name: "RES 7,(iy+dd),c",
+  name: "RES 7,(IY+DD),C",
   bytes: "fd cb b9",
   doc: "Reset bit 7 of (iy+dd) load into c",
   group: "Set",
@@ -18419,7 +18418,7 @@ opcodes.set(0xfdcbb9, {
 // {n:186, x:2, y:7, z:2, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbba, {
-  name: "RES 7,(iy+dd),d",
+  name: "RES 7,(IY+DD),D",
   bytes: "fd cb ba",
   doc: "Reset bit 7 of (iy+dd) load into d",
   group: "Set",
@@ -18440,7 +18439,7 @@ opcodes.set(0xfdcbba, {
 // {n:187, x:2, y:7, z:3, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbbb, {
-  name: "RES 7,(iy+dd),e",
+  name: "RES 7,(IY+DD),E",
   bytes: "fd cb bb",
   doc: "Reset bit 7 of (iy+dd) load into e",
   group: "Set",
@@ -18461,7 +18460,7 @@ opcodes.set(0xfdcbbb, {
 // {n:188, x:2, y:7, z:4, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbbc, {
-  name: "RES 7,(iy+dd),h",
+  name: "RES 7,(IY+DD),H",
   bytes: "fd cb bc",
   doc: "Reset bit 7 of (iy+dd) load into h",
   group: "Set",
@@ -18482,7 +18481,7 @@ opcodes.set(0xfdcbbc, {
 // {n:189, x:2, y:7, z:5, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbbd, {
-  name: "RES 7,(iy+dd),l",
+  name: "RES 7,(IY+DD),L",
   bytes: "fd cb bd",
   doc: "Reset bit 7 of (iy+dd) load into l",
   group: "Set",
@@ -18503,7 +18502,7 @@ opcodes.set(0xfdcbbd, {
 // {n:190, x:2, y:7, z:6, p:3, q:1}
 // RES $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbbe, {
-  name: "RES 7,(iy+dd),(iy+dd)",
+  name: "RES 7,(IY+DD),(IY+DD)",
   bytes: "fd cb be",
   doc: "Reset bit 7 of (iy+dd) load into (iy+dd)",
   group: "Set",
@@ -18523,7 +18522,7 @@ opcodes.set(0xfdcbbe, {
 // {n:191, x:2, y:7, z:7, p:3, q:1}
 // RES $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbbf, {
-  name: "RES 7,(iy+dd),a",
+  name: "RES 7,(IY+DD),A",
   bytes: "fd cb bf",
   doc: "Reset bit 7 of (iy+dd) load into a",
   group: "Set",
@@ -18544,7 +18543,7 @@ opcodes.set(0xfdcbbf, {
 // {n:192, x:3, y:0, z:0, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc0, {
-  name: "SET 0,(iy+dd),b",
+  name: "SET 0,(IY+DD),B",
   bytes: "fd cb c0",
   doc: "ld b, (set 0, (iy+dd))",
   group: "Set",
@@ -18565,7 +18564,7 @@ opcodes.set(0xfdcbc0, {
 // {n:193, x:3, y:0, z:1, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc1, {
-  name: "SET 0,(iy+dd),c",
+  name: "SET 0,(IY+DD),C",
   bytes: "fd cb c1",
   doc: "ld c, (set 0, (iy+dd))",
   group: "Set",
@@ -18586,7 +18585,7 @@ opcodes.set(0xfdcbc1, {
 // {n:194, x:3, y:0, z:2, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc2, {
-  name: "SET 0,(iy+dd),d",
+  name: "SET 0,(IY+DD),D",
   bytes: "fd cb c2",
   doc: "ld d, (set 0, (iy+dd))",
   group: "Set",
@@ -18607,7 +18606,7 @@ opcodes.set(0xfdcbc2, {
 // {n:195, x:3, y:0, z:3, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc3, {
-  name: "SET 0,(iy+dd),e",
+  name: "SET 0,(IY+DD),E",
   bytes: "fd cb c3",
   doc: "ld e, (set 0, (iy+dd))",
   group: "Set",
@@ -18628,7 +18627,7 @@ opcodes.set(0xfdcbc3, {
 // {n:196, x:3, y:0, z:4, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc4, {
-  name: "SET 0,(iy+dd),h",
+  name: "SET 0,(IY+DD),H",
   bytes: "fd cb c4",
   doc: "ld h, (set 0, (iy+dd))",
   group: "Set",
@@ -18649,7 +18648,7 @@ opcodes.set(0xfdcbc4, {
 // {n:197, x:3, y:0, z:5, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc5, {
-  name: "SET 0,(iy+dd),l",
+  name: "SET 0,(IY+DD),L",
   bytes: "fd cb c5",
   doc: "ld l, (set 0, (iy+dd))",
   group: "Set",
@@ -18670,7 +18669,7 @@ opcodes.set(0xfdcbc5, {
 // {n:198, x:3, y:0, z:6, p:0, q:0}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbc6, {
-  name: "SET 0,(iy+dd),(iy+dd)",
+  name: "SET 0,(IY+DD),(IY+DD)",
   bytes: "fd cb c6",
   doc: "ld (iy+dd), (set 0, (iy+dd))",
   group: "Set",
@@ -18690,7 +18689,7 @@ opcodes.set(0xfdcbc6, {
 // {n:199, x:3, y:0, z:7, p:0, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc7, {
-  name: "SET 0,(iy+dd),a",
+  name: "SET 0,(IY+DD),A",
   bytes: "fd cb c7",
   doc: "ld a, (set 0, (iy+dd))",
   group: "Set",
@@ -18711,7 +18710,7 @@ opcodes.set(0xfdcbc7, {
 // {n:200, x:3, y:1, z:0, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc8, {
-  name: "SET 1,(iy+dd),b",
+  name: "SET 1,(IY+DD),B",
   bytes: "fd cb c8",
   doc: "ld b, (set 1, (iy+dd))",
   group: "Set",
@@ -18732,7 +18731,7 @@ opcodes.set(0xfdcbc8, {
 // {n:201, x:3, y:1, z:1, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbc9, {
-  name: "SET 1,(iy+dd),c",
+  name: "SET 1,(IY+DD),C",
   bytes: "fd cb c9",
   doc: "ld c, (set 1, (iy+dd))",
   group: "Set",
@@ -18753,7 +18752,7 @@ opcodes.set(0xfdcbc9, {
 // {n:202, x:3, y:1, z:2, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbca, {
-  name: "SET 1,(iy+dd),d",
+  name: "SET 1,(IY+DD),D",
   bytes: "fd cb ca",
   doc: "ld d, (set 1, (iy+dd))",
   group: "Set",
@@ -18774,7 +18773,7 @@ opcodes.set(0xfdcbca, {
 // {n:203, x:3, y:1, z:3, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbcb, {
-  name: "SET 1,(iy+dd),e",
+  name: "SET 1,(IY+DD),E",
   bytes: "fd cb cb",
   doc: "ld e, (set 1, (iy+dd))",
   group: "Set",
@@ -18795,7 +18794,7 @@ opcodes.set(0xfdcbcb, {
 // {n:204, x:3, y:1, z:4, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbcc, {
-  name: "SET 1,(iy+dd),h",
+  name: "SET 1,(IY+DD),H",
   bytes: "fd cb cc",
   doc: "ld h, (set 1, (iy+dd))",
   group: "Set",
@@ -18816,7 +18815,7 @@ opcodes.set(0xfdcbcc, {
 // {n:205, x:3, y:1, z:5, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbcd, {
-  name: "SET 1,(iy+dd),l",
+  name: "SET 1,(IY+DD),L",
   bytes: "fd cb cd",
   doc: "ld l, (set 1, (iy+dd))",
   group: "Set",
@@ -18837,7 +18836,7 @@ opcodes.set(0xfdcbcd, {
 // {n:206, x:3, y:1, z:6, p:0, q:1}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbce, {
-  name: "SET 1,(iy+dd),(iy+dd)",
+  name: "SET 1,(IY+DD),(IY+DD)",
   bytes: "fd cb ce",
   doc: "ld (iy+dd), (set 1, (iy+dd))",
   group: "Set",
@@ -18857,7 +18856,7 @@ opcodes.set(0xfdcbce, {
 // {n:207, x:3, y:1, z:7, p:0, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbcf, {
-  name: "SET 1,(iy+dd),a",
+  name: "SET 1,(IY+DD),A",
   bytes: "fd cb cf",
   doc: "ld a, (set 1, (iy+dd))",
   group: "Set",
@@ -18878,7 +18877,7 @@ opcodes.set(0xfdcbcf, {
 // {n:208, x:3, y:2, z:0, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd0, {
-  name: "SET 2,(iy+dd),b",
+  name: "SET 2,(IY+DD),B",
   bytes: "fd cb d0",
   doc: "ld b, (set 2, (iy+dd))",
   group: "Set",
@@ -18899,7 +18898,7 @@ opcodes.set(0xfdcbd0, {
 // {n:209, x:3, y:2, z:1, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd1, {
-  name: "SET 2,(iy+dd),c",
+  name: "SET 2,(IY+DD),C",
   bytes: "fd cb d1",
   doc: "ld c, (set 2, (iy+dd))",
   group: "Set",
@@ -18920,7 +18919,7 @@ opcodes.set(0xfdcbd1, {
 // {n:210, x:3, y:2, z:2, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd2, {
-  name: "SET 2,(iy+dd),d",
+  name: "SET 2,(IY+DD),D",
   bytes: "fd cb d2",
   doc: "ld d, (set 2, (iy+dd))",
   group: "Set",
@@ -18941,7 +18940,7 @@ opcodes.set(0xfdcbd2, {
 // {n:211, x:3, y:2, z:3, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd3, {
-  name: "SET 2,(iy+dd),e",
+  name: "SET 2,(IY+DD),E",
   bytes: "fd cb d3",
   doc: "ld e, (set 2, (iy+dd))",
   group: "Set",
@@ -18962,7 +18961,7 @@ opcodes.set(0xfdcbd3, {
 // {n:212, x:3, y:2, z:4, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd4, {
-  name: "SET 2,(iy+dd),h",
+  name: "SET 2,(IY+DD),H",
   bytes: "fd cb d4",
   doc: "ld h, (set 2, (iy+dd))",
   group: "Set",
@@ -18983,7 +18982,7 @@ opcodes.set(0xfdcbd4, {
 // {n:213, x:3, y:2, z:5, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd5, {
-  name: "SET 2,(iy+dd),l",
+  name: "SET 2,(IY+DD),L",
   bytes: "fd cb d5",
   doc: "ld l, (set 2, (iy+dd))",
   group: "Set",
@@ -19004,7 +19003,7 @@ opcodes.set(0xfdcbd5, {
 // {n:214, x:3, y:2, z:6, p:1, q:0}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbd6, {
-  name: "SET 2,(iy+dd),(iy+dd)",
+  name: "SET 2,(IY+DD),(IY+DD)",
   bytes: "fd cb d6",
   doc: "ld (iy+dd), (set 2, (iy+dd))",
   group: "Set",
@@ -19024,7 +19023,7 @@ opcodes.set(0xfdcbd6, {
 // {n:215, x:3, y:2, z:7, p:1, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd7, {
-  name: "SET 2,(iy+dd),a",
+  name: "SET 2,(IY+DD),A",
   bytes: "fd cb d7",
   doc: "ld a, (set 2, (iy+dd))",
   group: "Set",
@@ -19045,7 +19044,7 @@ opcodes.set(0xfdcbd7, {
 // {n:216, x:3, y:3, z:0, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd8, {
-  name: "SET 3,(iy+dd),b",
+  name: "SET 3,(IY+DD),B",
   bytes: "fd cb d8",
   doc: "ld b, (set 3, (iy+dd))",
   group: "Set",
@@ -19066,7 +19065,7 @@ opcodes.set(0xfdcbd8, {
 // {n:217, x:3, y:3, z:1, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbd9, {
-  name: "SET 3,(iy+dd),c",
+  name: "SET 3,(IY+DD),C",
   bytes: "fd cb d9",
   doc: "ld c, (set 3, (iy+dd))",
   group: "Set",
@@ -19087,7 +19086,7 @@ opcodes.set(0xfdcbd9, {
 // {n:218, x:3, y:3, z:2, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbda, {
-  name: "SET 3,(iy+dd),d",
+  name: "SET 3,(IY+DD),D",
   bytes: "fd cb da",
   doc: "ld d, (set 3, (iy+dd))",
   group: "Set",
@@ -19108,7 +19107,7 @@ opcodes.set(0xfdcbda, {
 // {n:219, x:3, y:3, z:3, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbdb, {
-  name: "SET 3,(iy+dd),e",
+  name: "SET 3,(IY+DD),E",
   bytes: "fd cb db",
   doc: "ld e, (set 3, (iy+dd))",
   group: "Set",
@@ -19129,7 +19128,7 @@ opcodes.set(0xfdcbdb, {
 // {n:220, x:3, y:3, z:4, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbdc, {
-  name: "SET 3,(iy+dd),h",
+  name: "SET 3,(IY+DD),H",
   bytes: "fd cb dc",
   doc: "ld h, (set 3, (iy+dd))",
   group: "Set",
@@ -19150,7 +19149,7 @@ opcodes.set(0xfdcbdc, {
 // {n:221, x:3, y:3, z:5, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbdd, {
-  name: "SET 3,(iy+dd),l",
+  name: "SET 3,(IY+DD),L",
   bytes: "fd cb dd",
   doc: "ld l, (set 3, (iy+dd))",
   group: "Set",
@@ -19171,7 +19170,7 @@ opcodes.set(0xfdcbdd, {
 // {n:222, x:3, y:3, z:6, p:1, q:1}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbde, {
-  name: "SET 3,(iy+dd),(iy+dd)",
+  name: "SET 3,(IY+DD),(IY+DD)",
   bytes: "fd cb de",
   doc: "ld (iy+dd), (set 3, (iy+dd))",
   group: "Set",
@@ -19191,7 +19190,7 @@ opcodes.set(0xfdcbde, {
 // {n:223, x:3, y:3, z:7, p:1, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbdf, {
-  name: "SET 3,(iy+dd),a",
+  name: "SET 3,(IY+DD),A",
   bytes: "fd cb df",
   doc: "ld a, (set 3, (iy+dd))",
   group: "Set",
@@ -19212,7 +19211,7 @@ opcodes.set(0xfdcbdf, {
 // {n:224, x:3, y:4, z:0, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe0, {
-  name: "SET 4,(iy+dd),b",
+  name: "SET 4,(IY+DD),B",
   bytes: "fd cb e0",
   doc: "ld b, (set 4, (iy+dd))",
   group: "Set",
@@ -19233,7 +19232,7 @@ opcodes.set(0xfdcbe0, {
 // {n:225, x:3, y:4, z:1, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe1, {
-  name: "SET 4,(iy+dd),c",
+  name: "SET 4,(IY+DD),C",
   bytes: "fd cb e1",
   doc: "ld c, (set 4, (iy+dd))",
   group: "Set",
@@ -19254,7 +19253,7 @@ opcodes.set(0xfdcbe1, {
 // {n:226, x:3, y:4, z:2, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe2, {
-  name: "SET 4,(iy+dd),d",
+  name: "SET 4,(IY+DD),D",
   bytes: "fd cb e2",
   doc: "ld d, (set 4, (iy+dd))",
   group: "Set",
@@ -19275,7 +19274,7 @@ opcodes.set(0xfdcbe2, {
 // {n:227, x:3, y:4, z:3, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe3, {
-  name: "SET 4,(iy+dd),e",
+  name: "SET 4,(IY+DD),E",
   bytes: "fd cb e3",
   doc: "ld e, (set 4, (iy+dd))",
   group: "Set",
@@ -19296,7 +19295,7 @@ opcodes.set(0xfdcbe3, {
 // {n:228, x:3, y:4, z:4, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe4, {
-  name: "SET 4,(iy+dd),h",
+  name: "SET 4,(IY+DD),H",
   bytes: "fd cb e4",
   doc: "ld h, (set 4, (iy+dd))",
   group: "Set",
@@ -19317,7 +19316,7 @@ opcodes.set(0xfdcbe4, {
 // {n:229, x:3, y:4, z:5, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe5, {
-  name: "SET 4,(iy+dd),l",
+  name: "SET 4,(IY+DD),L",
   bytes: "fd cb e5",
   doc: "ld l, (set 4, (iy+dd))",
   group: "Set",
@@ -19338,7 +19337,7 @@ opcodes.set(0xfdcbe5, {
 // {n:230, x:3, y:4, z:6, p:2, q:0}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbe6, {
-  name: "SET 4,(iy+dd),(iy+dd)",
+  name: "SET 4,(IY+DD),(IY+DD)",
   bytes: "fd cb e6",
   doc: "ld (iy+dd), (set 4, (iy+dd))",
   group: "Set",
@@ -19358,7 +19357,7 @@ opcodes.set(0xfdcbe6, {
 // {n:231, x:3, y:4, z:7, p:2, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe7, {
-  name: "SET 4,(iy+dd),a",
+  name: "SET 4,(IY+DD),A",
   bytes: "fd cb e7",
   doc: "ld a, (set 4, (iy+dd))",
   group: "Set",
@@ -19379,7 +19378,7 @@ opcodes.set(0xfdcbe7, {
 // {n:232, x:3, y:5, z:0, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe8, {
-  name: "SET 5,(iy+dd),b",
+  name: "SET 5,(IY+DD),B",
   bytes: "fd cb e8",
   doc: "ld b, (set 5, (iy+dd))",
   group: "Set",
@@ -19400,7 +19399,7 @@ opcodes.set(0xfdcbe8, {
 // {n:233, x:3, y:5, z:1, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbe9, {
-  name: "SET 5,(iy+dd),c",
+  name: "SET 5,(IY+DD),C",
   bytes: "fd cb e9",
   doc: "ld c, (set 5, (iy+dd))",
   group: "Set",
@@ -19421,7 +19420,7 @@ opcodes.set(0xfdcbe9, {
 // {n:234, x:3, y:5, z:2, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbea, {
-  name: "SET 5,(iy+dd),d",
+  name: "SET 5,(IY+DD),D",
   bytes: "fd cb ea",
   doc: "ld d, (set 5, (iy+dd))",
   group: "Set",
@@ -19442,7 +19441,7 @@ opcodes.set(0xfdcbea, {
 // {n:235, x:3, y:5, z:3, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbeb, {
-  name: "SET 5,(iy+dd),e",
+  name: "SET 5,(IY+DD),E",
   bytes: "fd cb eb",
   doc: "ld e, (set 5, (iy+dd))",
   group: "Set",
@@ -19463,7 +19462,7 @@ opcodes.set(0xfdcbeb, {
 // {n:236, x:3, y:5, z:4, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbec, {
-  name: "SET 5,(iy+dd),h",
+  name: "SET 5,(IY+DD),H",
   bytes: "fd cb ec",
   doc: "ld h, (set 5, (iy+dd))",
   group: "Set",
@@ -19484,7 +19483,7 @@ opcodes.set(0xfdcbec, {
 // {n:237, x:3, y:5, z:5, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbed, {
-  name: "SET 5,(iy+dd),l",
+  name: "SET 5,(IY+DD),L",
   bytes: "fd cb ed",
   doc: "ld l, (set 5, (iy+dd))",
   group: "Set",
@@ -19505,7 +19504,7 @@ opcodes.set(0xfdcbed, {
 // {n:238, x:3, y:5, z:6, p:2, q:1}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbee, {
-  name: "SET 5,(iy+dd),(iy+dd)",
+  name: "SET 5,(IY+DD),(IY+DD)",
   bytes: "fd cb ee",
   doc: "ld (iy+dd), (set 5, (iy+dd))",
   group: "Set",
@@ -19525,7 +19524,7 @@ opcodes.set(0xfdcbee, {
 // {n:239, x:3, y:5, z:7, p:2, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbef, {
-  name: "SET 5,(iy+dd),a",
+  name: "SET 5,(IY+DD),A",
   bytes: "fd cb ef",
   doc: "ld a, (set 5, (iy+dd))",
   group: "Set",
@@ -19546,7 +19545,7 @@ opcodes.set(0xfdcbef, {
 // {n:240, x:3, y:6, z:0, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf0, {
-  name: "SET 6,(iy+dd),b",
+  name: "SET 6,(IY+DD),B",
   bytes: "fd cb f0",
   doc: "ld b, (set 6, (iy+dd))",
   group: "Set",
@@ -19567,7 +19566,7 @@ opcodes.set(0xfdcbf0, {
 // {n:241, x:3, y:6, z:1, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf1, {
-  name: "SET 6,(iy+dd),c",
+  name: "SET 6,(IY+DD),C",
   bytes: "fd cb f1",
   doc: "ld c, (set 6, (iy+dd))",
   group: "Set",
@@ -19588,7 +19587,7 @@ opcodes.set(0xfdcbf1, {
 // {n:242, x:3, y:6, z:2, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf2, {
-  name: "SET 6,(iy+dd),d",
+  name: "SET 6,(IY+DD),D",
   bytes: "fd cb f2",
   doc: "ld d, (set 6, (iy+dd))",
   group: "Set",
@@ -19609,7 +19608,7 @@ opcodes.set(0xfdcbf2, {
 // {n:243, x:3, y:6, z:3, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf3, {
-  name: "SET 6,(iy+dd),e",
+  name: "SET 6,(IY+DD),E",
   bytes: "fd cb f3",
   doc: "ld e, (set 6, (iy+dd))",
   group: "Set",
@@ -19630,7 +19629,7 @@ opcodes.set(0xfdcbf3, {
 // {n:244, x:3, y:6, z:4, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf4, {
-  name: "SET 6,(iy+dd),h",
+  name: "SET 6,(IY+DD),H",
   bytes: "fd cb f4",
   doc: "ld h, (set 6, (iy+dd))",
   group: "Set",
@@ -19651,7 +19650,7 @@ opcodes.set(0xfdcbf4, {
 // {n:245, x:3, y:6, z:5, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf5, {
-  name: "SET 6,(iy+dd),l",
+  name: "SET 6,(IY+DD),L",
   bytes: "fd cb f5",
   doc: "ld l, (set 6, (iy+dd))",
   group: "Set",
@@ -19672,7 +19671,7 @@ opcodes.set(0xfdcbf5, {
 // {n:246, x:3, y:6, z:6, p:3, q:0}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbf6, {
-  name: "SET 6,(iy+dd),(iy+dd)",
+  name: "SET 6,(IY+DD),(IY+DD)",
   bytes: "fd cb f6",
   doc: "ld (iy+dd), (set 6, (iy+dd))",
   group: "Set",
@@ -19692,7 +19691,7 @@ opcodes.set(0xfdcbf6, {
 // {n:247, x:3, y:6, z:7, p:3, q:0}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf7, {
-  name: "SET 6,(iy+dd),a",
+  name: "SET 6,(IY+DD),A",
   bytes: "fd cb f7",
   doc: "ld a, (set 6, (iy+dd))",
   group: "Set",
@@ -19713,7 +19712,7 @@ opcodes.set(0xfdcbf7, {
 // {n:248, x:3, y:7, z:0, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf8, {
-  name: "SET 7,(iy+dd),b",
+  name: "SET 7,(IY+DD),B",
   bytes: "fd cb f8",
   doc: "ld b, (set 7, (iy+dd))",
   group: "Set",
@@ -19734,7 +19733,7 @@ opcodes.set(0xfdcbf8, {
 // {n:249, x:3, y:7, z:1, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbf9, {
-  name: "SET 7,(iy+dd),c",
+  name: "SET 7,(IY+DD),C",
   bytes: "fd cb f9",
   doc: "ld c, (set 7, (iy+dd))",
   group: "Set",
@@ -19755,7 +19754,7 @@ opcodes.set(0xfdcbf9, {
 // {n:250, x:3, y:7, z:2, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbfa, {
-  name: "SET 7,(iy+dd),d",
+  name: "SET 7,(IY+DD),D",
   bytes: "fd cb fa",
   doc: "ld d, (set 7, (iy+dd))",
   group: "Set",
@@ -19776,7 +19775,7 @@ opcodes.set(0xfdcbfa, {
 // {n:251, x:3, y:7, z:3, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbfb, {
-  name: "SET 7,(iy+dd),e",
+  name: "SET 7,(IY+DD),E",
   bytes: "fd cb fb",
   doc: "ld e, (set 7, (iy+dd))",
   group: "Set",
@@ -19797,7 +19796,7 @@ opcodes.set(0xfdcbfb, {
 // {n:252, x:3, y:7, z:4, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbfc, {
-  name: "SET 7,(iy+dd),h",
+  name: "SET 7,(IY+DD),H",
   bytes: "fd cb fc",
   doc: "ld h, (set 7, (iy+dd))",
   group: "Set",
@@ -19818,7 +19817,7 @@ opcodes.set(0xfdcbfc, {
 // {n:253, x:3, y:7, z:5, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbfd, {
-  name: "SET 7,(iy+dd),l",
+  name: "SET 7,(IY+DD),L",
   bytes: "fd cb fd",
   doc: "ld l, (set 7, (iy+dd))",
   group: "Set",
@@ -19839,7 +19838,7 @@ opcodes.set(0xfdcbfd, {
 // {n:254, x:3, y:7, z:6, p:3, q:1}
 // SET $NY, ($RI+dd), ($RI+dd)
 opcodes.set(0xfdcbfe, {
-  name: "SET 7,(iy+dd),(iy+dd)",
+  name: "SET 7,(IY+DD),(IY+DD)",
   bytes: "fd cb fe",
   doc: "ld (iy+dd), (set 7, (iy+dd))",
   group: "Set",
@@ -19859,7 +19858,7 @@ opcodes.set(0xfdcbfe, {
 // {n:255, x:3, y:7, z:7, p:3, q:1}
 // SET $NY, ($RI+dd), $RRZ
 opcodes.set(0xfdcbff, {
-  name: "SET 7,(iy+dd),a",
+  name: "SET 7,(IY+DD),A",
   bytes: "fd cb ff",
   doc: "ld a, (set 7, (iy+dd))",
   group: "Set",

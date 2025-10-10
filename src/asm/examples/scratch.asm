@@ -12,3 +12,5 @@ x_loop:
 push bc                 ; save loop
 call print_a_tile
 pop bc                  ; restore loop
+
+d_file:

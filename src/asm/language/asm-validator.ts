@@ -1,8 +1,8 @@
 import type { ValidationAcceptor, ValidationChecks } from "langium";
-import { type AsmAstType, Instruction, isREGISTER, Label } from "./generated/ast.js";
+import { type AsmAstType, Expression, Instruction, Label } from "./generated/ast.js";
 import type { AsmServices } from "./asm-module.js";
 import { userPreferences } from "./asm-userpreferences.js";
-import { opcodesLookup } from "../opcodes-z80.js";
+import { IOpcodesNode, opcodesLookup } from "../opcodes-z80.js";
 
 console.log(opcodesLookup);
 
@@ -30,9 +30,13 @@ export class AsmValidator {
   checkInstructionArgs(instruction: Instruction, accept: ValidationAcceptor) {
     const instrName = instruction.opcode.toUpperCase();
     const args = (instruction.expressionList?.expressions || []).map((expr) => {
-      if (expr.immediate) return "$N";
-      if (expr.label) return "$NN";
-      return expr.$cstNode!.text.toUpperCase();
+      const toArgTemplate = (expr: Expression) => {
+        if (expr.immediate) return "$IMM";
+        if (expr.label) return instrName == "JR" ? "$N" : "$NN";
+        if (expr.paren) return toArgTemplate(expr.paren);
+        return expr.$cstNode!.text.toUpperCase();
+      };
+      return toArgTemplate(expr);
     });
 
     let curNode = opcodesLookup.get(instrName);
@@ -40,17 +44,23 @@ export class AsmValidator {
 
     for (let i = 0; i <= args.length; i++) {
       if (i == args.length) {
-        if (curNode?.codes.length == 0)
+        if (curNode.codes.length == 0)
           accept("error", "Missing argument " + Array.from(curNode.args.keys()).join(","), { node: instruction, property: "opcode" });
       } else {
-        const nextNode = curNode?.args.get(args[i]);
+        const nextNode: IOpcodesNode | undefined =
+          args[i] == "$IMM" ? curNode.args.get("$N") || curNode.args.get("$NN") || curNode.args.get("$DD") : curNode.args.get(args[i]);
         if (!nextNode) {
-          accept("error", "Invalid argument, expecting " + Array.from(curNode.args.keys()).join(","), {
-            node: instruction.expressionList!.expressions[i],
-          });
+          if (curNode.args.size == 0)
+            accept("error", "Unexpected argument", {
+              node: instruction.expressionList!.expressions[i],
+            });
+          else
+            accept("error", "Invalid argument, expecting " + Array.from(curNode.args.keys()).join(","), {
+              node: instruction.expressionList!.expressions[i],
+            });
           return;
         }
-        curNode = nextNode;
+        curNode = nextNode!;
       }
     }
     // const options = opcodesLookup.get(instruction.opcode.toUpperCase());

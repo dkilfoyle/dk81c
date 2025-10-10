@@ -39,7 +39,7 @@ import { opcodes } from "@/z80/decode";
 //   children: IOpcodeArgumentNode[];
 // }
 
-interface IOpcodesNode {
+export interface IOpcodesNode {
   codes: number[];
   args: Map<string, IOpcodesNode>;
 }
