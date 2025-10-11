@@ -37,7 +37,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@13"
+                  "$ref": "#/rules@14"
                 },
                 "arguments": [],
                 "cardinality": "+"
@@ -111,7 +111,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@14"
+                    "$ref": "#/rules@15"
                   },
                   "arguments": []
                 },
@@ -141,7 +141,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@14"
+                    "$ref": "#/rules@15"
                   },
                   "arguments": []
                 },
@@ -156,7 +156,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@14"
+                "$ref": "#/rules@15"
               },
               "arguments": []
             }
@@ -208,7 +208,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@12"
+                "$ref": "#/rules@13"
               },
               "arguments": []
             }
@@ -258,7 +258,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@11"
+                "$ref": "#/rules@12"
               },
               "arguments": []
             }
@@ -396,12 +396,24 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
         "elements": [
           {
             "$type": "Assignment",
+            "feature": "condition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@10"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
             "feature": "immediate",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@15"
+                "$ref": "#/rules@16"
               },
               "arguments": []
             }
@@ -413,7 +425,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@10"
+                "$ref": "#/rules@11"
               },
               "arguments": []
             }
@@ -454,7 +466,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@17"
+                "$ref": "#/rules@18"
               },
               "arguments": []
             }
@@ -495,11 +507,52 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
       "name": "ID",
       "definition": {
         "$type": "RegexToken",
-        "regex": "/[_a-zA-Z$][a-zA-Z0-9._]*/",
+        "regex": "/[_a-zA-Z][a-zA-Z0-9._]*/",
         "parenthesized": false
       },
       "fragment": false,
       "hidden": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "JUMPCONDITION",
+      "dataType": "string",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "NC"
+          },
+          {
+            "$type": "Keyword",
+            "value": "NZ"
+          },
+          {
+            "$type": "Keyword",
+            "value": "Z"
+          },
+          {
+            "$type": "Keyword",
+            "value": "M"
+          },
+          {
+            "$type": "Keyword",
+            "value": "PE"
+          },
+          {
+            "$type": "Keyword",
+            "value": "PO"
+          },
+          {
+            "$type": "Keyword",
+            "value": "P"
+          }
+        ]
+      },
+      "entry": false,
+      "fragment": false,
+      "parameters": []
     },
     {
       "$type": "ParserRule",
@@ -627,7 +680,19 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
+            "value": "DB"
+          },
+          {
+            "$type": "Keyword",
             "value": "DEFW"
+          },
+          {
+            "$type": "Keyword",
+            "value": "DW"
+          },
+          {
+            "$type": "Keyword",
+            "value": "DEFS"
           },
           {
             "$type": "Keyword",
@@ -963,7 +1028,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
       },
       "definition": {
         "$type": "RegexToken",
-        "regex": "/[\\\\\\\\-]?[0-9][0-9a-fA-F]*[h]?/",
+        "regex": "/[\\\\\\\\$]?[0-9A-Fa-f]+[Hh]?/",
         "parenthesized": false
       },
       "fragment": false,

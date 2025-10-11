@@ -56,7 +56,8 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
     curNode.codes.push(code);
   } else {
     for (let i = 0; i < args.length; i++) {
-      curNode = curNode.args.get(args[i]) || curNode.args.set(args[i], { args: new Map(), codes: [] }).get(args[i])!;
+      const argi = instrName == "RST" ? "$N" : args[i];
+      curNode = curNode.args.get(argi) || curNode.args.set(argi, { args: new Map(), codes: [] }).get(argi)!;
       if (i == args.length - 1) {
         curNode.codes.push(code);
       }

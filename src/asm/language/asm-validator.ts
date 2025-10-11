@@ -36,8 +36,8 @@ export class AsmValidator {
           if (left == "IX" || left == "IY") return left + "+DD";
           return "$NN";
         }
-        if (expr.immediate) return "$IMM";
-        if (expr.label) return instrName == "JR" ? "$N" : "$NN";
+        if (expr.immediate != undefined) return "$IMM";
+        if (expr.label) return ["JR", "DJNZ"].includes(instrName) ? "$N" : "$NN";
         if (expr.paren) return "(" + toArgTemplate(expr.paren) + ")";
         return expr.$cstNode!.text.toUpperCase();
       };

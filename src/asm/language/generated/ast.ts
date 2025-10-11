@@ -7,10 +7,10 @@
 import * as langium from 'langium';
 
 export const AsmTerminals = {
-    ID: /[_a-zA-Z$][a-zA-Z0-9._]*/,
+    ID: /[_a-zA-Z][a-zA-Z0-9._]*/,
     EOL: /[\r\n]+/,
     COMMENT: /;[^\n\r]*/,
-    NUMBER: /[\\-]?[0-9][0-9a-fA-F]*[h]?/,
+    NUMBER: /[\\$]?[0-9A-Fa-f]+[Hh]?/,
     STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
     WS: /[ \t]/,
 };
@@ -46,13 +46,16 @@ export type AsmKeywordNames =
     | "CPL"
     | "D"
     | "DAA"
+    | "DB"
     | "DE"
     | "DEC"
     | "DEFB"
+    | "DEFS"
     | "DEFW"
     | "DI"
     | "DJNZ"
     | "DS"
+    | "DW"
     | "E"
     | "EI"
     | "END"
@@ -86,8 +89,11 @@ export type AsmKeywordNames =
     | "LDDR"
     | "LDI"
     | "LDIR"
+    | "M"
+    | "NC"
     | "NEG"
     | "NOP"
+    | "NZ"
     | "OR"
     | "ORG"
     | "OTDR"
@@ -95,7 +101,10 @@ export type AsmKeywordNames =
     | "OUT"
     | "OUTD"
     | "OUTI"
+    | "P"
     | "PC"
+    | "PE"
+    | "PO"
     | "POP"
     | "PUSH"
     | "R"
@@ -124,14 +133,15 @@ export type AsmKeywordNames =
     | "SRA"
     | "SRL"
     | "SUB"
-    | "XOR";
+    | "XOR"
+    | "Z";
 
 export type AsmTokenNames = AsmTerminalNames | AsmKeywordNames;
 
-export type ASSEMBLER_DIRECTIVE = 'DEFB' | 'DEFW' | 'DS' | 'END' | 'ENDIF' | 'EQU' | 'IF' | 'ORG' | 'SET';
+export type ASSEMBLER_DIRECTIVE = 'DB' | 'DEFB' | 'DEFS' | 'DEFW' | 'DS' | 'DW' | 'END' | 'ENDIF' | 'EQU' | 'IF' | 'ORG' | 'SET';
 
 export function isASSEMBLER_DIRECTIVE(item: unknown): item is ASSEMBLER_DIRECTIVE {
-    return item === 'ORG' || item === 'END' || item === 'EQU' || item === 'DEFB' || item === 'DEFW' || item === 'DS' || item === 'IF' || item === 'ENDIF' || item === 'SET';
+    return item === 'ORG' || item === 'END' || item === 'EQU' || item === 'DEFB' || item === 'DB' || item === 'DEFW' || item === 'DW' || item === 'DEFS' || item === 'DS' || item === 'IF' || item === 'ENDIF' || item === 'SET';
 }
 
 export interface BinaryExpression extends Expression {
@@ -143,6 +153,7 @@ export interface BinaryExpression extends Expression {
 
 export const BinaryExpression = {
     $type: 'BinaryExpression',
+    condition: 'condition',
     dollar: 'dollar',
     immediate: 'immediate',
     label: 'label',
@@ -179,6 +190,7 @@ export function isDirective(item: unknown): item is Directive {
 
 export interface Expression extends langium.AstNode {
     readonly $type: 'BinaryExpression' | 'Expression';
+    condition?: JUMPCONDITION;
     dollar?: '$';
     immediate?: number;
     label?: langium.Reference<Label>;
@@ -189,6 +201,7 @@ export interface Expression extends langium.AstNode {
 
 export const Expression = {
     $type: 'Expression',
+    condition: 'condition',
     dollar: 'dollar',
     immediate: 'immediate',
     label: 'label',
@@ -231,6 +244,12 @@ export const Instruction = {
 
 export function isInstruction(item: unknown): item is Instruction {
     return reflection.isInstance(item, Instruction.$type);
+}
+
+export type JUMPCONDITION = 'M' | 'NC' | 'NZ' | 'P' | 'PE' | 'PO' | 'Z';
+
+export function isJUMPCONDITION(item: unknown): item is JUMPCONDITION {
+    return item === 'NC' || item === 'NZ' || item === 'Z' || item === 'M' || item === 'PE' || item === 'PO' || item === 'P';
 }
 
 export interface Label extends langium.AstNode {
@@ -311,6 +330,9 @@ export class AsmAstReflection extends langium.AbstractAstReflection {
         BinaryExpression: {
             name: BinaryExpression.$type,
             properties: {
+                condition: {
+                    name: BinaryExpression.condition
+                },
                 dollar: {
                     name: BinaryExpression.dollar
                 },
@@ -360,6 +382,9 @@ export class AsmAstReflection extends langium.AbstractAstReflection {
         Expression: {
             name: Expression.$type,
             properties: {
+                condition: {
+                    name: Expression.condition
+                },
                 dollar: {
                     name: Expression.dollar
                 },

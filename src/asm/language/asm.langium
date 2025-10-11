@@ -28,6 +28,7 @@ infix BinaryExpression on Argument:
     > '+' | '-';
 
 Argument infers Expression:
+    condition=JUMPCONDITION |
     immediate=NUMBER |
     register=REGISTER |
     label=[Label:ID] |
@@ -35,7 +36,16 @@ Argument infers Expression:
     string=STRING |
     "(" paren=Expression ")";
 
-terminal ID: /[_a-zA-Z$][a-zA-Z0-9._]*/;
+terminal ID: /[_a-zA-Z][a-zA-Z0-9._]*/;
+
+JUMPCONDITION returns string:
+    'NC'|
+    'NZ'|
+    'Z'|
+    'M'| 
+    'PE'| 
+    'PO'|
+    'P';
 
 REGISTER returns string:
     'A'
@@ -67,7 +77,10 @@ ASSEMBLER_DIRECTIVE returns string:
     | 'END'
     | 'EQU'
     | 'DEFB'
+    | 'DB'
     | 'DEFW'
+    | 'DW'
+    | 'DEFS'
     | 'DS'
     | 'IF'
     | 'ENDIF'
@@ -146,7 +159,8 @@ OPCODE returns string:
 
 terminal EOL: /[\r\n]+/;
 terminal COMMENT: /;[^\n\r]*/;
-terminal NUMBER returns number: /[\\-]?[0-9][0-9a-fA-F]*[h]?/;
+terminal NUMBER returns number: /[\\$]?[0-9A-Fa-f]+[Hh]?/;
+
 terminal CHARACTER: /'[ -~]'/;
 terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;
 hidden terminal WS: /[ \t]/;
