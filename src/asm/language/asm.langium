@@ -1,12 +1,12 @@
 grammar Asm
 
 entry Program:
-    (lines+=Line (EOL+ | EOF))*;
+    EOL* lines+=Line*;
 
 Line:
-    label=Label? (instruction=Instruction | directive=Directive) comment=COMMENT? |
-    label=Label comment=COMMENT? |
-    comment=COMMENT;
+    label=Label? (instruction=Instruction | directive=Directive) comment=COMMENT? (EOL+ | EOF)|
+    label=Label comment=COMMENT? (EOL+ | EOF)|
+    comment=COMMENT (EOL+ | EOF);
 
 Label:
     name=ID ":";

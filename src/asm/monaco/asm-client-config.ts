@@ -61,7 +61,7 @@ const languageClientConfig: LanguageClientConfig = {
 const editorAppConfig: EditorAppConfig = {
   codeResources: {
     modified: {
-      text: "ld c, 10\nbla x\n",
+      text: "call ",
       uri: "source.asm",
     },
   },

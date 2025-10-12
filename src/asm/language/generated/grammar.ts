@@ -20,6 +20,14 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
         "$type": "Group",
         "elements": [
           {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@14"
+            },
+            "arguments": [],
+            "cardinality": "*"
+          },
+          {
             "$type": "Assignment",
             "feature": "lines",
             "operator": "+=",
@@ -29,26 +37,10 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                 "$ref": "#/rules@1"
               },
               "arguments": []
-            }
-          },
-          {
-            "$type": "Alternatives",
-            "elements": [
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@14"
-                },
-                "arguments": [],
-                "cardinality": "+"
-              },
-              {
-                "$type": "EndOfFile"
-              }
-            ]
+            },
+            "cardinality": "*"
           }
-        ],
-        "cardinality": "*"
+        ]
       },
       "fragment": false,
       "parameters": []
@@ -116,6 +108,22 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                   "arguments": []
                 },
                 "cardinality": "?"
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@14"
+                    },
+                    "arguments": [],
+                    "cardinality": "+"
+                  },
+                  {
+                    "$type": "EndOfFile"
+                  }
+                ]
               }
             ]
           },
@@ -146,20 +154,57 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                   "arguments": []
                 },
                 "cardinality": "?"
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@14"
+                    },
+                    "arguments": [],
+                    "cardinality": "+"
+                  },
+                  {
+                    "$type": "EndOfFile"
+                  }
+                ]
               }
             ]
           },
           {
-            "$type": "Assignment",
-            "feature": "comment",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@15"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "comment",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@15"
+                  },
+                  "arguments": []
+                }
               },
-              "arguments": []
-            }
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@14"
+                    },
+                    "arguments": [],
+                    "cardinality": "+"
+                  },
+                  {
+                    "$type": "EndOfFile"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },

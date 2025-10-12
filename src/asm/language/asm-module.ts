@@ -14,10 +14,10 @@ import { AsmValidator, registerValidationChecks } from "./asm-validator.js";
 // import { AsmHoverProvider } from "./asm-hover.js";
 import { AsmValueConverter } from "./asm-valueconverter.js";
 // import { AsmFormatter } from "./asm-formatter.js";
-// import { AsmCompletionProvider } from "./asm-completion.js";
 // import { AsmFoldProvider } from "./asm-fold.js";
 import { AsmScopeComputation, AsmScopeProvider } from "./asm-scope.js";
 import { AsmWorkspaceManager } from "./asm-workspace.js";
+import { AsmCompletionProvider } from "./asm-completion.js";
 // import { AsmCommentProvider } from "./asm-comment.js";
 
 /**
@@ -49,7 +49,7 @@ export const AsmModule: Module<AsmServices, PartialLangiumServices & AsmAddedSer
     AsmValidator: () => new AsmValidator(),
   },
   lsp: {
-    // CompletionProvider: (services) => new AsmCompletionProvider(services),
+    CompletionProvider: (services) => new AsmCompletionProvider(services),
     // SignatureHelp: (services) => new AsmSignatureHelpProvider(services),
     // CodeActionProvider: (services) => new JackCodeActionProvider(),
     // HoverProvider: (services) => new AsmHoverProvider(services),

@@ -10,20 +10,24 @@ export class AsmCompletionProvider extends DefaultCompletionProvider {
     this.documents = services.shared.workspace.LangiumDocuments;
   }
   protected override completionFor(context: CompletionContext, next: NextFeature, acceptor: CompletionAcceptor): MaybePromise<void> {
-    console.log("completionFor", context, next);
+    console.log(next.feature);
+    if (GrammarAST.isKeyword(next.feature)) {
+      return this.completionForKeyword(context, next.feature, acceptor);
+    } else if (GrammarAST.isCrossReference(next.feature) && context.node) {
+      return this.completionForCrossReference(context, next as NextFeature<GrammarAST.CrossReference>, acceptor);
+    }
+    // else console.log(context, next);
     // if (GrammarAST.isKeyword(next.feature) && next.type == "") {
-    //   const doc = this.documentationProvider.getDocumentation({
-    //     $type: "Instr",
-    //     op: { opname: next.feature.value },
-    //   } as Instr);
+    //   // const doc = this.documentationProvider.getDocumentation({
+    //   //   $type: "Instr",
+    //   //   op: { opname: next.feature.value },
+    //   // } as Instr);
     //   return acceptor(context, {
     //     kind: CompletionItemKind.Field,
     //     label: next.feature.value,
     //     insertText: next.feature.value,
-    //     documentation: doc,
+    //     documentation: "doc",
     //   });
-    // }
-    // else
-    return super.completionFor(context, next, acceptor);
+    // } else return super.completionFor(context, next, acceptor);
   }
 }
