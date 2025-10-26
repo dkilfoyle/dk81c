@@ -1,6 +1,5 @@
 /* eslint-disable no-self-assign */
 // Generated decoder
-
 import type { Z80 } from "./z80";
 
 interface IOpCodeDefinition {
@@ -8,10 +7,13 @@ interface IOpCodeDefinition {
   bytes: string;
   group: string;
   doc?: string;
+  flags?: string;
+  states?: number[];
   fn: (z80: Z80) => void;
 }
 
 export const opcodes = new Map<number, IOpCodeDefinition>();
+
 const add16 = (x: number, y: number) => (x + y) & 0xffff;
 const signedByte = (x: number) => (x >= 128 ? x - 256 : x);
 const inc16 = (x: number) => (x + 1) & 0xffff;
@@ -25,6 +27,8 @@ opcodes.set(0x00, {
   name: "NOP",
   bytes: "00",
   group: "CPU Control",
+  doc: "No op",
+  states: [4],
   fn: (z80) => {},
 });
 
@@ -33,8 +37,9 @@ opcodes.set(0x00, {
 opcodes.set(0x01, {
   name: "LD BC,$NN",
   bytes: "01 XX XX",
-  doc: "bc=nn",
   group: "Load 16bit",
+  doc: "bc:=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RPL}
     z80.abus = z80.regs.pc;
@@ -54,8 +59,9 @@ opcodes.set(0x01, {
 opcodes.set(0x02, {
   name: "LD (BC),A",
   bytes: "02",
-  doc: "[BC]=A",
   group: "Load 8bit",
+  doc: "[BC]:=A",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $BC, db: $A, action: "$WZL=$C+1;$WZH=$A;"}
     z80.dbus = z80.regs.a;
@@ -71,8 +77,9 @@ opcodes.set(0x02, {
 opcodes.set(0x03, {
   name: "INC BC",
   bytes: "03",
-  doc: "bc+=1",
   group: "ALU 16bit",
+  doc: "bc+=1",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.inc16($RP)"}
     z80.incTStateCount(2);
@@ -86,6 +93,9 @@ opcodes.set(0x04, {
   name: "INC B",
   bytes: "04",
   group: "ALU 8bit",
+  doc: "b+=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.b = z80.alu.inc8(z80.regs.b);
@@ -98,6 +108,9 @@ opcodes.set(0x05, {
   name: "DEC B",
   bytes: "05",
   group: "ALU 8bit",
+  doc: "b-=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.b = z80.alu.dec8(z80.regs.b);
@@ -110,6 +123,8 @@ opcodes.set(0x06, {
   name: "LD B,$N",
   bytes: "06 XX",
   group: "Load 8bit",
+  doc: "b:=n",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RY}
     z80.abus = z80.regs.pc;
@@ -124,8 +139,10 @@ opcodes.set(0x06, {
 opcodes.set(0x07, {
   name: "RLCA",
   bytes: "07",
-  doc: "Fast RLC A",
   group: "ALU Rotate/Shift",
+  doc: "Rotate A left with bit 7 copied to Carry",
+  flags: "--0-0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.rlca()"}
     z80.alu.rlca();
@@ -138,6 +155,9 @@ opcodes.set(0x08, {
   name: "EX AF,AFP",
   bytes: "08",
   group: "Transfer",
+  doc: "AF <-> AF'",
+  flags: "******",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.ex_af_af2()"}
     z80.ex_af_af2();
@@ -150,6 +170,9 @@ opcodes.set(0x09, {
   name: "ADD HL,BC",
   bytes: "09",
   group: "ALU 16bit",
+  doc: "HL:=HL+bc",
+  flags: "***V0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$HL=z80.alu.add16($HL, $RP)"}
     z80.incTStateCount(7);
@@ -162,8 +185,9 @@ opcodes.set(0x09, {
 opcodes.set(0x0a, {
   name: "LD A,(BC)",
   bytes: "0a",
-  doc: "A=[BC]",
   group: "Load 8bit",
+  doc: "A:=[BC]",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $BC, dst: $A, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -179,6 +203,8 @@ opcodes.set(0x0b, {
   name: "DEC BC",
   bytes: "0b",
   group: "ALU 16bit",
+  doc: "bc-=1",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.dec16($RP)"}
     z80.incTStateCount(2);
@@ -192,6 +218,9 @@ opcodes.set(0x0c, {
   name: "INC C",
   bytes: "0c",
   group: "ALU 8bit",
+  doc: "c+=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.c = z80.alu.inc8(z80.regs.c);
@@ -204,6 +233,9 @@ opcodes.set(0x0d, {
   name: "DEC C",
   bytes: "0d",
   group: "ALU 8bit",
+  doc: "c-=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.c = z80.alu.dec8(z80.regs.c);
@@ -216,6 +248,8 @@ opcodes.set(0x0e, {
   name: "LD C,$N",
   bytes: "0e XX",
   group: "Load 8bit",
+  doc: "c:=n",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RY}
     z80.abus = z80.regs.pc;
@@ -230,8 +264,10 @@ opcodes.set(0x0e, {
 opcodes.set(0x0f, {
   name: "RRCA",
   bytes: "0f",
-  doc: "Fast RRC A",
   group: "ALU Rotate/Shift",
+  doc: "Rotate A right with bit 0 copied to Carry",
+  flags: "--0-0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.rrca()"}
     z80.alu.rrca();
@@ -239,12 +275,13 @@ opcodes.set(0x0f, {
 });
 
 // {n:16, x:0, y:2, z:0, p:1, q:0}
-// DJNZ $n
+// DJNZ $e
 opcodes.set(0x10, {
-  name: "DJNZ $N",
-  bytes: "10 XX",
-  doc: "B=B-1, if B != 0 then PC+=n",
+  name: "DJNZ $E",
+  bytes: "10",
   group: "Control flow",
+  doc: "Delta jump if not zero: PC+=$e if B-- != 0",
+  states: [13, 8],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "$B=dec8($B)"}
     z80.incTStateCount(1);
@@ -269,8 +306,9 @@ opcodes.set(0x10, {
 opcodes.set(0x11, {
   name: "LD DE,$NN",
   bytes: "11 XX XX",
-  doc: "de=nn",
   group: "Load 16bit",
+  doc: "de:=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RPL}
     z80.abus = z80.regs.pc;
@@ -290,8 +328,9 @@ opcodes.set(0x11, {
 opcodes.set(0x12, {
   name: "LD (DE),A",
   bytes: "12",
-  doc: "[DE]=A",
   group: "Load 8bit",
+  doc: "[DE]:=A",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $DE, db: $A, action: "$WZL=$E+1;$WZH=$A;"}
     z80.dbus = z80.regs.a;
@@ -307,8 +346,9 @@ opcodes.set(0x12, {
 opcodes.set(0x13, {
   name: "INC DE",
   bytes: "13",
-  doc: "de+=1",
   group: "ALU 16bit",
+  doc: "de+=1",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.inc16($RP)"}
     z80.incTStateCount(2);
@@ -322,6 +362,9 @@ opcodes.set(0x14, {
   name: "INC D",
   bytes: "14",
   group: "ALU 8bit",
+  doc: "d+=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.d = z80.alu.inc8(z80.regs.d);
@@ -334,6 +377,9 @@ opcodes.set(0x15, {
   name: "DEC D",
   bytes: "15",
   group: "ALU 8bit",
+  doc: "d-=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.d = z80.alu.dec8(z80.regs.d);
@@ -346,6 +392,8 @@ opcodes.set(0x16, {
   name: "LD D,$N",
   bytes: "16 XX",
   group: "Load 8bit",
+  doc: "d:=n",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RY}
     z80.abus = z80.regs.pc;
@@ -360,8 +408,10 @@ opcodes.set(0x16, {
 opcodes.set(0x17, {
   name: "RLA",
   bytes: "17",
-  doc: "Fast RL A",
   group: "ALU Rotate/Shift",
+  doc: "Rotate A left through carry",
+  flags: "--0-0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.rla()"}
     z80.alu.rla();
@@ -369,12 +419,13 @@ opcodes.set(0x17, {
 });
 
 // {n:24, x:0, y:3, z:0, p:1, q:1}
-// JR $n
+// JR $e
 opcodes.set(0x18, {
-  name: "JR $N",
-  bytes: "18 XX",
-  doc: "PC=PC+n",
+  name: "JR $E",
+  bytes: "18",
   group: "Control flow",
+  doc: "Jump relative: PC+=$e",
+  states: [122],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -393,6 +444,9 @@ opcodes.set(0x19, {
   name: "ADD HL,DE",
   bytes: "19",
   group: "ALU 16bit",
+  doc: "HL:=HL+de",
+  flags: "***V0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$HL=z80.alu.add16($HL, $RP)"}
     z80.incTStateCount(7);
@@ -405,8 +459,9 @@ opcodes.set(0x19, {
 opcodes.set(0x1a, {
   name: "LD A,(DE)",
   bytes: "1a",
-  doc: "A=[DE]",
   group: "Load 8bit",
+  doc: "A:=[DE]",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $DE, dst: $A, action: "$WZ=$DE+1"}
     z80.abus = z80.regs.de;
@@ -422,6 +477,8 @@ opcodes.set(0x1b, {
   name: "DEC DE",
   bytes: "1b",
   group: "ALU 16bit",
+  doc: "de-=1",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.dec16($RP)"}
     z80.incTStateCount(2);
@@ -435,6 +492,9 @@ opcodes.set(0x1c, {
   name: "INC E",
   bytes: "1c",
   group: "ALU 8bit",
+  doc: "e+=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.e = z80.alu.inc8(z80.regs.e);
@@ -447,6 +507,9 @@ opcodes.set(0x1d, {
   name: "DEC E",
   bytes: "1d",
   group: "ALU 8bit",
+  doc: "e-=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.e = z80.alu.dec8(z80.regs.e);
@@ -459,6 +522,8 @@ opcodes.set(0x1e, {
   name: "LD E,$N",
   bytes: "1e XX",
   group: "Load 8bit",
+  doc: "e:=n",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RY}
     z80.abus = z80.regs.pc;
@@ -473,8 +538,10 @@ opcodes.set(0x1e, {
 opcodes.set(0x1f, {
   name: "RRA",
   bytes: "1f",
-  doc: "Fast RR A",
   group: "ALU Rotate/Shift",
+  doc: "Rotate A right through carry",
+  flags: "--0-0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.rra()"}
     z80.alu.rra();
@@ -482,12 +549,13 @@ opcodes.set(0x1f, {
 });
 
 // {n:32, x:0, y:4, z:0, p:2, q:0}
-// JR $CC-4,$n
+// JR $CC-4,$e
 opcodes.set(0x20, {
-  name: "JR NZ,$N",
-  bytes: "20 XX",
-  doc: "if NZ then PC=PC+n",
+  name: "JR NZ,$E",
+  bytes: "20",
   group: "Control flow",
+  doc: "Jump relative conditional: if NZ then PC+=$e",
+  states: [12, 7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH, if: "$CC-4", action: "$PC+=$DLATCH;$WZ=$PC;$T+=5"}
     z80.abus = z80.regs.pc;
@@ -506,8 +574,9 @@ opcodes.set(0x20, {
 opcodes.set(0x21, {
   name: "LD HL,$NN",
   bytes: "21 XX XX",
-  doc: "hl=nn",
   group: "Load 16bit",
+  doc: "hl:=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RPL}
     z80.abus = z80.regs.pc;
@@ -527,8 +596,9 @@ opcodes.set(0x21, {
 opcodes.set(0x22, {
   name: "LD ($NN),HL",
   bytes: "22 XX XX",
-  doc: "[nn]=HL",
   group: "Load 16bit",
+  doc: "[nn]:=L, [nn+1]:=H",
+  states: [16],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -557,8 +627,9 @@ opcodes.set(0x22, {
 opcodes.set(0x23, {
   name: "INC HL",
   bytes: "23",
-  doc: "hl+=1",
   group: "ALU 16bit",
+  doc: "hl+=1",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.inc16($RP)"}
     z80.incTStateCount(2);
@@ -572,6 +643,9 @@ opcodes.set(0x24, {
   name: "INC H",
   bytes: "24",
   group: "ALU 8bit",
+  doc: "h+=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.h = z80.alu.inc8(z80.regs.h);
@@ -584,6 +658,9 @@ opcodes.set(0x25, {
   name: "DEC H",
   bytes: "25",
   group: "ALU 8bit",
+  doc: "h-=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.h = z80.alu.dec8(z80.regs.h);
@@ -596,6 +673,8 @@ opcodes.set(0x26, {
   name: "LD H,$N",
   bytes: "26 XX",
   group: "Load 8bit",
+  doc: "h:=n",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RY}
     z80.abus = z80.regs.pc;
@@ -610,8 +689,10 @@ opcodes.set(0x26, {
 opcodes.set(0x27, {
   name: "DAA",
   bytes: "27",
-  doc: "Convert A to BCD",
   group: "ALU General",
+  doc: "Convert A to BCD",
+  flags: "***P-*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.daa()"}
     z80.alu.daa();
@@ -619,12 +700,13 @@ opcodes.set(0x27, {
 });
 
 // {n:40, x:0, y:5, z:0, p:2, q:1}
-// JR $CC-4,$n
+// JR $CC-4,$e
 opcodes.set(0x28, {
-  name: "JR Z,$N",
-  bytes: "28 XX",
-  doc: "if Z then PC=PC+n",
+  name: "JR Z,$E",
+  bytes: "28",
   group: "Control flow",
+  doc: "Jump relative conditional: if Z then PC+=$e",
+  states: [12, 7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH, if: "$CC-4", action: "$PC+=$DLATCH;$WZ=$PC;$T+=5"}
     z80.abus = z80.regs.pc;
@@ -644,6 +726,9 @@ opcodes.set(0x29, {
   name: "ADD HL,HL",
   bytes: "29",
   group: "ALU 16bit",
+  doc: "HL:=HL+hl",
+  flags: "***V0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$HL=z80.alu.add16($HL, $RP)"}
     z80.incTStateCount(7);
@@ -656,8 +741,9 @@ opcodes.set(0x29, {
 opcodes.set(0x2a, {
   name: "LD HL,($NN)",
   bytes: "2a XX XX",
-  doc: "HL=[nn]",
   group: "Load 16bit",
+  doc: "L:=[nn],H:=[nn+1]",
+  states: [16],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -687,6 +773,8 @@ opcodes.set(0x2b, {
   name: "DEC HL",
   bytes: "2b",
   group: "ALU 16bit",
+  doc: "hl-=1",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.dec16($RP)"}
     z80.incTStateCount(2);
@@ -700,6 +788,9 @@ opcodes.set(0x2c, {
   name: "INC L",
   bytes: "2c",
   group: "ALU 8bit",
+  doc: "l+=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.l = z80.alu.inc8(z80.regs.l);
@@ -712,6 +803,9 @@ opcodes.set(0x2d, {
   name: "DEC L",
   bytes: "2d",
   group: "ALU 8bit",
+  doc: "l-=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.l = z80.alu.dec8(z80.regs.l);
@@ -724,6 +818,8 @@ opcodes.set(0x2e, {
   name: "LD L,$N",
   bytes: "2e XX",
   group: "Load 8bit",
+  doc: "l:=n",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RY}
     z80.abus = z80.regs.pc;
@@ -738,8 +834,10 @@ opcodes.set(0x2e, {
 opcodes.set(0x2f, {
   name: "CPL",
   bytes: "2f",
-  doc: "Invert all bits of A",
   group: "ALU General",
+  doc: "Invert all bits of A (one's complement)",
+  flags: "--1-1-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.cpl()"}
     z80.alu.cpl();
@@ -747,12 +845,13 @@ opcodes.set(0x2f, {
 });
 
 // {n:48, x:0, y:6, z:0, p:3, q:0}
-// JR $CC-4,$n
+// JR $CC-4,$e
 opcodes.set(0x30, {
-  name: "JR NC,$N",
-  bytes: "30 XX",
-  doc: "if NC then PC=PC+n",
+  name: "JR NC,$E",
+  bytes: "30",
   group: "Control flow",
+  doc: "Jump relative conditional: if NC then PC+=$e",
+  states: [12, 7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH, if: "$CC-4", action: "$PC+=$DLATCH;$WZ=$PC;$T+=5"}
     z80.abus = z80.regs.pc;
@@ -771,8 +870,9 @@ opcodes.set(0x30, {
 opcodes.set(0x31, {
   name: "LD SP,$NN",
   bytes: "31 XX XX",
-  doc: "sp=nn",
   group: "Load 16bit",
+  doc: "sp:=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RPL}
     z80.abus = z80.regs.pc;
@@ -792,8 +892,9 @@ opcodes.set(0x31, {
 opcodes.set(0x32, {
   name: "LD ($NN),A",
   bytes: "32 XX XX",
-  doc: "[nn]=A",
   group: "Load 16bit",
+  doc: "[nn]:=A",
+  states: [13],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -819,8 +920,9 @@ opcodes.set(0x32, {
 opcodes.set(0x33, {
   name: "INC SP",
   bytes: "33",
-  doc: "sp+=1",
   group: "ALU 16bit",
+  doc: "sp+=1",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.inc16($RP)"}
     z80.incTStateCount(2);
@@ -834,6 +936,9 @@ opcodes.set(0x34, {
   name: "INC (HL)",
   bytes: "34",
   group: "ALU 8bit",
+  doc: "[HL]-=1",
+  flags: "***V0-",
+  states: [11],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $ADDR, dst: $DLATCH, action: "$DLATCH=z80.alu.inc8($DLATCH)"}
     z80.abus = z80.regs.hl;
@@ -852,6 +957,9 @@ opcodes.set(0x35, {
   name: "DEC (HL)",
   bytes: "35",
   group: "ALU 8bit",
+  doc: "[HL]-=1",
+  flags: "***V0-",
+  states: [11],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $ADDR, dst: $DLATCH, action: "$DLATCH=z80.alu.dec8($DLATCH)"}
     z80.abus = z80.regs.hl;
@@ -870,6 +978,8 @@ opcodes.set(0x36, {
   name: "LD (HL),$N",
   bytes: "36 XX",
   group: "Load 8bit",
+  doc: "[HL]:=n",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -886,8 +996,10 @@ opcodes.set(0x36, {
 opcodes.set(0x37, {
   name: "SCF",
   bytes: "37",
-  doc: "Set Carry, clear H and N",
   group: "ALU General",
+  doc: "Set Carry Flag: CY=1",
+  flags: "--0-01",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.scf()"}
     z80.alu.scf();
@@ -895,12 +1007,13 @@ opcodes.set(0x37, {
 });
 
 // {n:56, x:0, y:7, z:0, p:3, q:1}
-// JR $CC-4,$n
+// JR $CC-4,$e
 opcodes.set(0x38, {
-  name: "JR C,$N",
-  bytes: "38 XX",
-  doc: "if C then PC=PC+n",
+  name: "JR C,$E",
+  bytes: "38",
   group: "Control flow",
+  doc: "Jump relative conditional: if C then PC+=$e",
+  states: [12, 7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH, if: "$CC-4", action: "$PC+=$DLATCH;$WZ=$PC;$T+=5"}
     z80.abus = z80.regs.pc;
@@ -920,6 +1033,9 @@ opcodes.set(0x39, {
   name: "ADD HL,SP",
   bytes: "39",
   group: "ALU 16bit",
+  doc: "HL:=HL+sp",
+  flags: "***V0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$HL=z80.alu.add16($HL, $RP)"}
     z80.incTStateCount(7);
@@ -932,8 +1048,9 @@ opcodes.set(0x39, {
 opcodes.set(0x3a, {
   name: "LD A,($NN)",
   bytes: "3a XX XX",
-  doc: "A=[nn]",
-  group: "Load 16bit",
+  group: "Load 8bit",
+  doc: "A:=[nn]",
+  states: [13],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -959,6 +1076,8 @@ opcodes.set(0x3b, {
   name: "DEC SP",
   bytes: "3b",
   group: "ALU 16bit",
+  doc: "sp-=1",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.dec16($RP)"}
     z80.incTStateCount(2);
@@ -972,6 +1091,9 @@ opcodes.set(0x3c, {
   name: "INC A",
   bytes: "3c",
   group: "ALU 8bit",
+  doc: "a+=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.a = z80.alu.inc8(z80.regs.a);
@@ -984,6 +1106,9 @@ opcodes.set(0x3d, {
   name: "DEC A",
   bytes: "3d",
   group: "ALU 8bit",
+  doc: "a-=1",
+  flags: "***V0-",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.a = z80.alu.dec8(z80.regs.a);
@@ -996,6 +1121,8 @@ opcodes.set(0x3e, {
   name: "LD A,$N",
   bytes: "3e XX",
   group: "Load 8bit",
+  doc: "a:=n",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RY}
     z80.abus = z80.regs.pc;
@@ -1010,8 +1137,10 @@ opcodes.set(0x3e, {
 opcodes.set(0x3f, {
   name: "CCF",
   bytes: "3f",
-  doc: "Invert Carry, invert H, clear N",
   group: "ALU General",
+  doc: "Complement Carry Flag",
+  flags: "--*-0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.ccf()"}
     z80.alu.ccf();
@@ -1024,6 +1153,8 @@ opcodes.set(0x40, {
   name: "LD B,B",
   bytes: "40",
   group: "Load 8bit",
+  doc: "b:=b",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.b = z80.regs.b;
@@ -1036,6 +1167,8 @@ opcodes.set(0x41, {
   name: "LD B,C",
   bytes: "41",
   group: "Load 8bit",
+  doc: "b:=c",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.b = z80.regs.c;
@@ -1048,6 +1181,8 @@ opcodes.set(0x42, {
   name: "LD B,D",
   bytes: "42",
   group: "Load 8bit",
+  doc: "b:=d",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.b = z80.regs.d;
@@ -1060,6 +1195,8 @@ opcodes.set(0x43, {
   name: "LD B,E",
   bytes: "43",
   group: "Load 8bit",
+  doc: "b:=e",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.b = z80.regs.e;
@@ -1072,6 +1209,8 @@ opcodes.set(0x44, {
   name: "LD B,H",
   bytes: "44",
   group: "Load 8bit",
+  doc: "b:=h",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.b = z80.regs.h;
@@ -1084,6 +1223,8 @@ opcodes.set(0x45, {
   name: "LD B,L",
   bytes: "45",
   group: "Load 8bit",
+  doc: "b:=l",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.b = z80.regs.l;
@@ -1096,6 +1237,8 @@ opcodes.set(0x46, {
   name: "LD B,(HL)",
   bytes: "46",
   group: "Load 8bit",
+  doc: "b:=(HL)",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $RY}
     z80.abus = z80.regs.hl;
@@ -1110,6 +1253,8 @@ opcodes.set(0x47, {
   name: "LD B,A",
   bytes: "47",
   group: "Load 8bit",
+  doc: "b:=a",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.b = z80.regs.a;
@@ -1122,6 +1267,8 @@ opcodes.set(0x48, {
   name: "LD C,B",
   bytes: "48",
   group: "Load 8bit",
+  doc: "c:=b",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.c = z80.regs.b;
@@ -1134,6 +1281,8 @@ opcodes.set(0x49, {
   name: "LD C,C",
   bytes: "49",
   group: "Load 8bit",
+  doc: "c:=c",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.c = z80.regs.c;
@@ -1146,6 +1295,8 @@ opcodes.set(0x4a, {
   name: "LD C,D",
   bytes: "4a",
   group: "Load 8bit",
+  doc: "c:=d",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.c = z80.regs.d;
@@ -1158,6 +1309,8 @@ opcodes.set(0x4b, {
   name: "LD C,E",
   bytes: "4b",
   group: "Load 8bit",
+  doc: "c:=e",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.c = z80.regs.e;
@@ -1170,6 +1323,8 @@ opcodes.set(0x4c, {
   name: "LD C,H",
   bytes: "4c",
   group: "Load 8bit",
+  doc: "c:=h",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.c = z80.regs.h;
@@ -1182,6 +1337,8 @@ opcodes.set(0x4d, {
   name: "LD C,L",
   bytes: "4d",
   group: "Load 8bit",
+  doc: "c:=l",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.c = z80.regs.l;
@@ -1194,6 +1351,8 @@ opcodes.set(0x4e, {
   name: "LD C,(HL)",
   bytes: "4e",
   group: "Load 8bit",
+  doc: "c:=(HL)",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $RY}
     z80.abus = z80.regs.hl;
@@ -1208,6 +1367,8 @@ opcodes.set(0x4f, {
   name: "LD C,A",
   bytes: "4f",
   group: "Load 8bit",
+  doc: "c:=a",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.c = z80.regs.a;
@@ -1220,6 +1381,8 @@ opcodes.set(0x50, {
   name: "LD D,B",
   bytes: "50",
   group: "Load 8bit",
+  doc: "d:=b",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.d = z80.regs.b;
@@ -1232,6 +1395,8 @@ opcodes.set(0x51, {
   name: "LD D,C",
   bytes: "51",
   group: "Load 8bit",
+  doc: "d:=c",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.d = z80.regs.c;
@@ -1244,6 +1409,8 @@ opcodes.set(0x52, {
   name: "LD D,D",
   bytes: "52",
   group: "Load 8bit",
+  doc: "d:=d",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.d = z80.regs.d;
@@ -1256,6 +1423,8 @@ opcodes.set(0x53, {
   name: "LD D,E",
   bytes: "53",
   group: "Load 8bit",
+  doc: "d:=e",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.d = z80.regs.e;
@@ -1268,6 +1437,8 @@ opcodes.set(0x54, {
   name: "LD D,H",
   bytes: "54",
   group: "Load 8bit",
+  doc: "d:=h",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.d = z80.regs.h;
@@ -1280,6 +1451,8 @@ opcodes.set(0x55, {
   name: "LD D,L",
   bytes: "55",
   group: "Load 8bit",
+  doc: "d:=l",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.d = z80.regs.l;
@@ -1292,6 +1465,8 @@ opcodes.set(0x56, {
   name: "LD D,(HL)",
   bytes: "56",
   group: "Load 8bit",
+  doc: "d:=(HL)",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $RY}
     z80.abus = z80.regs.hl;
@@ -1306,6 +1481,8 @@ opcodes.set(0x57, {
   name: "LD D,A",
   bytes: "57",
   group: "Load 8bit",
+  doc: "d:=a",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.d = z80.regs.a;
@@ -1318,6 +1495,8 @@ opcodes.set(0x58, {
   name: "LD E,B",
   bytes: "58",
   group: "Load 8bit",
+  doc: "e:=b",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.e = z80.regs.b;
@@ -1330,6 +1509,8 @@ opcodes.set(0x59, {
   name: "LD E,C",
   bytes: "59",
   group: "Load 8bit",
+  doc: "e:=c",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.e = z80.regs.c;
@@ -1342,6 +1523,8 @@ opcodes.set(0x5a, {
   name: "LD E,D",
   bytes: "5a",
   group: "Load 8bit",
+  doc: "e:=d",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.e = z80.regs.d;
@@ -1354,6 +1537,8 @@ opcodes.set(0x5b, {
   name: "LD E,E",
   bytes: "5b",
   group: "Load 8bit",
+  doc: "e:=e",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.e = z80.regs.e;
@@ -1366,6 +1551,8 @@ opcodes.set(0x5c, {
   name: "LD E,H",
   bytes: "5c",
   group: "Load 8bit",
+  doc: "e:=h",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.e = z80.regs.h;
@@ -1378,6 +1565,8 @@ opcodes.set(0x5d, {
   name: "LD E,L",
   bytes: "5d",
   group: "Load 8bit",
+  doc: "e:=l",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.e = z80.regs.l;
@@ -1390,6 +1579,8 @@ opcodes.set(0x5e, {
   name: "LD E,(HL)",
   bytes: "5e",
   group: "Load 8bit",
+  doc: "e:=(HL)",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $RY}
     z80.abus = z80.regs.hl;
@@ -1404,6 +1595,8 @@ opcodes.set(0x5f, {
   name: "LD E,A",
   bytes: "5f",
   group: "Load 8bit",
+  doc: "e:=a",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.e = z80.regs.a;
@@ -1416,6 +1609,8 @@ opcodes.set(0x60, {
   name: "LD H,B",
   bytes: "60",
   group: "Load 8bit",
+  doc: "h:=b",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.h = z80.regs.b;
@@ -1428,6 +1623,8 @@ opcodes.set(0x61, {
   name: "LD H,C",
   bytes: "61",
   group: "Load 8bit",
+  doc: "h:=c",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.h = z80.regs.c;
@@ -1440,6 +1637,8 @@ opcodes.set(0x62, {
   name: "LD H,D",
   bytes: "62",
   group: "Load 8bit",
+  doc: "h:=d",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.h = z80.regs.d;
@@ -1452,6 +1651,8 @@ opcodes.set(0x63, {
   name: "LD H,E",
   bytes: "63",
   group: "Load 8bit",
+  doc: "h:=e",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.h = z80.regs.e;
@@ -1464,6 +1665,8 @@ opcodes.set(0x64, {
   name: "LD H,H",
   bytes: "64",
   group: "Load 8bit",
+  doc: "h:=h",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.h = z80.regs.h;
@@ -1476,6 +1679,8 @@ opcodes.set(0x65, {
   name: "LD H,L",
   bytes: "65",
   group: "Load 8bit",
+  doc: "h:=l",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.h = z80.regs.l;
@@ -1488,6 +1693,8 @@ opcodes.set(0x66, {
   name: "LD H,(HL)",
   bytes: "66",
   group: "Load 8bit",
+  doc: "h:=(HL)",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $RY}
     z80.abus = z80.regs.hl;
@@ -1502,6 +1709,8 @@ opcodes.set(0x67, {
   name: "LD H,A",
   bytes: "67",
   group: "Load 8bit",
+  doc: "h:=a",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.h = z80.regs.a;
@@ -1514,6 +1723,8 @@ opcodes.set(0x68, {
   name: "LD L,B",
   bytes: "68",
   group: "Load 8bit",
+  doc: "l:=b",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.l = z80.regs.b;
@@ -1526,6 +1737,8 @@ opcodes.set(0x69, {
   name: "LD L,C",
   bytes: "69",
   group: "Load 8bit",
+  doc: "l:=c",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.l = z80.regs.c;
@@ -1538,6 +1751,8 @@ opcodes.set(0x6a, {
   name: "LD L,D",
   bytes: "6a",
   group: "Load 8bit",
+  doc: "l:=d",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.l = z80.regs.d;
@@ -1550,6 +1765,8 @@ opcodes.set(0x6b, {
   name: "LD L,E",
   bytes: "6b",
   group: "Load 8bit",
+  doc: "l:=e",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.l = z80.regs.e;
@@ -1562,6 +1779,8 @@ opcodes.set(0x6c, {
   name: "LD L,H",
   bytes: "6c",
   group: "Load 8bit",
+  doc: "l:=h",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.l = z80.regs.h;
@@ -1574,6 +1793,8 @@ opcodes.set(0x6d, {
   name: "LD L,L",
   bytes: "6d",
   group: "Load 8bit",
+  doc: "l:=l",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.l = z80.regs.l;
@@ -1586,6 +1807,8 @@ opcodes.set(0x6e, {
   name: "LD L,(HL)",
   bytes: "6e",
   group: "Load 8bit",
+  doc: "l:=(HL)",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $RY}
     z80.abus = z80.regs.hl;
@@ -1600,6 +1823,8 @@ opcodes.set(0x6f, {
   name: "LD L,A",
   bytes: "6f",
   group: "Load 8bit",
+  doc: "l:=a",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.l = z80.regs.a;
@@ -1612,6 +1837,8 @@ opcodes.set(0x70, {
   name: "LD (HL),B",
   bytes: "70",
   group: "Load 8bit",
+  doc: "[hl]:=b",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $ADDR, db: $RZ}
     z80.dbus = z80.regs.b;
@@ -1626,6 +1853,8 @@ opcodes.set(0x71, {
   name: "LD (HL),C",
   bytes: "71",
   group: "Load 8bit",
+  doc: "[hl]:=c",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $ADDR, db: $RZ}
     z80.dbus = z80.regs.c;
@@ -1640,6 +1869,8 @@ opcodes.set(0x72, {
   name: "LD (HL),D",
   bytes: "72",
   group: "Load 8bit",
+  doc: "[hl]:=d",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $ADDR, db: $RZ}
     z80.dbus = z80.regs.d;
@@ -1654,6 +1885,8 @@ opcodes.set(0x73, {
   name: "LD (HL),E",
   bytes: "73",
   group: "Load 8bit",
+  doc: "[hl]:=e",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $ADDR, db: $RZ}
     z80.dbus = z80.regs.e;
@@ -1668,6 +1901,8 @@ opcodes.set(0x74, {
   name: "LD (HL),H",
   bytes: "74",
   group: "Load 8bit",
+  doc: "[hl]:=h",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $ADDR, db: $RZ}
     z80.dbus = z80.regs.h;
@@ -1682,6 +1917,8 @@ opcodes.set(0x75, {
   name: "LD (HL),L",
   bytes: "75",
   group: "Load 8bit",
+  doc: "[hl]:=l",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $ADDR, db: $RZ}
     z80.dbus = z80.regs.l;
@@ -1696,6 +1933,8 @@ opcodes.set(0x76, {
   name: "HALT",
   bytes: "76",
   group: "CPU Control",
+  doc: "Repeat NOP until interrupt",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.regs.halted=1;$PC--;"}
     z80.regs.halted = 1;
@@ -1709,6 +1948,8 @@ opcodes.set(0x77, {
   name: "LD (HL),A",
   bytes: "77",
   group: "Load 8bit",
+  doc: "[hl]:=a",
+  states: [7],
   fn: (z80) => {
     // mwrite: {ab: $ADDR, db: $RZ}
     z80.dbus = z80.regs.a;
@@ -1723,6 +1964,8 @@ opcodes.set(0x78, {
   name: "LD A,B",
   bytes: "78",
   group: "Load 8bit",
+  doc: "a:=b",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.a = z80.regs.b;
@@ -1735,6 +1978,8 @@ opcodes.set(0x79, {
   name: "LD A,C",
   bytes: "79",
   group: "Load 8bit",
+  doc: "a:=c",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.a = z80.regs.c;
@@ -1747,6 +1992,8 @@ opcodes.set(0x7a, {
   name: "LD A,D",
   bytes: "7a",
   group: "Load 8bit",
+  doc: "a:=d",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.a = z80.regs.d;
@@ -1759,6 +2006,8 @@ opcodes.set(0x7b, {
   name: "LD A,E",
   bytes: "7b",
   group: "Load 8bit",
+  doc: "a:=e",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.a = z80.regs.e;
@@ -1771,6 +2020,8 @@ opcodes.set(0x7c, {
   name: "LD A,H",
   bytes: "7c",
   group: "Load 8bit",
+  doc: "a:=h",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.a = z80.regs.h;
@@ -1783,6 +2034,8 @@ opcodes.set(0x7d, {
   name: "LD A,L",
   bytes: "7d",
   group: "Load 8bit",
+  doc: "a:=l",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.a = z80.regs.l;
@@ -1795,6 +2048,8 @@ opcodes.set(0x7e, {
   name: "LD A,(HL)",
   bytes: "7e",
   group: "Load 8bit",
+  doc: "a:=(HL)",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $RY}
     z80.abus = z80.regs.hl;
@@ -1809,6 +2064,8 @@ opcodes.set(0x7f, {
   name: "LD A,A",
   bytes: "7f",
   group: "Load 8bit",
+  doc: "a:=a",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$RY=$RZ"}
     z80.regs.a = z80.regs.a;
@@ -1821,6 +2078,9 @@ opcodes.set(0x80, {
   name: "ADD B",
   bytes: "80",
   group: "ALU 8bit",
+  doc: "A:=A $ALU b",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.b);
@@ -1833,6 +2093,9 @@ opcodes.set(0x81, {
   name: "ADD C",
   bytes: "81",
   group: "ALU 8bit",
+  doc: "A:=A $ALU c",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.c);
@@ -1845,6 +2108,9 @@ opcodes.set(0x82, {
   name: "ADD D",
   bytes: "82",
   group: "ALU 8bit",
+  doc: "A:=A $ALU d",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.d);
@@ -1857,6 +2123,9 @@ opcodes.set(0x83, {
   name: "ADD E",
   bytes: "83",
   group: "ALU 8bit",
+  doc: "A:=A $ALU e",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.e);
@@ -1869,6 +2138,9 @@ opcodes.set(0x84, {
   name: "ADD H",
   bytes: "84",
   group: "ALU 8bit",
+  doc: "A:=A $ALU h",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.h);
@@ -1881,6 +2153,9 @@ opcodes.set(0x85, {
   name: "ADD L",
   bytes: "85",
   group: "ALU 8bit",
+  doc: "A:=A $ALU l",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.l);
@@ -1893,6 +2168,9 @@ opcodes.set(0x86, {
   name: "ADD (HL)",
   bytes: "86",
   group: "ALU 8bit",
+  doc: "A:=A $ALU (HL)",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -1908,6 +2186,9 @@ opcodes.set(0x87, {
   name: "ADD A",
   bytes: "87",
   group: "ALU 8bit",
+  doc: "A:=A $ALU a",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.a);
@@ -1920,6 +2201,9 @@ opcodes.set(0x88, {
   name: "ADC B",
   bytes: "88",
   group: "ALU 8bit",
+  doc: "A:=A $ALU b",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.b);
@@ -1932,6 +2216,9 @@ opcodes.set(0x89, {
   name: "ADC C",
   bytes: "89",
   group: "ALU 8bit",
+  doc: "A:=A $ALU c",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.c);
@@ -1944,6 +2231,9 @@ opcodes.set(0x8a, {
   name: "ADC D",
   bytes: "8a",
   group: "ALU 8bit",
+  doc: "A:=A $ALU d",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.d);
@@ -1956,6 +2246,9 @@ opcodes.set(0x8b, {
   name: "ADC E",
   bytes: "8b",
   group: "ALU 8bit",
+  doc: "A:=A $ALU e",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.e);
@@ -1968,6 +2261,9 @@ opcodes.set(0x8c, {
   name: "ADC H",
   bytes: "8c",
   group: "ALU 8bit",
+  doc: "A:=A $ALU h",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.h);
@@ -1980,6 +2276,9 @@ opcodes.set(0x8d, {
   name: "ADC L",
   bytes: "8d",
   group: "ALU 8bit",
+  doc: "A:=A $ALU l",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.l);
@@ -1992,6 +2291,9 @@ opcodes.set(0x8e, {
   name: "ADC (HL)",
   bytes: "8e",
   group: "ALU 8bit",
+  doc: "A:=A $ALU (HL)",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -2007,6 +2309,9 @@ opcodes.set(0x8f, {
   name: "ADC A",
   bytes: "8f",
   group: "ALU 8bit",
+  doc: "A:=A $ALU a",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.a);
@@ -2019,6 +2324,9 @@ opcodes.set(0x90, {
   name: "SUB B",
   bytes: "90",
   group: "ALU 8bit",
+  doc: "A:=A $ALU b",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.b);
@@ -2031,6 +2339,9 @@ opcodes.set(0x91, {
   name: "SUB C",
   bytes: "91",
   group: "ALU 8bit",
+  doc: "A:=A $ALU c",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.c);
@@ -2043,6 +2354,9 @@ opcodes.set(0x92, {
   name: "SUB D",
   bytes: "92",
   group: "ALU 8bit",
+  doc: "A:=A $ALU d",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.d);
@@ -2055,6 +2369,9 @@ opcodes.set(0x93, {
   name: "SUB E",
   bytes: "93",
   group: "ALU 8bit",
+  doc: "A:=A $ALU e",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.e);
@@ -2067,6 +2384,9 @@ opcodes.set(0x94, {
   name: "SUB H",
   bytes: "94",
   group: "ALU 8bit",
+  doc: "A:=A $ALU h",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.h);
@@ -2079,6 +2399,9 @@ opcodes.set(0x95, {
   name: "SUB L",
   bytes: "95",
   group: "ALU 8bit",
+  doc: "A:=A $ALU l",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.l);
@@ -2091,6 +2414,9 @@ opcodes.set(0x96, {
   name: "SUB (HL)",
   bytes: "96",
   group: "ALU 8bit",
+  doc: "A:=A $ALU (HL)",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -2106,6 +2432,9 @@ opcodes.set(0x97, {
   name: "SUB A",
   bytes: "97",
   group: "ALU 8bit",
+  doc: "A:=A $ALU a",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.a);
@@ -2118,6 +2447,9 @@ opcodes.set(0x98, {
   name: "SBC B",
   bytes: "98",
   group: "ALU 8bit",
+  doc: "A:=A $ALU b",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.b);
@@ -2130,6 +2462,9 @@ opcodes.set(0x99, {
   name: "SBC C",
   bytes: "99",
   group: "ALU 8bit",
+  doc: "A:=A $ALU c",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.c);
@@ -2142,6 +2477,9 @@ opcodes.set(0x9a, {
   name: "SBC D",
   bytes: "9a",
   group: "ALU 8bit",
+  doc: "A:=A $ALU d",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.d);
@@ -2154,6 +2492,9 @@ opcodes.set(0x9b, {
   name: "SBC E",
   bytes: "9b",
   group: "ALU 8bit",
+  doc: "A:=A $ALU e",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.e);
@@ -2166,6 +2507,9 @@ opcodes.set(0x9c, {
   name: "SBC H",
   bytes: "9c",
   group: "ALU 8bit",
+  doc: "A:=A $ALU h",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.h);
@@ -2178,6 +2522,9 @@ opcodes.set(0x9d, {
   name: "SBC L",
   bytes: "9d",
   group: "ALU 8bit",
+  doc: "A:=A $ALU l",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.l);
@@ -2190,6 +2537,9 @@ opcodes.set(0x9e, {
   name: "SBC (HL)",
   bytes: "9e",
   group: "ALU 8bit",
+  doc: "A:=A $ALU (HL)",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -2205,6 +2555,9 @@ opcodes.set(0x9f, {
   name: "SBC A",
   bytes: "9f",
   group: "ALU 8bit",
+  doc: "A:=A $ALU a",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.a);
@@ -2217,6 +2570,9 @@ opcodes.set(0xa0, {
   name: "AND B",
   bytes: "a0",
   group: "ALU 8bit",
+  doc: "A:=A $ALU b",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.b);
@@ -2229,6 +2585,9 @@ opcodes.set(0xa1, {
   name: "AND C",
   bytes: "a1",
   group: "ALU 8bit",
+  doc: "A:=A $ALU c",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.c);
@@ -2241,6 +2600,9 @@ opcodes.set(0xa2, {
   name: "AND D",
   bytes: "a2",
   group: "ALU 8bit",
+  doc: "A:=A $ALU d",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.d);
@@ -2253,6 +2615,9 @@ opcodes.set(0xa3, {
   name: "AND E",
   bytes: "a3",
   group: "ALU 8bit",
+  doc: "A:=A $ALU e",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.e);
@@ -2265,6 +2630,9 @@ opcodes.set(0xa4, {
   name: "AND H",
   bytes: "a4",
   group: "ALU 8bit",
+  doc: "A:=A $ALU h",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.h);
@@ -2277,6 +2645,9 @@ opcodes.set(0xa5, {
   name: "AND L",
   bytes: "a5",
   group: "ALU 8bit",
+  doc: "A:=A $ALU l",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.l);
@@ -2289,6 +2660,9 @@ opcodes.set(0xa6, {
   name: "AND (HL)",
   bytes: "a6",
   group: "ALU 8bit",
+  doc: "A:=A $ALU (HL)",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -2304,6 +2678,9 @@ opcodes.set(0xa7, {
   name: "AND A",
   bytes: "a7",
   group: "ALU 8bit",
+  doc: "A:=A $ALU a",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.a);
@@ -2316,6 +2693,9 @@ opcodes.set(0xa8, {
   name: "XOR B",
   bytes: "a8",
   group: "ALU 8bit",
+  doc: "A:=A $ALU b",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.b);
@@ -2328,6 +2708,9 @@ opcodes.set(0xa9, {
   name: "XOR C",
   bytes: "a9",
   group: "ALU 8bit",
+  doc: "A:=A $ALU c",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.c);
@@ -2340,6 +2723,9 @@ opcodes.set(0xaa, {
   name: "XOR D",
   bytes: "aa",
   group: "ALU 8bit",
+  doc: "A:=A $ALU d",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.d);
@@ -2352,6 +2738,9 @@ opcodes.set(0xab, {
   name: "XOR E",
   bytes: "ab",
   group: "ALU 8bit",
+  doc: "A:=A $ALU e",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.e);
@@ -2364,6 +2753,9 @@ opcodes.set(0xac, {
   name: "XOR H",
   bytes: "ac",
   group: "ALU 8bit",
+  doc: "A:=A $ALU h",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.h);
@@ -2376,6 +2768,9 @@ opcodes.set(0xad, {
   name: "XOR L",
   bytes: "ad",
   group: "ALU 8bit",
+  doc: "A:=A $ALU l",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.l);
@@ -2388,6 +2783,9 @@ opcodes.set(0xae, {
   name: "XOR (HL)",
   bytes: "ae",
   group: "ALU 8bit",
+  doc: "A:=A $ALU (HL)",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -2403,6 +2801,9 @@ opcodes.set(0xaf, {
   name: "XOR A",
   bytes: "af",
   group: "ALU 8bit",
+  doc: "A:=A $ALU a",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.a);
@@ -2415,6 +2816,9 @@ opcodes.set(0xb0, {
   name: "OR B",
   bytes: "b0",
   group: "ALU 8bit",
+  doc: "A:=A $ALU b",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.b);
@@ -2427,6 +2831,9 @@ opcodes.set(0xb1, {
   name: "OR C",
   bytes: "b1",
   group: "ALU 8bit",
+  doc: "A:=A $ALU c",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.c);
@@ -2439,6 +2846,9 @@ opcodes.set(0xb2, {
   name: "OR D",
   bytes: "b2",
   group: "ALU 8bit",
+  doc: "A:=A $ALU d",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.d);
@@ -2451,6 +2861,9 @@ opcodes.set(0xb3, {
   name: "OR E",
   bytes: "b3",
   group: "ALU 8bit",
+  doc: "A:=A $ALU e",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.e);
@@ -2463,6 +2876,9 @@ opcodes.set(0xb4, {
   name: "OR H",
   bytes: "b4",
   group: "ALU 8bit",
+  doc: "A:=A $ALU h",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.h);
@@ -2475,6 +2891,9 @@ opcodes.set(0xb5, {
   name: "OR L",
   bytes: "b5",
   group: "ALU 8bit",
+  doc: "A:=A $ALU l",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.l);
@@ -2487,6 +2906,9 @@ opcodes.set(0xb6, {
   name: "OR (HL)",
   bytes: "b6",
   group: "ALU 8bit",
+  doc: "A:=A $ALU (HL)",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -2502,6 +2924,9 @@ opcodes.set(0xb7, {
   name: "OR A",
   bytes: "b7",
   group: "ALU 8bit",
+  doc: "A:=A $ALU a",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.a);
@@ -2514,6 +2939,9 @@ opcodes.set(0xb8, {
   name: "CP B",
   bytes: "b8",
   group: "ALU 8bit",
+  doc: "A:=A $ALU b",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.b);
@@ -2526,6 +2954,9 @@ opcodes.set(0xb9, {
   name: "CP C",
   bytes: "b9",
   group: "ALU 8bit",
+  doc: "A:=A $ALU c",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.c);
@@ -2538,6 +2969,9 @@ opcodes.set(0xba, {
   name: "CP D",
   bytes: "ba",
   group: "ALU 8bit",
+  doc: "A:=A $ALU d",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.d);
@@ -2550,6 +2984,9 @@ opcodes.set(0xbb, {
   name: "CP E",
   bytes: "bb",
   group: "ALU 8bit",
+  doc: "A:=A $ALU e",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.e);
@@ -2562,6 +2999,9 @@ opcodes.set(0xbc, {
   name: "CP H",
   bytes: "bc",
   group: "ALU 8bit",
+  doc: "A:=A $ALU h",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.h);
@@ -2574,6 +3014,9 @@ opcodes.set(0xbd, {
   name: "CP L",
   bytes: "bd",
   group: "ALU 8bit",
+  doc: "A:=A $ALU l",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.l);
@@ -2586,6 +3029,9 @@ opcodes.set(0xbe, {
   name: "CP (HL)",
   bytes: "be",
   group: "ALU 8bit",
+  doc: "A:=A $ALU (HL)",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -2601,6 +3047,9 @@ opcodes.set(0xbf, {
   name: "CP A",
   bytes: "bf",
   group: "ALU 8bit",
+  doc: "A:=A $ALU a",
+  flags: "***V0*",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.a);
@@ -2613,6 +3062,8 @@ opcodes.set(0xc0, {
   name: "RET NZ",
   bytes: "c0",
   group: "Control flow",
+  doc: "Return if NZ",
+  states: [11, 5],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "if (!$CC) return;"}
     z80.incTStateCount(1);
@@ -2637,6 +3088,8 @@ opcodes.set(0xc1, {
   name: "POP BC",
   bytes: "c1",
   group: "Load 16bit",
+  doc: "Pop stack [LowByte,HighByte] to bc",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $RP2L}
     z80.abus = z80.regs.sp;
@@ -2657,6 +3110,8 @@ opcodes.set(0xc2, {
   name: "JP NZ,$NN",
   bytes: "c2 XX XX",
   group: "Control flow",
+  doc: "Jump conditional to immediate: if NZ PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -2680,6 +3135,8 @@ opcodes.set(0xc3, {
   name: "JP $NN",
   bytes: "c3 XX XX",
   group: "Control flow",
+  doc: "Jump unconditional to immediate: PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -2701,6 +3158,8 @@ opcodes.set(0xc4, {
   name: "CALL NZ,$NN",
   bytes: "c4 XX XX",
   group: "Control flow",
+  doc: "Call conditional: if NZ push PC, PC=nn",
+  states: [17, 10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -2735,6 +3194,8 @@ opcodes.set(0xc5, {
   name: "PUSH BC",
   bytes: "c5",
   group: "Load 16bit",
+  doc: "Push bc to stack in order [LowHi]",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -2757,6 +3218,9 @@ opcodes.set(0xc6, {
   name: "ADD $N",
   bytes: "c6 XX",
   group: "ALU 8bit",
+  doc: "A:=A $ALU n",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -2772,8 +3236,9 @@ opcodes.set(0xc6, {
 opcodes.set(0xc7, {
   name: "RST 0X00",
   bytes: "c7",
-  doc: "push PC, PC=p",
-  group: "CPU control",
+  group: "Control Flow",
+  doc: "Restart: push PC, PC=p",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -2798,6 +3263,8 @@ opcodes.set(0xc8, {
   name: "RET Z",
   bytes: "c8",
   group: "Control flow",
+  doc: "Return if Z",
+  states: [11, 5],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "if (!$CC) return;"}
     z80.incTStateCount(1);
@@ -2822,6 +3289,8 @@ opcodes.set(0xc9, {
   name: "RET",
   bytes: "c9",
   group: "Control flow",
+  doc: "Return: POP SP",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL}
     z80.abus = z80.regs.sp;
@@ -2843,6 +3312,8 @@ opcodes.set(0xca, {
   name: "JP Z,$NN",
   bytes: "ca XX XX",
   group: "Control flow",
+  doc: "Jump conditional to immediate: if Z PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -2878,6 +3349,8 @@ opcodes.set(0xcc, {
   name: "CALL Z,$NN",
   bytes: "cc XX XX",
   group: "Control flow",
+  doc: "Call conditional: if Z push PC, PC=nn",
+  states: [17, 10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -2912,6 +3385,8 @@ opcodes.set(0xcd, {
   name: "CALL $NN",
   bytes: "cd XX XX",
   group: "Control flow",
+  doc: "Call unconditional: push SP,PC=nn",
+  states: [17],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -2944,6 +3419,9 @@ opcodes.set(0xce, {
   name: "ADC $N",
   bytes: "ce XX",
   group: "ALU 8bit",
+  doc: "A:=A $ALU n",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -2959,8 +3437,9 @@ opcodes.set(0xce, {
 opcodes.set(0xcf, {
   name: "RST 0X08",
   bytes: "cf",
-  doc: "push PC, PC=p",
-  group: "CPU control",
+  group: "Control Flow",
+  doc: "Restart: push PC, PC=p",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -2985,6 +3464,8 @@ opcodes.set(0xd0, {
   name: "RET NC",
   bytes: "d0",
   group: "Control flow",
+  doc: "Return if NC",
+  states: [11, 5],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "if (!$CC) return;"}
     z80.incTStateCount(1);
@@ -3009,6 +3490,8 @@ opcodes.set(0xd1, {
   name: "POP DE",
   bytes: "d1",
   group: "Load 16bit",
+  doc: "Pop stack [LowByte,HighByte] to de",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $RP2L}
     z80.abus = z80.regs.sp;
@@ -3029,6 +3512,8 @@ opcodes.set(0xd2, {
   name: "JP NC,$NN",
   bytes: "d2 XX XX",
   group: "Control flow",
+  doc: "Jump conditional to immediate: if NC PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3052,6 +3537,8 @@ opcodes.set(0xd3, {
   name: "OUT ($N),A",
   bytes: "d3 XX",
   group: "IO",
+  doc: "[N]:=A",
+  states: [11],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL, action: "$WZH=$A"}
     z80.abus = z80.regs.pc;
@@ -3073,6 +3560,8 @@ opcodes.set(0xd4, {
   name: "CALL NC,$NN",
   bytes: "d4 XX XX",
   group: "Control flow",
+  doc: "Call conditional: if NC push PC, PC=nn",
+  states: [17, 10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3107,6 +3596,8 @@ opcodes.set(0xd5, {
   name: "PUSH DE",
   bytes: "d5",
   group: "Load 16bit",
+  doc: "Push de to stack in order [LowHi]",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -3129,6 +3620,9 @@ opcodes.set(0xd6, {
   name: "SUB $N",
   bytes: "d6 XX",
   group: "ALU 8bit",
+  doc: "A:=A $ALU n",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -3144,8 +3638,9 @@ opcodes.set(0xd6, {
 opcodes.set(0xd7, {
   name: "RST 0X10",
   bytes: "d7",
-  doc: "push PC, PC=p",
-  group: "CPU control",
+  group: "Control Flow",
+  doc: "Restart: push PC, PC=p",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -3170,6 +3665,8 @@ opcodes.set(0xd8, {
   name: "RET C",
   bytes: "d8",
   group: "Control flow",
+  doc: "Return if C",
+  states: [11, 5],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "if (!$CC) return;"}
     z80.incTStateCount(1);
@@ -3193,8 +3690,9 @@ opcodes.set(0xd8, {
 opcodes.set(0xd9, {
   name: "EXX",
   bytes: "d9",
-  doc: "Swap registers/primes",
   group: "Transfer",
+  doc: "Swap BC/DE/HL with their prime",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.exx()"}
     z80.exx();
@@ -3207,6 +3705,8 @@ opcodes.set(0xda, {
   name: "JP C,$NN",
   bytes: "da XX XX",
   group: "Control flow",
+  doc: "Jump conditional to immediate: if C PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3230,6 +3730,8 @@ opcodes.set(0xdb, {
   name: "IN A,($N)",
   bytes: "db XX",
   group: "IO",
+  doc: "A:=[N]",
+  states: [11],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL, action: "$WZH=$A"}
     z80.abus = z80.regs.pc;
@@ -3251,6 +3753,8 @@ opcodes.set(0xdc, {
   name: "CALL C,$NN",
   bytes: "dc XX XX",
   group: "Control flow",
+  doc: "Call conditional: if C push PC, PC=nn",
+  states: [17, 10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3297,6 +3801,9 @@ opcodes.set(0xde, {
   name: "SBC $N",
   bytes: "de XX",
   group: "ALU 8bit",
+  doc: "A:=A $ALU n",
+  flags: "***V0*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -3312,8 +3819,9 @@ opcodes.set(0xde, {
 opcodes.set(0xdf, {
   name: "RST 0X18",
   bytes: "df",
-  doc: "push PC, PC=p",
-  group: "CPU control",
+  group: "Control Flow",
+  doc: "Restart: push PC, PC=p",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -3338,6 +3846,8 @@ opcodes.set(0xe0, {
   name: "RET PO",
   bytes: "e0",
   group: "Control flow",
+  doc: "Return if PO",
+  states: [11, 5],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "if (!$CC) return;"}
     z80.incTStateCount(1);
@@ -3362,6 +3872,8 @@ opcodes.set(0xe1, {
   name: "POP HL",
   bytes: "e1",
   group: "Load 16bit",
+  doc: "Pop stack [LowByte,HighByte] to hl",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $RP2L}
     z80.abus = z80.regs.sp;
@@ -3382,6 +3894,8 @@ opcodes.set(0xe2, {
   name: "JP PO,$NN",
   bytes: "e2 XX XX",
   group: "Control flow",
+  doc: "Jump conditional to immediate: if PO PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3405,6 +3919,8 @@ opcodes.set(0xe3, {
   name: "EX (SP),HL",
   bytes: "e3",
   group: "Transfer",
+  doc: "Exchange (SP)<->HL",
+  states: [19],
   fn: (z80) => {
     // mread: {ab: $SP, dst: $WZL}
     z80.abus = z80.regs.sp;
@@ -3434,6 +3950,8 @@ opcodes.set(0xe4, {
   name: "CALL PO,$NN",
   bytes: "e4 XX XX",
   group: "Control flow",
+  doc: "Call conditional: if PO push PC, PC=nn",
+  states: [17, 10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3468,6 +3986,8 @@ opcodes.set(0xe5, {
   name: "PUSH HL",
   bytes: "e5",
   group: "Load 16bit",
+  doc: "Push hl to stack in order [LowHi]",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -3490,6 +4010,9 @@ opcodes.set(0xe6, {
   name: "AND $N",
   bytes: "e6 XX",
   group: "ALU 8bit",
+  doc: "A:=A $ALU n",
+  flags: "***P00",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -3505,8 +4028,9 @@ opcodes.set(0xe6, {
 opcodes.set(0xe7, {
   name: "RST 0X20",
   bytes: "e7",
-  doc: "push PC, PC=p",
-  group: "CPU control",
+  group: "Control Flow",
+  doc: "Restart: push PC, PC=p",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -3531,6 +4055,8 @@ opcodes.set(0xe8, {
   name: "RET PE",
   bytes: "e8",
   group: "Control flow",
+  doc: "Return if PE",
+  states: [11, 5],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "if (!$CC) return;"}
     z80.incTStateCount(1);
@@ -3554,8 +4080,9 @@ opcodes.set(0xe8, {
 opcodes.set(0xe9, {
   name: "JP HL",
   bytes: "e9",
-  doc: "JMP if parity",
   group: "Control flow",
+  doc: "JMP if parity: PC=HL",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$PC=$HL"}
     z80.regs.pc = z80.regs.hl;
@@ -3568,6 +4095,8 @@ opcodes.set(0xea, {
   name: "JP PE,$NN",
   bytes: "ea XX XX",
   group: "Control flow",
+  doc: "Jump conditional to immediate: if PE PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3591,6 +4120,8 @@ opcodes.set(0xeb, {
   name: "EX DE,HL",
   bytes: "eb",
   group: "Transfer",
+  doc: "Exchange DE<->HL",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "z80.ex_de_hl()"}
     z80.ex_de_hl();
@@ -3603,6 +4134,8 @@ opcodes.set(0xec, {
   name: "CALL PE,$NN",
   bytes: "ec XX XX",
   group: "Control flow",
+  doc: "Call conditional: if PE push PC, PC=nn",
+  states: [17, 10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3649,6 +4182,9 @@ opcodes.set(0xee, {
   name: "XOR $N",
   bytes: "ee XX",
   group: "ALU 8bit",
+  doc: "A:=A $ALU n",
+  flags: "***P00",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -3664,8 +4200,9 @@ opcodes.set(0xee, {
 opcodes.set(0xef, {
   name: "RST 0X28",
   bytes: "ef",
-  doc: "push PC, PC=p",
-  group: "CPU control",
+  group: "Control Flow",
+  doc: "Restart: push PC, PC=p",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -3690,6 +4227,8 @@ opcodes.set(0xf0, {
   name: "RET P",
   bytes: "f0",
   group: "Control flow",
+  doc: "Return if P",
+  states: [11, 5],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "if (!$CC) return;"}
     z80.incTStateCount(1);
@@ -3714,6 +4253,8 @@ opcodes.set(0xf1, {
   name: "POP AF",
   bytes: "f1",
   group: "Load 16bit",
+  doc: "Pop stack [LowByte,HighByte] to af",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $RP2L}
     z80.abus = z80.regs.sp;
@@ -3734,6 +4275,8 @@ opcodes.set(0xf2, {
   name: "JP P,$NN",
   bytes: "f2 XX XX",
   group: "Control flow",
+  doc: "Jump conditional to immediate: if P PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3756,8 +4299,9 @@ opcodes.set(0xf2, {
 opcodes.set(0xf3, {
   name: "DI",
   bytes: "f3",
-  doc: "Disable interrupts",
   group: "CPU Control",
+  doc: "Disable interrupts",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$IFF1=0; $IFF2=0"}
     z80.regs.iff1 = 0;
@@ -3771,6 +4315,8 @@ opcodes.set(0xf4, {
   name: "CALL P,$NN",
   bytes: "f4 XX XX",
   group: "Control flow",
+  doc: "Call conditional: if P push PC, PC=nn",
+  states: [17, 10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3805,6 +4351,8 @@ opcodes.set(0xf5, {
   name: "PUSH AF",
   bytes: "f5",
   group: "Load 16bit",
+  doc: "Push af to stack in order [LowHi]",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -3827,6 +4375,9 @@ opcodes.set(0xf6, {
   name: "OR $N",
   bytes: "f6 XX",
   group: "ALU 8bit",
+  doc: "A:=A $ALU n",
+  flags: "***V1*",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -3842,8 +4393,9 @@ opcodes.set(0xf6, {
 opcodes.set(0xf7, {
   name: "RST 0X30",
   bytes: "f7",
-  doc: "push PC, PC=p",
-  group: "CPU control",
+  group: "Control Flow",
+  doc: "Restart: push PC, PC=p",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -3868,6 +4420,8 @@ opcodes.set(0xf8, {
   name: "RET M",
   bytes: "f8",
   group: "Control flow",
+  doc: "Return if M",
+  states: [11, 5],
   fn: (z80) => {
     // generic: {tcycles: 1, action: "if (!$CC) return;"}
     z80.incTStateCount(1);
@@ -3892,6 +4446,8 @@ opcodes.set(0xf9, {
   name: "LD SP,HL",
   bytes: "f9",
   group: "Load 16bit",
+  doc: "SP:=HL",
+  states: [6],
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$SP=$HL"}
     z80.incTStateCount(2);
@@ -3905,6 +4461,8 @@ opcodes.set(0xfa, {
   name: "JP M,$NN",
   bytes: "fa XX XX",
   group: "Control flow",
+  doc: "Jump conditional to immediate: if M PC=nn",
+  states: [10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3927,8 +4485,9 @@ opcodes.set(0xfa, {
 opcodes.set(0xfb, {
   name: "EI",
   bytes: "fb",
-  doc: "Enable interrupts",
   group: "CPU Control",
+  doc: "Enable interrupts",
+  states: [4],
   fn: (z80) => {
     // overlapped: {action: "$IFF1=1; $IFF2=1"}
     z80.regs.iff1 = 1;
@@ -3942,6 +4501,8 @@ opcodes.set(0xfc, {
   name: "CALL M,$NN",
   bytes: "fc XX XX",
   group: "Control flow",
+  doc: "Call conditional: if M push PC, PC=nn",
+  states: [17, 10],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -3988,6 +4549,9 @@ opcodes.set(0xfe, {
   name: "CP $N",
   bytes: "fe XX",
   group: "ALU 8bit",
+  doc: "A:=A $ALU n",
+  flags: "***P00",
+  states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
     z80.abus = z80.regs.pc;
@@ -4003,8 +4567,9 @@ opcodes.set(0xfe, {
 opcodes.set(0xff, {
   name: "RST 0X38",
   bytes: "ff",
-  doc: "push PC, PC=p",
-  group: "CPU control",
+  group: "Control Flow",
+  doc: "Restart: push PC, PC=p",
+  states: [11],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -4028,8 +4593,10 @@ opcodes.set(0xff, {
 opcodes.set(0xcb00, {
   name: "RLC B",
   bytes: "cb 00",
-  doc: "Rotate left through carry b",
   group: "RT/SH 8bit",
+  doc: "Rotate left through carry b",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.b = z80.alu.rlc(z80.regs.b);
@@ -4041,8 +4608,10 @@ opcodes.set(0xcb00, {
 opcodes.set(0xcb01, {
   name: "RLC C",
   bytes: "cb 01",
-  doc: "Rotate left through carry c",
   group: "RT/SH 8bit",
+  doc: "Rotate left through carry c",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.c = z80.alu.rlc(z80.regs.c);
@@ -4054,8 +4623,10 @@ opcodes.set(0xcb01, {
 opcodes.set(0xcb02, {
   name: "RLC D",
   bytes: "cb 02",
-  doc: "Rotate left through carry d",
   group: "RT/SH 8bit",
+  doc: "Rotate left through carry d",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.d = z80.alu.rlc(z80.regs.d);
@@ -4067,8 +4638,10 @@ opcodes.set(0xcb02, {
 opcodes.set(0xcb03, {
   name: "RLC E",
   bytes: "cb 03",
-  doc: "Rotate left through carry e",
   group: "RT/SH 8bit",
+  doc: "Rotate left through carry e",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.e = z80.alu.rlc(z80.regs.e);
@@ -4080,8 +4653,10 @@ opcodes.set(0xcb03, {
 opcodes.set(0xcb04, {
   name: "RLC H",
   bytes: "cb 04",
-  doc: "Rotate left through carry h",
   group: "RT/SH 8bit",
+  doc: "Rotate left through carry h",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.h = z80.alu.rlc(z80.regs.h);
@@ -4093,8 +4668,10 @@ opcodes.set(0xcb04, {
 opcodes.set(0xcb05, {
   name: "RLC L",
   bytes: "cb 05",
-  doc: "Rotate left through carry l",
   group: "RT/SH 8bit",
+  doc: "Rotate left through carry l",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.l = z80.alu.rlc(z80.regs.l);
@@ -4106,8 +4683,10 @@ opcodes.set(0xcb05, {
 opcodes.set(0xcb06, {
   name: "RLC (HL)",
   bytes: "cb 06",
-  doc: "Rotate left through carry (HL)",
   group: "RT/SH 8bit",
+  doc: "Rotate left through carry (HL)",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -4126,8 +4705,10 @@ opcodes.set(0xcb06, {
 opcodes.set(0xcb07, {
   name: "RLC A",
   bytes: "cb 07",
-  doc: "Rotate left through carry a",
   group: "RT/SH 8bit",
+  doc: "Rotate left through carry a",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.a = z80.alu.rlc(z80.regs.a);
@@ -4139,8 +4720,10 @@ opcodes.set(0xcb07, {
 opcodes.set(0xcb08, {
   name: "RRC B",
   bytes: "cb 08",
-  doc: "Rotate right through carry b",
   group: "RT/SH 8bit",
+  doc: "Rotate right through carry b",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.b = z80.alu.rrc(z80.regs.b);
@@ -4152,8 +4735,10 @@ opcodes.set(0xcb08, {
 opcodes.set(0xcb09, {
   name: "RRC C",
   bytes: "cb 09",
-  doc: "Rotate right through carry c",
   group: "RT/SH 8bit",
+  doc: "Rotate right through carry c",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.c = z80.alu.rrc(z80.regs.c);
@@ -4165,8 +4750,10 @@ opcodes.set(0xcb09, {
 opcodes.set(0xcb0a, {
   name: "RRC D",
   bytes: "cb 0a",
-  doc: "Rotate right through carry d",
   group: "RT/SH 8bit",
+  doc: "Rotate right through carry d",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.d = z80.alu.rrc(z80.regs.d);
@@ -4178,8 +4765,10 @@ opcodes.set(0xcb0a, {
 opcodes.set(0xcb0b, {
   name: "RRC E",
   bytes: "cb 0b",
-  doc: "Rotate right through carry e",
   group: "RT/SH 8bit",
+  doc: "Rotate right through carry e",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.e = z80.alu.rrc(z80.regs.e);
@@ -4191,8 +4780,10 @@ opcodes.set(0xcb0b, {
 opcodes.set(0xcb0c, {
   name: "RRC H",
   bytes: "cb 0c",
-  doc: "Rotate right through carry h",
   group: "RT/SH 8bit",
+  doc: "Rotate right through carry h",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.h = z80.alu.rrc(z80.regs.h);
@@ -4204,8 +4795,10 @@ opcodes.set(0xcb0c, {
 opcodes.set(0xcb0d, {
   name: "RRC L",
   bytes: "cb 0d",
-  doc: "Rotate right through carry l",
   group: "RT/SH 8bit",
+  doc: "Rotate right through carry l",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.l = z80.alu.rrc(z80.regs.l);
@@ -4217,8 +4810,10 @@ opcodes.set(0xcb0d, {
 opcodes.set(0xcb0e, {
   name: "RRC (HL)",
   bytes: "cb 0e",
-  doc: "Rotate right through carry (HL)",
   group: "RT/SH 8bit",
+  doc: "Rotate right through carry (HL)",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -4237,8 +4832,10 @@ opcodes.set(0xcb0e, {
 opcodes.set(0xcb0f, {
   name: "RRC A",
   bytes: "cb 0f",
-  doc: "Rotate right through carry a",
   group: "RT/SH 8bit",
+  doc: "Rotate right through carry a",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.a = z80.alu.rrc(z80.regs.a);
@@ -4250,8 +4847,10 @@ opcodes.set(0xcb0f, {
 opcodes.set(0xcb10, {
   name: "RL B",
   bytes: "cb 10",
-  doc: "Rotate left from carry b",
   group: "RT/SH 8bit",
+  doc: "Rotate left from carry b",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.b = z80.alu.rl(z80.regs.b);
@@ -4263,8 +4862,10 @@ opcodes.set(0xcb10, {
 opcodes.set(0xcb11, {
   name: "RL C",
   bytes: "cb 11",
-  doc: "Rotate left from carry c",
   group: "RT/SH 8bit",
+  doc: "Rotate left from carry c",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.c = z80.alu.rl(z80.regs.c);
@@ -4276,8 +4877,10 @@ opcodes.set(0xcb11, {
 opcodes.set(0xcb12, {
   name: "RL D",
   bytes: "cb 12",
-  doc: "Rotate left from carry d",
   group: "RT/SH 8bit",
+  doc: "Rotate left from carry d",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.d = z80.alu.rl(z80.regs.d);
@@ -4289,8 +4892,10 @@ opcodes.set(0xcb12, {
 opcodes.set(0xcb13, {
   name: "RL E",
   bytes: "cb 13",
-  doc: "Rotate left from carry e",
   group: "RT/SH 8bit",
+  doc: "Rotate left from carry e",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.e = z80.alu.rl(z80.regs.e);
@@ -4302,8 +4907,10 @@ opcodes.set(0xcb13, {
 opcodes.set(0xcb14, {
   name: "RL H",
   bytes: "cb 14",
-  doc: "Rotate left from carry h",
   group: "RT/SH 8bit",
+  doc: "Rotate left from carry h",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.h = z80.alu.rl(z80.regs.h);
@@ -4315,8 +4922,10 @@ opcodes.set(0xcb14, {
 opcodes.set(0xcb15, {
   name: "RL L",
   bytes: "cb 15",
-  doc: "Rotate left from carry l",
   group: "RT/SH 8bit",
+  doc: "Rotate left from carry l",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.l = z80.alu.rl(z80.regs.l);
@@ -4328,8 +4937,10 @@ opcodes.set(0xcb15, {
 opcodes.set(0xcb16, {
   name: "RL (HL)",
   bytes: "cb 16",
-  doc: "Rotate left from carry (HL)",
   group: "RT/SH 8bit",
+  doc: "Rotate left from carry (HL)",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -4348,8 +4959,10 @@ opcodes.set(0xcb16, {
 opcodes.set(0xcb17, {
   name: "RL A",
   bytes: "cb 17",
-  doc: "Rotate left from carry a",
   group: "RT/SH 8bit",
+  doc: "Rotate left from carry a",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.a = z80.alu.rl(z80.regs.a);
@@ -4361,8 +4974,10 @@ opcodes.set(0xcb17, {
 opcodes.set(0xcb18, {
   name: "RR B",
   bytes: "cb 18",
-  doc: "Rotate right from carry b",
   group: "RT/SH 8bit",
+  doc: "Rotate right from carry b",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.b = z80.alu.rr(z80.regs.b);
@@ -4374,8 +4989,10 @@ opcodes.set(0xcb18, {
 opcodes.set(0xcb19, {
   name: "RR C",
   bytes: "cb 19",
-  doc: "Rotate right from carry c",
   group: "RT/SH 8bit",
+  doc: "Rotate right from carry c",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.c = z80.alu.rr(z80.regs.c);
@@ -4387,8 +5004,10 @@ opcodes.set(0xcb19, {
 opcodes.set(0xcb1a, {
   name: "RR D",
   bytes: "cb 1a",
-  doc: "Rotate right from carry d",
   group: "RT/SH 8bit",
+  doc: "Rotate right from carry d",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.d = z80.alu.rr(z80.regs.d);
@@ -4400,8 +5019,10 @@ opcodes.set(0xcb1a, {
 opcodes.set(0xcb1b, {
   name: "RR E",
   bytes: "cb 1b",
-  doc: "Rotate right from carry e",
   group: "RT/SH 8bit",
+  doc: "Rotate right from carry e",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.e = z80.alu.rr(z80.regs.e);
@@ -4413,8 +5034,10 @@ opcodes.set(0xcb1b, {
 opcodes.set(0xcb1c, {
   name: "RR H",
   bytes: "cb 1c",
-  doc: "Rotate right from carry h",
   group: "RT/SH 8bit",
+  doc: "Rotate right from carry h",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.h = z80.alu.rr(z80.regs.h);
@@ -4426,8 +5049,10 @@ opcodes.set(0xcb1c, {
 opcodes.set(0xcb1d, {
   name: "RR L",
   bytes: "cb 1d",
-  doc: "Rotate right from carry l",
   group: "RT/SH 8bit",
+  doc: "Rotate right from carry l",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.l = z80.alu.rr(z80.regs.l);
@@ -4439,8 +5064,10 @@ opcodes.set(0xcb1d, {
 opcodes.set(0xcb1e, {
   name: "RR (HL)",
   bytes: "cb 1e",
-  doc: "Rotate right from carry (HL)",
   group: "RT/SH 8bit",
+  doc: "Rotate right from carry (HL)",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -4459,8 +5086,10 @@ opcodes.set(0xcb1e, {
 opcodes.set(0xcb1f, {
   name: "RR A",
   bytes: "cb 1f",
-  doc: "Rotate right from carry a",
   group: "RT/SH 8bit",
+  doc: "Rotate right from carry a",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.a = z80.alu.rr(z80.regs.a);
@@ -4472,8 +5101,10 @@ opcodes.set(0xcb1f, {
 opcodes.set(0xcb20, {
   name: "SLA B",
   bytes: "cb 20",
-  doc: "Shift left arithmetic b",
   group: "RT/SH 8bit",
+  doc: "Shift left arithmetic b",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.b = z80.alu.sla(z80.regs.b);
@@ -4485,8 +5116,10 @@ opcodes.set(0xcb20, {
 opcodes.set(0xcb21, {
   name: "SLA C",
   bytes: "cb 21",
-  doc: "Shift left arithmetic c",
   group: "RT/SH 8bit",
+  doc: "Shift left arithmetic c",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.c = z80.alu.sla(z80.regs.c);
@@ -4498,8 +5131,10 @@ opcodes.set(0xcb21, {
 opcodes.set(0xcb22, {
   name: "SLA D",
   bytes: "cb 22",
-  doc: "Shift left arithmetic d",
   group: "RT/SH 8bit",
+  doc: "Shift left arithmetic d",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.d = z80.alu.sla(z80.regs.d);
@@ -4511,8 +5146,10 @@ opcodes.set(0xcb22, {
 opcodes.set(0xcb23, {
   name: "SLA E",
   bytes: "cb 23",
-  doc: "Shift left arithmetic e",
   group: "RT/SH 8bit",
+  doc: "Shift left arithmetic e",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.e = z80.alu.sla(z80.regs.e);
@@ -4524,8 +5161,10 @@ opcodes.set(0xcb23, {
 opcodes.set(0xcb24, {
   name: "SLA H",
   bytes: "cb 24",
-  doc: "Shift left arithmetic h",
   group: "RT/SH 8bit",
+  doc: "Shift left arithmetic h",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.h = z80.alu.sla(z80.regs.h);
@@ -4537,8 +5176,10 @@ opcodes.set(0xcb24, {
 opcodes.set(0xcb25, {
   name: "SLA L",
   bytes: "cb 25",
-  doc: "Shift left arithmetic l",
   group: "RT/SH 8bit",
+  doc: "Shift left arithmetic l",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.l = z80.alu.sla(z80.regs.l);
@@ -4550,8 +5191,10 @@ opcodes.set(0xcb25, {
 opcodes.set(0xcb26, {
   name: "SLA (HL)",
   bytes: "cb 26",
-  doc: "Shift left arithmetic (HL)",
   group: "RT/SH 8bit",
+  doc: "Shift left arithmetic (HL)",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -4570,8 +5213,10 @@ opcodes.set(0xcb26, {
 opcodes.set(0xcb27, {
   name: "SLA A",
   bytes: "cb 27",
-  doc: "Shift left arithmetic a",
   group: "RT/SH 8bit",
+  doc: "Shift left arithmetic a",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.a = z80.alu.sla(z80.regs.a);
@@ -4583,8 +5228,10 @@ opcodes.set(0xcb27, {
 opcodes.set(0xcb28, {
   name: "SRA B",
   bytes: "cb 28",
-  doc: "Shift right arithmetic b",
   group: "RT/SH 8bit",
+  doc: "Shift right arithmetic b",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.b = z80.alu.sra(z80.regs.b);
@@ -4596,8 +5243,10 @@ opcodes.set(0xcb28, {
 opcodes.set(0xcb29, {
   name: "SRA C",
   bytes: "cb 29",
-  doc: "Shift right arithmetic c",
   group: "RT/SH 8bit",
+  doc: "Shift right arithmetic c",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.c = z80.alu.sra(z80.regs.c);
@@ -4609,8 +5258,10 @@ opcodes.set(0xcb29, {
 opcodes.set(0xcb2a, {
   name: "SRA D",
   bytes: "cb 2a",
-  doc: "Shift right arithmetic d",
   group: "RT/SH 8bit",
+  doc: "Shift right arithmetic d",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.d = z80.alu.sra(z80.regs.d);
@@ -4622,8 +5273,10 @@ opcodes.set(0xcb2a, {
 opcodes.set(0xcb2b, {
   name: "SRA E",
   bytes: "cb 2b",
-  doc: "Shift right arithmetic e",
   group: "RT/SH 8bit",
+  doc: "Shift right arithmetic e",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.e = z80.alu.sra(z80.regs.e);
@@ -4635,8 +5288,10 @@ opcodes.set(0xcb2b, {
 opcodes.set(0xcb2c, {
   name: "SRA H",
   bytes: "cb 2c",
-  doc: "Shift right arithmetic h",
   group: "RT/SH 8bit",
+  doc: "Shift right arithmetic h",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.h = z80.alu.sra(z80.regs.h);
@@ -4648,8 +5303,10 @@ opcodes.set(0xcb2c, {
 opcodes.set(0xcb2d, {
   name: "SRA L",
   bytes: "cb 2d",
-  doc: "Shift right arithmetic l",
   group: "RT/SH 8bit",
+  doc: "Shift right arithmetic l",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.l = z80.alu.sra(z80.regs.l);
@@ -4661,8 +5318,10 @@ opcodes.set(0xcb2d, {
 opcodes.set(0xcb2e, {
   name: "SRA (HL)",
   bytes: "cb 2e",
-  doc: "Shift right arithmetic (HL)",
   group: "RT/SH 8bit",
+  doc: "Shift right arithmetic (HL)",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -4681,8 +5340,10 @@ opcodes.set(0xcb2e, {
 opcodes.set(0xcb2f, {
   name: "SRA A",
   bytes: "cb 2f",
-  doc: "Shift right arithmetic a",
   group: "RT/SH 8bit",
+  doc: "Shift right arithmetic a",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.a = z80.alu.sra(z80.regs.a);
@@ -4694,8 +5355,10 @@ opcodes.set(0xcb2f, {
 opcodes.set(0xcb30, {
   name: "SLL B",
   bytes: "cb 30",
-  doc: "Shift left logical b",
   group: "RT/SH 8bit",
+  doc: "Shift left logical b",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.b = z80.alu.sll(z80.regs.b);
@@ -4707,8 +5370,10 @@ opcodes.set(0xcb30, {
 opcodes.set(0xcb31, {
   name: "SLL C",
   bytes: "cb 31",
-  doc: "Shift left logical c",
   group: "RT/SH 8bit",
+  doc: "Shift left logical c",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.c = z80.alu.sll(z80.regs.c);
@@ -4720,8 +5385,10 @@ opcodes.set(0xcb31, {
 opcodes.set(0xcb32, {
   name: "SLL D",
   bytes: "cb 32",
-  doc: "Shift left logical d",
   group: "RT/SH 8bit",
+  doc: "Shift left logical d",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.d = z80.alu.sll(z80.regs.d);
@@ -4733,8 +5400,10 @@ opcodes.set(0xcb32, {
 opcodes.set(0xcb33, {
   name: "SLL E",
   bytes: "cb 33",
-  doc: "Shift left logical e",
   group: "RT/SH 8bit",
+  doc: "Shift left logical e",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.e = z80.alu.sll(z80.regs.e);
@@ -4746,8 +5415,10 @@ opcodes.set(0xcb33, {
 opcodes.set(0xcb34, {
   name: "SLL H",
   bytes: "cb 34",
-  doc: "Shift left logical h",
   group: "RT/SH 8bit",
+  doc: "Shift left logical h",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.h = z80.alu.sll(z80.regs.h);
@@ -4759,8 +5430,10 @@ opcodes.set(0xcb34, {
 opcodes.set(0xcb35, {
   name: "SLL L",
   bytes: "cb 35",
-  doc: "Shift left logical l",
   group: "RT/SH 8bit",
+  doc: "Shift left logical l",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.l = z80.alu.sll(z80.regs.l);
@@ -4772,8 +5445,10 @@ opcodes.set(0xcb35, {
 opcodes.set(0xcb36, {
   name: "SLL (HL)",
   bytes: "cb 36",
-  doc: "Shift left logical (HL)",
   group: "RT/SH 8bit",
+  doc: "Shift left logical (HL)",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -4792,8 +5467,10 @@ opcodes.set(0xcb36, {
 opcodes.set(0xcb37, {
   name: "SLL A",
   bytes: "cb 37",
-  doc: "Shift left logical a",
   group: "RT/SH 8bit",
+  doc: "Shift left logical a",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.a = z80.alu.sll(z80.regs.a);
@@ -4805,8 +5482,10 @@ opcodes.set(0xcb37, {
 opcodes.set(0xcb38, {
   name: "SRL B",
   bytes: "cb 38",
-  doc: "Shift right logical b",
   group: "RT/SH 8bit",
+  doc: "Shift right logical b",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.b = z80.alu.srl(z80.regs.b);
@@ -4818,8 +5497,10 @@ opcodes.set(0xcb38, {
 opcodes.set(0xcb39, {
   name: "SRL C",
   bytes: "cb 39",
-  doc: "Shift right logical c",
   group: "RT/SH 8bit",
+  doc: "Shift right logical c",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.c = z80.alu.srl(z80.regs.c);
@@ -4831,8 +5512,10 @@ opcodes.set(0xcb39, {
 opcodes.set(0xcb3a, {
   name: "SRL D",
   bytes: "cb 3a",
-  doc: "Shift right logical d",
   group: "RT/SH 8bit",
+  doc: "Shift right logical d",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.d = z80.alu.srl(z80.regs.d);
@@ -4844,8 +5527,10 @@ opcodes.set(0xcb3a, {
 opcodes.set(0xcb3b, {
   name: "SRL E",
   bytes: "cb 3b",
-  doc: "Shift right logical e",
   group: "RT/SH 8bit",
+  doc: "Shift right logical e",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.e = z80.alu.srl(z80.regs.e);
@@ -4857,8 +5542,10 @@ opcodes.set(0xcb3b, {
 opcodes.set(0xcb3c, {
   name: "SRL H",
   bytes: "cb 3c",
-  doc: "Shift right logical h",
   group: "RT/SH 8bit",
+  doc: "Shift right logical h",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.h = z80.alu.srl(z80.regs.h);
@@ -4870,8 +5557,10 @@ opcodes.set(0xcb3c, {
 opcodes.set(0xcb3d, {
   name: "SRL L",
   bytes: "cb 3d",
-  doc: "Shift right logical l",
   group: "RT/SH 8bit",
+  doc: "Shift right logical l",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.l = z80.alu.srl(z80.regs.l);
@@ -4883,8 +5572,10 @@ opcodes.set(0xcb3d, {
 opcodes.set(0xcb3e, {
   name: "SRL (HL)",
   bytes: "cb 3e",
-  doc: "Shift right logical (HL)",
   group: "RT/SH 8bit",
+  doc: "Shift right logical (HL)",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -4903,8 +5594,10 @@ opcodes.set(0xcb3e, {
 opcodes.set(0xcb3f, {
   name: "SRL A",
   bytes: "cb 3f",
-  doc: "Shift right logical a",
   group: "RT/SH 8bit",
+  doc: "Shift right logical a",
+  flags: "**0P0*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=$ROT($RZ)"}
     z80.regs.a = z80.alu.srl(z80.regs.a);
@@ -4916,8 +5609,10 @@ opcodes.set(0xcb3f, {
 opcodes.set(0xcb40, {
   name: "BIT 0,B",
   bytes: "cb 40",
+  group: "Bits",
   doc: "f.Z = bit 0 in register b2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x1, z80.regs.b);
@@ -4929,8 +5624,10 @@ opcodes.set(0xcb40, {
 opcodes.set(0xcb41, {
   name: "BIT 0,C",
   bytes: "cb 41",
+  group: "Bits",
   doc: "f.Z = bit 0 in register c2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x1, z80.regs.c);
@@ -4942,8 +5639,10 @@ opcodes.set(0xcb41, {
 opcodes.set(0xcb42, {
   name: "BIT 0,D",
   bytes: "cb 42",
+  group: "Bits",
   doc: "f.Z = bit 0 in register d2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x1, z80.regs.d);
@@ -4955,8 +5654,10 @@ opcodes.set(0xcb42, {
 opcodes.set(0xcb43, {
   name: "BIT 0,E",
   bytes: "cb 43",
+  group: "Bits",
   doc: "f.Z = bit 0 in register e2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x1, z80.regs.e);
@@ -4968,8 +5669,10 @@ opcodes.set(0xcb43, {
 opcodes.set(0xcb44, {
   name: "BIT 0,H",
   bytes: "cb 44",
+  group: "Bits",
   doc: "f.Z = bit 0 in register h2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x1, z80.regs.h);
@@ -4981,8 +5684,10 @@ opcodes.set(0xcb44, {
 opcodes.set(0xcb45, {
   name: "BIT 0,L",
   bytes: "cb 45",
+  group: "Bits",
   doc: "f.Z = bit 0 in register l2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x1, z80.regs.l);
@@ -4994,8 +5699,10 @@ opcodes.set(0xcb45, {
 opcodes.set(0xcb46, {
   name: "BIT 0,(HL)",
   bytes: "cb 46",
+  group: "Bits",
   doc: "f.Z = bit 0 of (HL)",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5011,8 +5718,10 @@ opcodes.set(0xcb46, {
 opcodes.set(0xcb47, {
   name: "BIT 0,A",
   bytes: "cb 47",
+  group: "Bits",
   doc: "f.Z = bit 0 in register a2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x1, z80.regs.a);
@@ -5024,8 +5733,10 @@ opcodes.set(0xcb47, {
 opcodes.set(0xcb48, {
   name: "BIT 1,B",
   bytes: "cb 48",
+  group: "Bits",
   doc: "f.Z = bit 1 in register b2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x2, z80.regs.b);
@@ -5037,8 +5748,10 @@ opcodes.set(0xcb48, {
 opcodes.set(0xcb49, {
   name: "BIT 1,C",
   bytes: "cb 49",
+  group: "Bits",
   doc: "f.Z = bit 1 in register c2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x2, z80.regs.c);
@@ -5050,8 +5763,10 @@ opcodes.set(0xcb49, {
 opcodes.set(0xcb4a, {
   name: "BIT 1,D",
   bytes: "cb 4a",
+  group: "Bits",
   doc: "f.Z = bit 1 in register d2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x2, z80.regs.d);
@@ -5063,8 +5778,10 @@ opcodes.set(0xcb4a, {
 opcodes.set(0xcb4b, {
   name: "BIT 1,E",
   bytes: "cb 4b",
+  group: "Bits",
   doc: "f.Z = bit 1 in register e2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x2, z80.regs.e);
@@ -5076,8 +5793,10 @@ opcodes.set(0xcb4b, {
 opcodes.set(0xcb4c, {
   name: "BIT 1,H",
   bytes: "cb 4c",
+  group: "Bits",
   doc: "f.Z = bit 1 in register h2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x2, z80.regs.h);
@@ -5089,8 +5808,10 @@ opcodes.set(0xcb4c, {
 opcodes.set(0xcb4d, {
   name: "BIT 1,L",
   bytes: "cb 4d",
+  group: "Bits",
   doc: "f.Z = bit 1 in register l2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x2, z80.regs.l);
@@ -5102,8 +5823,10 @@ opcodes.set(0xcb4d, {
 opcodes.set(0xcb4e, {
   name: "BIT 1,(HL)",
   bytes: "cb 4e",
+  group: "Bits",
   doc: "f.Z = bit 1 of (HL)",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5119,8 +5842,10 @@ opcodes.set(0xcb4e, {
 opcodes.set(0xcb4f, {
   name: "BIT 1,A",
   bytes: "cb 4f",
+  group: "Bits",
   doc: "f.Z = bit 1 in register a2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x2, z80.regs.a);
@@ -5132,8 +5857,10 @@ opcodes.set(0xcb4f, {
 opcodes.set(0xcb50, {
   name: "BIT 2,B",
   bytes: "cb 50",
+  group: "Bits",
   doc: "f.Z = bit 2 in register b2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x4, z80.regs.b);
@@ -5145,8 +5872,10 @@ opcodes.set(0xcb50, {
 opcodes.set(0xcb51, {
   name: "BIT 2,C",
   bytes: "cb 51",
+  group: "Bits",
   doc: "f.Z = bit 2 in register c2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x4, z80.regs.c);
@@ -5158,8 +5887,10 @@ opcodes.set(0xcb51, {
 opcodes.set(0xcb52, {
   name: "BIT 2,D",
   bytes: "cb 52",
+  group: "Bits",
   doc: "f.Z = bit 2 in register d2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x4, z80.regs.d);
@@ -5171,8 +5902,10 @@ opcodes.set(0xcb52, {
 opcodes.set(0xcb53, {
   name: "BIT 2,E",
   bytes: "cb 53",
+  group: "Bits",
   doc: "f.Z = bit 2 in register e2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x4, z80.regs.e);
@@ -5184,8 +5917,10 @@ opcodes.set(0xcb53, {
 opcodes.set(0xcb54, {
   name: "BIT 2,H",
   bytes: "cb 54",
+  group: "Bits",
   doc: "f.Z = bit 2 in register h2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x4, z80.regs.h);
@@ -5197,8 +5932,10 @@ opcodes.set(0xcb54, {
 opcodes.set(0xcb55, {
   name: "BIT 2,L",
   bytes: "cb 55",
+  group: "Bits",
   doc: "f.Z = bit 2 in register l2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x4, z80.regs.l);
@@ -5210,8 +5947,10 @@ opcodes.set(0xcb55, {
 opcodes.set(0xcb56, {
   name: "BIT 2,(HL)",
   bytes: "cb 56",
+  group: "Bits",
   doc: "f.Z = bit 2 of (HL)",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5227,8 +5966,10 @@ opcodes.set(0xcb56, {
 opcodes.set(0xcb57, {
   name: "BIT 2,A",
   bytes: "cb 57",
+  group: "Bits",
   doc: "f.Z = bit 2 in register a2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x4, z80.regs.a);
@@ -5240,8 +5981,10 @@ opcodes.set(0xcb57, {
 opcodes.set(0xcb58, {
   name: "BIT 3,B",
   bytes: "cb 58",
+  group: "Bits",
   doc: "f.Z = bit 3 in register b2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x8, z80.regs.b);
@@ -5253,8 +5996,10 @@ opcodes.set(0xcb58, {
 opcodes.set(0xcb59, {
   name: "BIT 3,C",
   bytes: "cb 59",
+  group: "Bits",
   doc: "f.Z = bit 3 in register c2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x8, z80.regs.c);
@@ -5266,8 +6011,10 @@ opcodes.set(0xcb59, {
 opcodes.set(0xcb5a, {
   name: "BIT 3,D",
   bytes: "cb 5a",
+  group: "Bits",
   doc: "f.Z = bit 3 in register d2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x8, z80.regs.d);
@@ -5279,8 +6026,10 @@ opcodes.set(0xcb5a, {
 opcodes.set(0xcb5b, {
   name: "BIT 3,E",
   bytes: "cb 5b",
+  group: "Bits",
   doc: "f.Z = bit 3 in register e2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x8, z80.regs.e);
@@ -5292,8 +6041,10 @@ opcodes.set(0xcb5b, {
 opcodes.set(0xcb5c, {
   name: "BIT 3,H",
   bytes: "cb 5c",
+  group: "Bits",
   doc: "f.Z = bit 3 in register h2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x8, z80.regs.h);
@@ -5305,8 +6056,10 @@ opcodes.set(0xcb5c, {
 opcodes.set(0xcb5d, {
   name: "BIT 3,L",
   bytes: "cb 5d",
+  group: "Bits",
   doc: "f.Z = bit 3 in register l2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x8, z80.regs.l);
@@ -5318,8 +6071,10 @@ opcodes.set(0xcb5d, {
 opcodes.set(0xcb5e, {
   name: "BIT 3,(HL)",
   bytes: "cb 5e",
+  group: "Bits",
   doc: "f.Z = bit 3 of (HL)",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5335,8 +6090,10 @@ opcodes.set(0xcb5e, {
 opcodes.set(0xcb5f, {
   name: "BIT 3,A",
   bytes: "cb 5f",
+  group: "Bits",
   doc: "f.Z = bit 3 in register a2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x8, z80.regs.a);
@@ -5348,8 +6105,10 @@ opcodes.set(0xcb5f, {
 opcodes.set(0xcb60, {
   name: "BIT 4,B",
   bytes: "cb 60",
+  group: "Bits",
   doc: "f.Z = bit 4 in register b2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x10, z80.regs.b);
@@ -5361,8 +6120,10 @@ opcodes.set(0xcb60, {
 opcodes.set(0xcb61, {
   name: "BIT 4,C",
   bytes: "cb 61",
+  group: "Bits",
   doc: "f.Z = bit 4 in register c2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x10, z80.regs.c);
@@ -5374,8 +6135,10 @@ opcodes.set(0xcb61, {
 opcodes.set(0xcb62, {
   name: "BIT 4,D",
   bytes: "cb 62",
+  group: "Bits",
   doc: "f.Z = bit 4 in register d2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x10, z80.regs.d);
@@ -5387,8 +6150,10 @@ opcodes.set(0xcb62, {
 opcodes.set(0xcb63, {
   name: "BIT 4,E",
   bytes: "cb 63",
+  group: "Bits",
   doc: "f.Z = bit 4 in register e2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x10, z80.regs.e);
@@ -5400,8 +6165,10 @@ opcodes.set(0xcb63, {
 opcodes.set(0xcb64, {
   name: "BIT 4,H",
   bytes: "cb 64",
+  group: "Bits",
   doc: "f.Z = bit 4 in register h2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x10, z80.regs.h);
@@ -5413,8 +6180,10 @@ opcodes.set(0xcb64, {
 opcodes.set(0xcb65, {
   name: "BIT 4,L",
   bytes: "cb 65",
+  group: "Bits",
   doc: "f.Z = bit 4 in register l2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x10, z80.regs.l);
@@ -5426,8 +6195,10 @@ opcodes.set(0xcb65, {
 opcodes.set(0xcb66, {
   name: "BIT 4,(HL)",
   bytes: "cb 66",
+  group: "Bits",
   doc: "f.Z = bit 4 of (HL)",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5443,8 +6214,10 @@ opcodes.set(0xcb66, {
 opcodes.set(0xcb67, {
   name: "BIT 4,A",
   bytes: "cb 67",
+  group: "Bits",
   doc: "f.Z = bit 4 in register a2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x10, z80.regs.a);
@@ -5456,8 +6229,10 @@ opcodes.set(0xcb67, {
 opcodes.set(0xcb68, {
   name: "BIT 5,B",
   bytes: "cb 68",
+  group: "Bits",
   doc: "f.Z = bit 5 in register b2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x20, z80.regs.b);
@@ -5469,8 +6244,10 @@ opcodes.set(0xcb68, {
 opcodes.set(0xcb69, {
   name: "BIT 5,C",
   bytes: "cb 69",
+  group: "Bits",
   doc: "f.Z = bit 5 in register c2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x20, z80.regs.c);
@@ -5482,8 +6259,10 @@ opcodes.set(0xcb69, {
 opcodes.set(0xcb6a, {
   name: "BIT 5,D",
   bytes: "cb 6a",
+  group: "Bits",
   doc: "f.Z = bit 5 in register d2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x20, z80.regs.d);
@@ -5495,8 +6274,10 @@ opcodes.set(0xcb6a, {
 opcodes.set(0xcb6b, {
   name: "BIT 5,E",
   bytes: "cb 6b",
+  group: "Bits",
   doc: "f.Z = bit 5 in register e2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x20, z80.regs.e);
@@ -5508,8 +6289,10 @@ opcodes.set(0xcb6b, {
 opcodes.set(0xcb6c, {
   name: "BIT 5,H",
   bytes: "cb 6c",
+  group: "Bits",
   doc: "f.Z = bit 5 in register h2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x20, z80.regs.h);
@@ -5521,8 +6304,10 @@ opcodes.set(0xcb6c, {
 opcodes.set(0xcb6d, {
   name: "BIT 5,L",
   bytes: "cb 6d",
+  group: "Bits",
   doc: "f.Z = bit 5 in register l2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x20, z80.regs.l);
@@ -5534,8 +6319,10 @@ opcodes.set(0xcb6d, {
 opcodes.set(0xcb6e, {
   name: "BIT 5,(HL)",
   bytes: "cb 6e",
+  group: "Bits",
   doc: "f.Z = bit 5 of (HL)",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5551,8 +6338,10 @@ opcodes.set(0xcb6e, {
 opcodes.set(0xcb6f, {
   name: "BIT 5,A",
   bytes: "cb 6f",
+  group: "Bits",
   doc: "f.Z = bit 5 in register a2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x20, z80.regs.a);
@@ -5564,8 +6353,10 @@ opcodes.set(0xcb6f, {
 opcodes.set(0xcb70, {
   name: "BIT 6,B",
   bytes: "cb 70",
+  group: "Bits",
   doc: "f.Z = bit 6 in register b2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x40, z80.regs.b);
@@ -5577,8 +6368,10 @@ opcodes.set(0xcb70, {
 opcodes.set(0xcb71, {
   name: "BIT 6,C",
   bytes: "cb 71",
+  group: "Bits",
   doc: "f.Z = bit 6 in register c2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x40, z80.regs.c);
@@ -5590,8 +6383,10 @@ opcodes.set(0xcb71, {
 opcodes.set(0xcb72, {
   name: "BIT 6,D",
   bytes: "cb 72",
+  group: "Bits",
   doc: "f.Z = bit 6 in register d2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x40, z80.regs.d);
@@ -5603,8 +6398,10 @@ opcodes.set(0xcb72, {
 opcodes.set(0xcb73, {
   name: "BIT 6,E",
   bytes: "cb 73",
+  group: "Bits",
   doc: "f.Z = bit 6 in register e2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x40, z80.regs.e);
@@ -5616,8 +6413,10 @@ opcodes.set(0xcb73, {
 opcodes.set(0xcb74, {
   name: "BIT 6,H",
   bytes: "cb 74",
+  group: "Bits",
   doc: "f.Z = bit 6 in register h2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x40, z80.regs.h);
@@ -5629,8 +6428,10 @@ opcodes.set(0xcb74, {
 opcodes.set(0xcb75, {
   name: "BIT 6,L",
   bytes: "cb 75",
+  group: "Bits",
   doc: "f.Z = bit 6 in register l2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x40, z80.regs.l);
@@ -5642,8 +6443,10 @@ opcodes.set(0xcb75, {
 opcodes.set(0xcb76, {
   name: "BIT 6,(HL)",
   bytes: "cb 76",
+  group: "Bits",
   doc: "f.Z = bit 6 of (HL)",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5659,8 +6462,10 @@ opcodes.set(0xcb76, {
 opcodes.set(0xcb77, {
   name: "BIT 6,A",
   bytes: "cb 77",
+  group: "Bits",
   doc: "f.Z = bit 6 in register a2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x40, z80.regs.a);
@@ -5672,8 +6477,10 @@ opcodes.set(0xcb77, {
 opcodes.set(0xcb78, {
   name: "BIT 7,B",
   bytes: "cb 78",
+  group: "Bits",
   doc: "f.Z = bit 7 in register b2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x80, z80.regs.b);
@@ -5685,8 +6492,10 @@ opcodes.set(0xcb78, {
 opcodes.set(0xcb79, {
   name: "BIT 7,C",
   bytes: "cb 79",
+  group: "Bits",
   doc: "f.Z = bit 7 in register c2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x80, z80.regs.c);
@@ -5698,8 +6507,10 @@ opcodes.set(0xcb79, {
 opcodes.set(0xcb7a, {
   name: "BIT 7,D",
   bytes: "cb 7a",
+  group: "Bits",
   doc: "f.Z = bit 7 in register d2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x80, z80.regs.d);
@@ -5711,8 +6522,10 @@ opcodes.set(0xcb7a, {
 opcodes.set(0xcb7b, {
   name: "BIT 7,E",
   bytes: "cb 7b",
+  group: "Bits",
   doc: "f.Z = bit 7 in register e2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x80, z80.regs.e);
@@ -5724,8 +6537,10 @@ opcodes.set(0xcb7b, {
 opcodes.set(0xcb7c, {
   name: "BIT 7,H",
   bytes: "cb 7c",
+  group: "Bits",
   doc: "f.Z = bit 7 in register h2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x80, z80.regs.h);
@@ -5737,8 +6552,10 @@ opcodes.set(0xcb7c, {
 opcodes.set(0xcb7d, {
   name: "BIT 7,L",
   bytes: "cb 7d",
+  group: "Bits",
   doc: "f.Z = bit 7 in register l2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x80, z80.regs.l);
@@ -5750,8 +6567,10 @@ opcodes.set(0xcb7d, {
 opcodes.set(0xcb7e, {
   name: "BIT 7,(HL)",
   bytes: "cb 7e",
+  group: "Bits",
   doc: "f.Z = bit 7 of (HL)",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5767,8 +6586,10 @@ opcodes.set(0xcb7e, {
 opcodes.set(0xcb7f, {
   name: "BIT 7,A",
   bytes: "cb 7f",
+  group: "Bits",
   doc: "f.Z = bit 7 in register a2",
-  group: "Set",
+  flags: "**1*0-",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.bit($BITY, $RZ)"}
     z80.alu.bit(0x80, z80.regs.a);
@@ -5780,8 +6601,9 @@ opcodes.set(0xcb7f, {
 opcodes.set(0xcb80, {
   name: "RES 0,B",
   bytes: "cb 80",
+  group: "Bits",
   doc: "Reset bit 0 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.b = z80.alu.res(0, z80.regs.b);
@@ -5793,8 +6615,9 @@ opcodes.set(0xcb80, {
 opcodes.set(0xcb81, {
   name: "RES 0,C",
   bytes: "cb 81",
+  group: "Bits",
   doc: "Reset bit 0 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.c = z80.alu.res(0, z80.regs.c);
@@ -5806,8 +6629,9 @@ opcodes.set(0xcb81, {
 opcodes.set(0xcb82, {
   name: "RES 0,D",
   bytes: "cb 82",
+  group: "Bits",
   doc: "Reset bit 0 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.d = z80.alu.res(0, z80.regs.d);
@@ -5819,8 +6643,9 @@ opcodes.set(0xcb82, {
 opcodes.set(0xcb83, {
   name: "RES 0,E",
   bytes: "cb 83",
+  group: "Bits",
   doc: "Reset bit 0 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.e = z80.alu.res(0, z80.regs.e);
@@ -5832,8 +6657,9 @@ opcodes.set(0xcb83, {
 opcodes.set(0xcb84, {
   name: "RES 0,H",
   bytes: "cb 84",
+  group: "Bits",
   doc: "Reset bit 0 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.h = z80.alu.res(0, z80.regs.h);
@@ -5845,8 +6671,9 @@ opcodes.set(0xcb84, {
 opcodes.set(0xcb85, {
   name: "RES 0,L",
   bytes: "cb 85",
+  group: "Bits",
   doc: "Reset bit 0 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.l = z80.alu.res(0, z80.regs.l);
@@ -5858,8 +6685,9 @@ opcodes.set(0xcb85, {
 opcodes.set(0xcb86, {
   name: "RES 0,(HL)",
   bytes: "cb 86",
+  group: "Bits",
   doc: "Reset bit 0 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5878,8 +6706,9 @@ opcodes.set(0xcb86, {
 opcodes.set(0xcb87, {
   name: "RES 0,A",
   bytes: "cb 87",
+  group: "Bits",
   doc: "Reset bit 0 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.a = z80.alu.res(0, z80.regs.a);
@@ -5891,8 +6720,9 @@ opcodes.set(0xcb87, {
 opcodes.set(0xcb88, {
   name: "RES 1,B",
   bytes: "cb 88",
+  group: "Bits",
   doc: "Reset bit 1 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.b = z80.alu.res(1, z80.regs.b);
@@ -5904,8 +6734,9 @@ opcodes.set(0xcb88, {
 opcodes.set(0xcb89, {
   name: "RES 1,C",
   bytes: "cb 89",
+  group: "Bits",
   doc: "Reset bit 1 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.c = z80.alu.res(1, z80.regs.c);
@@ -5917,8 +6748,9 @@ opcodes.set(0xcb89, {
 opcodes.set(0xcb8a, {
   name: "RES 1,D",
   bytes: "cb 8a",
+  group: "Bits",
   doc: "Reset bit 1 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.d = z80.alu.res(1, z80.regs.d);
@@ -5930,8 +6762,9 @@ opcodes.set(0xcb8a, {
 opcodes.set(0xcb8b, {
   name: "RES 1,E",
   bytes: "cb 8b",
+  group: "Bits",
   doc: "Reset bit 1 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.e = z80.alu.res(1, z80.regs.e);
@@ -5943,8 +6776,9 @@ opcodes.set(0xcb8b, {
 opcodes.set(0xcb8c, {
   name: "RES 1,H",
   bytes: "cb 8c",
+  group: "Bits",
   doc: "Reset bit 1 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.h = z80.alu.res(1, z80.regs.h);
@@ -5956,8 +6790,9 @@ opcodes.set(0xcb8c, {
 opcodes.set(0xcb8d, {
   name: "RES 1,L",
   bytes: "cb 8d",
+  group: "Bits",
   doc: "Reset bit 1 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.l = z80.alu.res(1, z80.regs.l);
@@ -5969,8 +6804,9 @@ opcodes.set(0xcb8d, {
 opcodes.set(0xcb8e, {
   name: "RES 1,(HL)",
   bytes: "cb 8e",
+  group: "Bits",
   doc: "Reset bit 1 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -5989,8 +6825,9 @@ opcodes.set(0xcb8e, {
 opcodes.set(0xcb8f, {
   name: "RES 1,A",
   bytes: "cb 8f",
+  group: "Bits",
   doc: "Reset bit 1 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.a = z80.alu.res(1, z80.regs.a);
@@ -6002,8 +6839,9 @@ opcodes.set(0xcb8f, {
 opcodes.set(0xcb90, {
   name: "RES 2,B",
   bytes: "cb 90",
+  group: "Bits",
   doc: "Reset bit 2 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.b = z80.alu.res(2, z80.regs.b);
@@ -6015,8 +6853,9 @@ opcodes.set(0xcb90, {
 opcodes.set(0xcb91, {
   name: "RES 2,C",
   bytes: "cb 91",
+  group: "Bits",
   doc: "Reset bit 2 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.c = z80.alu.res(2, z80.regs.c);
@@ -6028,8 +6867,9 @@ opcodes.set(0xcb91, {
 opcodes.set(0xcb92, {
   name: "RES 2,D",
   bytes: "cb 92",
+  group: "Bits",
   doc: "Reset bit 2 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.d = z80.alu.res(2, z80.regs.d);
@@ -6041,8 +6881,9 @@ opcodes.set(0xcb92, {
 opcodes.set(0xcb93, {
   name: "RES 2,E",
   bytes: "cb 93",
+  group: "Bits",
   doc: "Reset bit 2 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.e = z80.alu.res(2, z80.regs.e);
@@ -6054,8 +6895,9 @@ opcodes.set(0xcb93, {
 opcodes.set(0xcb94, {
   name: "RES 2,H",
   bytes: "cb 94",
+  group: "Bits",
   doc: "Reset bit 2 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.h = z80.alu.res(2, z80.regs.h);
@@ -6067,8 +6909,9 @@ opcodes.set(0xcb94, {
 opcodes.set(0xcb95, {
   name: "RES 2,L",
   bytes: "cb 95",
+  group: "Bits",
   doc: "Reset bit 2 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.l = z80.alu.res(2, z80.regs.l);
@@ -6080,8 +6923,9 @@ opcodes.set(0xcb95, {
 opcodes.set(0xcb96, {
   name: "RES 2,(HL)",
   bytes: "cb 96",
+  group: "Bits",
   doc: "Reset bit 2 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6100,8 +6944,9 @@ opcodes.set(0xcb96, {
 opcodes.set(0xcb97, {
   name: "RES 2,A",
   bytes: "cb 97",
+  group: "Bits",
   doc: "Reset bit 2 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.a = z80.alu.res(2, z80.regs.a);
@@ -6113,8 +6958,9 @@ opcodes.set(0xcb97, {
 opcodes.set(0xcb98, {
   name: "RES 3,B",
   bytes: "cb 98",
+  group: "Bits",
   doc: "Reset bit 3 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.b = z80.alu.res(3, z80.regs.b);
@@ -6126,8 +6972,9 @@ opcodes.set(0xcb98, {
 opcodes.set(0xcb99, {
   name: "RES 3,C",
   bytes: "cb 99",
+  group: "Bits",
   doc: "Reset bit 3 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.c = z80.alu.res(3, z80.regs.c);
@@ -6139,8 +6986,9 @@ opcodes.set(0xcb99, {
 opcodes.set(0xcb9a, {
   name: "RES 3,D",
   bytes: "cb 9a",
+  group: "Bits",
   doc: "Reset bit 3 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.d = z80.alu.res(3, z80.regs.d);
@@ -6152,8 +7000,9 @@ opcodes.set(0xcb9a, {
 opcodes.set(0xcb9b, {
   name: "RES 3,E",
   bytes: "cb 9b",
+  group: "Bits",
   doc: "Reset bit 3 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.e = z80.alu.res(3, z80.regs.e);
@@ -6165,8 +7014,9 @@ opcodes.set(0xcb9b, {
 opcodes.set(0xcb9c, {
   name: "RES 3,H",
   bytes: "cb 9c",
+  group: "Bits",
   doc: "Reset bit 3 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.h = z80.alu.res(3, z80.regs.h);
@@ -6178,8 +7028,9 @@ opcodes.set(0xcb9c, {
 opcodes.set(0xcb9d, {
   name: "RES 3,L",
   bytes: "cb 9d",
+  group: "Bits",
   doc: "Reset bit 3 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.l = z80.alu.res(3, z80.regs.l);
@@ -6191,8 +7042,9 @@ opcodes.set(0xcb9d, {
 opcodes.set(0xcb9e, {
   name: "RES 3,(HL)",
   bytes: "cb 9e",
+  group: "Bits",
   doc: "Reset bit 3 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6211,8 +7063,9 @@ opcodes.set(0xcb9e, {
 opcodes.set(0xcb9f, {
   name: "RES 3,A",
   bytes: "cb 9f",
+  group: "Bits",
   doc: "Reset bit 3 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.a = z80.alu.res(3, z80.regs.a);
@@ -6224,8 +7077,9 @@ opcodes.set(0xcb9f, {
 opcodes.set(0xcba0, {
   name: "RES 4,B",
   bytes: "cb a0",
+  group: "Bits",
   doc: "Reset bit 4 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.b = z80.alu.res(4, z80.regs.b);
@@ -6237,8 +7091,9 @@ opcodes.set(0xcba0, {
 opcodes.set(0xcba1, {
   name: "RES 4,C",
   bytes: "cb a1",
+  group: "Bits",
   doc: "Reset bit 4 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.c = z80.alu.res(4, z80.regs.c);
@@ -6250,8 +7105,9 @@ opcodes.set(0xcba1, {
 opcodes.set(0xcba2, {
   name: "RES 4,D",
   bytes: "cb a2",
+  group: "Bits",
   doc: "Reset bit 4 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.d = z80.alu.res(4, z80.regs.d);
@@ -6263,8 +7119,9 @@ opcodes.set(0xcba2, {
 opcodes.set(0xcba3, {
   name: "RES 4,E",
   bytes: "cb a3",
+  group: "Bits",
   doc: "Reset bit 4 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.e = z80.alu.res(4, z80.regs.e);
@@ -6276,8 +7133,9 @@ opcodes.set(0xcba3, {
 opcodes.set(0xcba4, {
   name: "RES 4,H",
   bytes: "cb a4",
+  group: "Bits",
   doc: "Reset bit 4 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.h = z80.alu.res(4, z80.regs.h);
@@ -6289,8 +7147,9 @@ opcodes.set(0xcba4, {
 opcodes.set(0xcba5, {
   name: "RES 4,L",
   bytes: "cb a5",
+  group: "Bits",
   doc: "Reset bit 4 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.l = z80.alu.res(4, z80.regs.l);
@@ -6302,8 +7161,9 @@ opcodes.set(0xcba5, {
 opcodes.set(0xcba6, {
   name: "RES 4,(HL)",
   bytes: "cb a6",
+  group: "Bits",
   doc: "Reset bit 4 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6322,8 +7182,9 @@ opcodes.set(0xcba6, {
 opcodes.set(0xcba7, {
   name: "RES 4,A",
   bytes: "cb a7",
+  group: "Bits",
   doc: "Reset bit 4 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.a = z80.alu.res(4, z80.regs.a);
@@ -6335,8 +7196,9 @@ opcodes.set(0xcba7, {
 opcodes.set(0xcba8, {
   name: "RES 5,B",
   bytes: "cb a8",
+  group: "Bits",
   doc: "Reset bit 5 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.b = z80.alu.res(5, z80.regs.b);
@@ -6348,8 +7210,9 @@ opcodes.set(0xcba8, {
 opcodes.set(0xcba9, {
   name: "RES 5,C",
   bytes: "cb a9",
+  group: "Bits",
   doc: "Reset bit 5 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.c = z80.alu.res(5, z80.regs.c);
@@ -6361,8 +7224,9 @@ opcodes.set(0xcba9, {
 opcodes.set(0xcbaa, {
   name: "RES 5,D",
   bytes: "cb aa",
+  group: "Bits",
   doc: "Reset bit 5 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.d = z80.alu.res(5, z80.regs.d);
@@ -6374,8 +7238,9 @@ opcodes.set(0xcbaa, {
 opcodes.set(0xcbab, {
   name: "RES 5,E",
   bytes: "cb ab",
+  group: "Bits",
   doc: "Reset bit 5 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.e = z80.alu.res(5, z80.regs.e);
@@ -6387,8 +7252,9 @@ opcodes.set(0xcbab, {
 opcodes.set(0xcbac, {
   name: "RES 5,H",
   bytes: "cb ac",
+  group: "Bits",
   doc: "Reset bit 5 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.h = z80.alu.res(5, z80.regs.h);
@@ -6400,8 +7266,9 @@ opcodes.set(0xcbac, {
 opcodes.set(0xcbad, {
   name: "RES 5,L",
   bytes: "cb ad",
+  group: "Bits",
   doc: "Reset bit 5 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.l = z80.alu.res(5, z80.regs.l);
@@ -6413,8 +7280,9 @@ opcodes.set(0xcbad, {
 opcodes.set(0xcbae, {
   name: "RES 5,(HL)",
   bytes: "cb ae",
+  group: "Bits",
   doc: "Reset bit 5 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6433,8 +7301,9 @@ opcodes.set(0xcbae, {
 opcodes.set(0xcbaf, {
   name: "RES 5,A",
   bytes: "cb af",
+  group: "Bits",
   doc: "Reset bit 5 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.a = z80.alu.res(5, z80.regs.a);
@@ -6446,8 +7315,9 @@ opcodes.set(0xcbaf, {
 opcodes.set(0xcbb0, {
   name: "RES 6,B",
   bytes: "cb b0",
+  group: "Bits",
   doc: "Reset bit 6 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.b = z80.alu.res(6, z80.regs.b);
@@ -6459,8 +7329,9 @@ opcodes.set(0xcbb0, {
 opcodes.set(0xcbb1, {
   name: "RES 6,C",
   bytes: "cb b1",
+  group: "Bits",
   doc: "Reset bit 6 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.c = z80.alu.res(6, z80.regs.c);
@@ -6472,8 +7343,9 @@ opcodes.set(0xcbb1, {
 opcodes.set(0xcbb2, {
   name: "RES 6,D",
   bytes: "cb b2",
+  group: "Bits",
   doc: "Reset bit 6 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.d = z80.alu.res(6, z80.regs.d);
@@ -6485,8 +7357,9 @@ opcodes.set(0xcbb2, {
 opcodes.set(0xcbb3, {
   name: "RES 6,E",
   bytes: "cb b3",
+  group: "Bits",
   doc: "Reset bit 6 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.e = z80.alu.res(6, z80.regs.e);
@@ -6498,8 +7371,9 @@ opcodes.set(0xcbb3, {
 opcodes.set(0xcbb4, {
   name: "RES 6,H",
   bytes: "cb b4",
+  group: "Bits",
   doc: "Reset bit 6 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.h = z80.alu.res(6, z80.regs.h);
@@ -6511,8 +7385,9 @@ opcodes.set(0xcbb4, {
 opcodes.set(0xcbb5, {
   name: "RES 6,L",
   bytes: "cb b5",
+  group: "Bits",
   doc: "Reset bit 6 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.l = z80.alu.res(6, z80.regs.l);
@@ -6524,8 +7399,9 @@ opcodes.set(0xcbb5, {
 opcodes.set(0xcbb6, {
   name: "RES 6,(HL)",
   bytes: "cb b6",
+  group: "Bits",
   doc: "Reset bit 6 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6544,8 +7420,9 @@ opcodes.set(0xcbb6, {
 opcodes.set(0xcbb7, {
   name: "RES 6,A",
   bytes: "cb b7",
+  group: "Bits",
   doc: "Reset bit 6 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.a = z80.alu.res(6, z80.regs.a);
@@ -6557,8 +7434,9 @@ opcodes.set(0xcbb7, {
 opcodes.set(0xcbb8, {
   name: "RES 7,B",
   bytes: "cb b8",
+  group: "Bits",
   doc: "Reset bit 7 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.b = z80.alu.res(7, z80.regs.b);
@@ -6570,8 +7448,9 @@ opcodes.set(0xcbb8, {
 opcodes.set(0xcbb9, {
   name: "RES 7,C",
   bytes: "cb b9",
+  group: "Bits",
   doc: "Reset bit 7 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.c = z80.alu.res(7, z80.regs.c);
@@ -6583,8 +7462,9 @@ opcodes.set(0xcbb9, {
 opcodes.set(0xcbba, {
   name: "RES 7,D",
   bytes: "cb ba",
+  group: "Bits",
   doc: "Reset bit 7 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.d = z80.alu.res(7, z80.regs.d);
@@ -6596,8 +7476,9 @@ opcodes.set(0xcbba, {
 opcodes.set(0xcbbb, {
   name: "RES 7,E",
   bytes: "cb bb",
+  group: "Bits",
   doc: "Reset bit 7 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.e = z80.alu.res(7, z80.regs.e);
@@ -6609,8 +7490,9 @@ opcodes.set(0xcbbb, {
 opcodes.set(0xcbbc, {
   name: "RES 7,H",
   bytes: "cb bc",
+  group: "Bits",
   doc: "Reset bit 7 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.h = z80.alu.res(7, z80.regs.h);
@@ -6622,8 +7504,9 @@ opcodes.set(0xcbbc, {
 opcodes.set(0xcbbd, {
   name: "RES 7,L",
   bytes: "cb bd",
+  group: "Bits",
   doc: "Reset bit 7 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.l = z80.alu.res(7, z80.regs.l);
@@ -6635,8 +7518,9 @@ opcodes.set(0xcbbd, {
 opcodes.set(0xcbbe, {
   name: "RES 7,(HL)",
   bytes: "cb be",
+  group: "Bits",
   doc: "Reset bit 7 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6655,8 +7539,9 @@ opcodes.set(0xcbbe, {
 opcodes.set(0xcbbf, {
   name: "RES 7,A",
   bytes: "cb bf",
+  group: "Bits",
   doc: "Reset bit 7 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.res($NY, $RZ)"}
     z80.regs.a = z80.alu.res(7, z80.regs.a);
@@ -6668,8 +7553,9 @@ opcodes.set(0xcbbf, {
 opcodes.set(0xcbc0, {
   name: "SET 0,B",
   bytes: "cb c0",
+  group: "Bits",
   doc: "Set bit 0 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.b = z80.alu.set(0, z80.regs.b);
@@ -6681,8 +7567,9 @@ opcodes.set(0xcbc0, {
 opcodes.set(0xcbc1, {
   name: "SET 0,C",
   bytes: "cb c1",
+  group: "Bits",
   doc: "Set bit 0 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.c = z80.alu.set(0, z80.regs.c);
@@ -6694,8 +7581,9 @@ opcodes.set(0xcbc1, {
 opcodes.set(0xcbc2, {
   name: "SET 0,D",
   bytes: "cb c2",
+  group: "Bits",
   doc: "Set bit 0 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.d = z80.alu.set(0, z80.regs.d);
@@ -6707,8 +7595,9 @@ opcodes.set(0xcbc2, {
 opcodes.set(0xcbc3, {
   name: "SET 0,E",
   bytes: "cb c3",
+  group: "Bits",
   doc: "Set bit 0 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.e = z80.alu.set(0, z80.regs.e);
@@ -6720,8 +7609,9 @@ opcodes.set(0xcbc3, {
 opcodes.set(0xcbc4, {
   name: "SET 0,H",
   bytes: "cb c4",
+  group: "Bits",
   doc: "Set bit 0 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.h = z80.alu.set(0, z80.regs.h);
@@ -6733,8 +7623,9 @@ opcodes.set(0xcbc4, {
 opcodes.set(0xcbc5, {
   name: "SET 0,L",
   bytes: "cb c5",
+  group: "Bits",
   doc: "Set bit 0 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.l = z80.alu.set(0, z80.regs.l);
@@ -6746,8 +7637,9 @@ opcodes.set(0xcbc5, {
 opcodes.set(0xcbc6, {
   name: "SET 0,(HL)",
   bytes: "cb c6",
+  group: "Bits",
   doc: "Set bit 0 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6766,8 +7658,9 @@ opcodes.set(0xcbc6, {
 opcodes.set(0xcbc7, {
   name: "SET 0,A",
   bytes: "cb c7",
+  group: "Bits",
   doc: "Set bit 0 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.a = z80.alu.set(0, z80.regs.a);
@@ -6779,8 +7672,9 @@ opcodes.set(0xcbc7, {
 opcodes.set(0xcbc8, {
   name: "SET 1,B",
   bytes: "cb c8",
+  group: "Bits",
   doc: "Set bit 1 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.b = z80.alu.set(1, z80.regs.b);
@@ -6792,8 +7686,9 @@ opcodes.set(0xcbc8, {
 opcodes.set(0xcbc9, {
   name: "SET 1,C",
   bytes: "cb c9",
+  group: "Bits",
   doc: "Set bit 1 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.c = z80.alu.set(1, z80.regs.c);
@@ -6805,8 +7700,9 @@ opcodes.set(0xcbc9, {
 opcodes.set(0xcbca, {
   name: "SET 1,D",
   bytes: "cb ca",
+  group: "Bits",
   doc: "Set bit 1 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.d = z80.alu.set(1, z80.regs.d);
@@ -6818,8 +7714,9 @@ opcodes.set(0xcbca, {
 opcodes.set(0xcbcb, {
   name: "SET 1,E",
   bytes: "cb cb",
+  group: "Bits",
   doc: "Set bit 1 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.e = z80.alu.set(1, z80.regs.e);
@@ -6831,8 +7728,9 @@ opcodes.set(0xcbcb, {
 opcodes.set(0xcbcc, {
   name: "SET 1,H",
   bytes: "cb cc",
+  group: "Bits",
   doc: "Set bit 1 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.h = z80.alu.set(1, z80.regs.h);
@@ -6844,8 +7742,9 @@ opcodes.set(0xcbcc, {
 opcodes.set(0xcbcd, {
   name: "SET 1,L",
   bytes: "cb cd",
+  group: "Bits",
   doc: "Set bit 1 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.l = z80.alu.set(1, z80.regs.l);
@@ -6857,8 +7756,9 @@ opcodes.set(0xcbcd, {
 opcodes.set(0xcbce, {
   name: "SET 1,(HL)",
   bytes: "cb ce",
+  group: "Bits",
   doc: "Set bit 1 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6877,8 +7777,9 @@ opcodes.set(0xcbce, {
 opcodes.set(0xcbcf, {
   name: "SET 1,A",
   bytes: "cb cf",
+  group: "Bits",
   doc: "Set bit 1 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.a = z80.alu.set(1, z80.regs.a);
@@ -6890,8 +7791,9 @@ opcodes.set(0xcbcf, {
 opcodes.set(0xcbd0, {
   name: "SET 2,B",
   bytes: "cb d0",
+  group: "Bits",
   doc: "Set bit 2 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.b = z80.alu.set(2, z80.regs.b);
@@ -6903,8 +7805,9 @@ opcodes.set(0xcbd0, {
 opcodes.set(0xcbd1, {
   name: "SET 2,C",
   bytes: "cb d1",
+  group: "Bits",
   doc: "Set bit 2 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.c = z80.alu.set(2, z80.regs.c);
@@ -6916,8 +7819,9 @@ opcodes.set(0xcbd1, {
 opcodes.set(0xcbd2, {
   name: "SET 2,D",
   bytes: "cb d2",
+  group: "Bits",
   doc: "Set bit 2 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.d = z80.alu.set(2, z80.regs.d);
@@ -6929,8 +7833,9 @@ opcodes.set(0xcbd2, {
 opcodes.set(0xcbd3, {
   name: "SET 2,E",
   bytes: "cb d3",
+  group: "Bits",
   doc: "Set bit 2 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.e = z80.alu.set(2, z80.regs.e);
@@ -6942,8 +7847,9 @@ opcodes.set(0xcbd3, {
 opcodes.set(0xcbd4, {
   name: "SET 2,H",
   bytes: "cb d4",
+  group: "Bits",
   doc: "Set bit 2 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.h = z80.alu.set(2, z80.regs.h);
@@ -6955,8 +7861,9 @@ opcodes.set(0xcbd4, {
 opcodes.set(0xcbd5, {
   name: "SET 2,L",
   bytes: "cb d5",
+  group: "Bits",
   doc: "Set bit 2 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.l = z80.alu.set(2, z80.regs.l);
@@ -6968,8 +7875,9 @@ opcodes.set(0xcbd5, {
 opcodes.set(0xcbd6, {
   name: "SET 2,(HL)",
   bytes: "cb d6",
+  group: "Bits",
   doc: "Set bit 2 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -6988,8 +7896,9 @@ opcodes.set(0xcbd6, {
 opcodes.set(0xcbd7, {
   name: "SET 2,A",
   bytes: "cb d7",
+  group: "Bits",
   doc: "Set bit 2 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.a = z80.alu.set(2, z80.regs.a);
@@ -7001,8 +7910,9 @@ opcodes.set(0xcbd7, {
 opcodes.set(0xcbd8, {
   name: "SET 3,B",
   bytes: "cb d8",
+  group: "Bits",
   doc: "Set bit 3 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.b = z80.alu.set(3, z80.regs.b);
@@ -7014,8 +7924,9 @@ opcodes.set(0xcbd8, {
 opcodes.set(0xcbd9, {
   name: "SET 3,C",
   bytes: "cb d9",
+  group: "Bits",
   doc: "Set bit 3 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.c = z80.alu.set(3, z80.regs.c);
@@ -7027,8 +7938,9 @@ opcodes.set(0xcbd9, {
 opcodes.set(0xcbda, {
   name: "SET 3,D",
   bytes: "cb da",
+  group: "Bits",
   doc: "Set bit 3 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.d = z80.alu.set(3, z80.regs.d);
@@ -7040,8 +7952,9 @@ opcodes.set(0xcbda, {
 opcodes.set(0xcbdb, {
   name: "SET 3,E",
   bytes: "cb db",
+  group: "Bits",
   doc: "Set bit 3 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.e = z80.alu.set(3, z80.regs.e);
@@ -7053,8 +7966,9 @@ opcodes.set(0xcbdb, {
 opcodes.set(0xcbdc, {
   name: "SET 3,H",
   bytes: "cb dc",
+  group: "Bits",
   doc: "Set bit 3 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.h = z80.alu.set(3, z80.regs.h);
@@ -7066,8 +7980,9 @@ opcodes.set(0xcbdc, {
 opcodes.set(0xcbdd, {
   name: "SET 3,L",
   bytes: "cb dd",
+  group: "Bits",
   doc: "Set bit 3 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.l = z80.alu.set(3, z80.regs.l);
@@ -7079,8 +7994,9 @@ opcodes.set(0xcbdd, {
 opcodes.set(0xcbde, {
   name: "SET 3,(HL)",
   bytes: "cb de",
+  group: "Bits",
   doc: "Set bit 3 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -7099,8 +8015,9 @@ opcodes.set(0xcbde, {
 opcodes.set(0xcbdf, {
   name: "SET 3,A",
   bytes: "cb df",
+  group: "Bits",
   doc: "Set bit 3 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.a = z80.alu.set(3, z80.regs.a);
@@ -7112,8 +8029,9 @@ opcodes.set(0xcbdf, {
 opcodes.set(0xcbe0, {
   name: "SET 4,B",
   bytes: "cb e0",
+  group: "Bits",
   doc: "Set bit 4 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.b = z80.alu.set(4, z80.regs.b);
@@ -7125,8 +8043,9 @@ opcodes.set(0xcbe0, {
 opcodes.set(0xcbe1, {
   name: "SET 4,C",
   bytes: "cb e1",
+  group: "Bits",
   doc: "Set bit 4 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.c = z80.alu.set(4, z80.regs.c);
@@ -7138,8 +8057,9 @@ opcodes.set(0xcbe1, {
 opcodes.set(0xcbe2, {
   name: "SET 4,D",
   bytes: "cb e2",
+  group: "Bits",
   doc: "Set bit 4 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.d = z80.alu.set(4, z80.regs.d);
@@ -7151,8 +8071,9 @@ opcodes.set(0xcbe2, {
 opcodes.set(0xcbe3, {
   name: "SET 4,E",
   bytes: "cb e3",
+  group: "Bits",
   doc: "Set bit 4 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.e = z80.alu.set(4, z80.regs.e);
@@ -7164,8 +8085,9 @@ opcodes.set(0xcbe3, {
 opcodes.set(0xcbe4, {
   name: "SET 4,H",
   bytes: "cb e4",
+  group: "Bits",
   doc: "Set bit 4 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.h = z80.alu.set(4, z80.regs.h);
@@ -7177,8 +8099,9 @@ opcodes.set(0xcbe4, {
 opcodes.set(0xcbe5, {
   name: "SET 4,L",
   bytes: "cb e5",
+  group: "Bits",
   doc: "Set bit 4 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.l = z80.alu.set(4, z80.regs.l);
@@ -7190,8 +8113,9 @@ opcodes.set(0xcbe5, {
 opcodes.set(0xcbe6, {
   name: "SET 4,(HL)",
   bytes: "cb e6",
+  group: "Bits",
   doc: "Set bit 4 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -7210,8 +8134,9 @@ opcodes.set(0xcbe6, {
 opcodes.set(0xcbe7, {
   name: "SET 4,A",
   bytes: "cb e7",
+  group: "Bits",
   doc: "Set bit 4 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.a = z80.alu.set(4, z80.regs.a);
@@ -7223,8 +8148,9 @@ opcodes.set(0xcbe7, {
 opcodes.set(0xcbe8, {
   name: "SET 5,B",
   bytes: "cb e8",
+  group: "Bits",
   doc: "Set bit 5 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.b = z80.alu.set(5, z80.regs.b);
@@ -7236,8 +8162,9 @@ opcodes.set(0xcbe8, {
 opcodes.set(0xcbe9, {
   name: "SET 5,C",
   bytes: "cb e9",
+  group: "Bits",
   doc: "Set bit 5 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.c = z80.alu.set(5, z80.regs.c);
@@ -7249,8 +8176,9 @@ opcodes.set(0xcbe9, {
 opcodes.set(0xcbea, {
   name: "SET 5,D",
   bytes: "cb ea",
+  group: "Bits",
   doc: "Set bit 5 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.d = z80.alu.set(5, z80.regs.d);
@@ -7262,8 +8190,9 @@ opcodes.set(0xcbea, {
 opcodes.set(0xcbeb, {
   name: "SET 5,E",
   bytes: "cb eb",
+  group: "Bits",
   doc: "Set bit 5 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.e = z80.alu.set(5, z80.regs.e);
@@ -7275,8 +8204,9 @@ opcodes.set(0xcbeb, {
 opcodes.set(0xcbec, {
   name: "SET 5,H",
   bytes: "cb ec",
+  group: "Bits",
   doc: "Set bit 5 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.h = z80.alu.set(5, z80.regs.h);
@@ -7288,8 +8218,9 @@ opcodes.set(0xcbec, {
 opcodes.set(0xcbed, {
   name: "SET 5,L",
   bytes: "cb ed",
+  group: "Bits",
   doc: "Set bit 5 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.l = z80.alu.set(5, z80.regs.l);
@@ -7301,8 +8232,9 @@ opcodes.set(0xcbed, {
 opcodes.set(0xcbee, {
   name: "SET 5,(HL)",
   bytes: "cb ee",
+  group: "Bits",
   doc: "Set bit 5 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -7321,8 +8253,9 @@ opcodes.set(0xcbee, {
 opcodes.set(0xcbef, {
   name: "SET 5,A",
   bytes: "cb ef",
+  group: "Bits",
   doc: "Set bit 5 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.a = z80.alu.set(5, z80.regs.a);
@@ -7334,8 +8267,9 @@ opcodes.set(0xcbef, {
 opcodes.set(0xcbf0, {
   name: "SET 6,B",
   bytes: "cb f0",
+  group: "Bits",
   doc: "Set bit 6 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.b = z80.alu.set(6, z80.regs.b);
@@ -7347,8 +8281,9 @@ opcodes.set(0xcbf0, {
 opcodes.set(0xcbf1, {
   name: "SET 6,C",
   bytes: "cb f1",
+  group: "Bits",
   doc: "Set bit 6 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.c = z80.alu.set(6, z80.regs.c);
@@ -7360,8 +8295,9 @@ opcodes.set(0xcbf1, {
 opcodes.set(0xcbf2, {
   name: "SET 6,D",
   bytes: "cb f2",
+  group: "Bits",
   doc: "Set bit 6 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.d = z80.alu.set(6, z80.regs.d);
@@ -7373,8 +8309,9 @@ opcodes.set(0xcbf2, {
 opcodes.set(0xcbf3, {
   name: "SET 6,E",
   bytes: "cb f3",
+  group: "Bits",
   doc: "Set bit 6 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.e = z80.alu.set(6, z80.regs.e);
@@ -7386,8 +8323,9 @@ opcodes.set(0xcbf3, {
 opcodes.set(0xcbf4, {
   name: "SET 6,H",
   bytes: "cb f4",
+  group: "Bits",
   doc: "Set bit 6 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.h = z80.alu.set(6, z80.regs.h);
@@ -7399,8 +8337,9 @@ opcodes.set(0xcbf4, {
 opcodes.set(0xcbf5, {
   name: "SET 6,L",
   bytes: "cb f5",
+  group: "Bits",
   doc: "Set bit 6 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.l = z80.alu.set(6, z80.regs.l);
@@ -7412,8 +8351,9 @@ opcodes.set(0xcbf5, {
 opcodes.set(0xcbf6, {
   name: "SET 6,(HL)",
   bytes: "cb f6",
+  group: "Bits",
   doc: "Set bit 6 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -7432,8 +8372,9 @@ opcodes.set(0xcbf6, {
 opcodes.set(0xcbf7, {
   name: "SET 6,A",
   bytes: "cb f7",
+  group: "Bits",
   doc: "Set bit 6 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.a = z80.alu.set(6, z80.regs.a);
@@ -7445,8 +8386,9 @@ opcodes.set(0xcbf7, {
 opcodes.set(0xcbf8, {
   name: "SET 7,B",
   bytes: "cb f8",
+  group: "Bits",
   doc: "Set bit 7 in register b2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.b = z80.alu.set(7, z80.regs.b);
@@ -7458,8 +8400,9 @@ opcodes.set(0xcbf8, {
 opcodes.set(0xcbf9, {
   name: "SET 7,C",
   bytes: "cb f9",
+  group: "Bits",
   doc: "Set bit 7 in register c2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.c = z80.alu.set(7, z80.regs.c);
@@ -7471,8 +8414,9 @@ opcodes.set(0xcbf9, {
 opcodes.set(0xcbfa, {
   name: "SET 7,D",
   bytes: "cb fa",
+  group: "Bits",
   doc: "Set bit 7 in register d2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.d = z80.alu.set(7, z80.regs.d);
@@ -7484,8 +8428,9 @@ opcodes.set(0xcbfa, {
 opcodes.set(0xcbfb, {
   name: "SET 7,E",
   bytes: "cb fb",
+  group: "Bits",
   doc: "Set bit 7 in register e2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.e = z80.alu.set(7, z80.regs.e);
@@ -7497,8 +8442,9 @@ opcodes.set(0xcbfb, {
 opcodes.set(0xcbfc, {
   name: "SET 7,H",
   bytes: "cb fc",
+  group: "Bits",
   doc: "Set bit 7 in register h2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.h = z80.alu.set(7, z80.regs.h);
@@ -7510,8 +8456,9 @@ opcodes.set(0xcbfc, {
 opcodes.set(0xcbfd, {
   name: "SET 7,L",
   bytes: "cb fd",
+  group: "Bits",
   doc: "Set bit 7 in register l2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.l = z80.alu.set(7, z80.regs.l);
@@ -7523,8 +8470,9 @@ opcodes.set(0xcbfd, {
 opcodes.set(0xcbfe, {
   name: "SET 7,(HL)",
   bytes: "cb fe",
+  group: "Bits",
   doc: "Set bit 7 of (HL)",
-  group: "Set",
+  states: [15],
   fn: (z80) => {
     // mread: {ab: $ADDR, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -7543,8 +8491,9 @@ opcodes.set(0xcbfe, {
 opcodes.set(0xcbff, {
   name: "SET 7,A",
   bytes: "cb ff",
+  group: "Bits",
   doc: "Set bit 7 in register a2",
-  group: "Set",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$RZ=z80.alu.set($NY, $RZ)"}
     z80.regs.a = z80.alu.set(7, z80.regs.a);
@@ -7582,8 +8531,8 @@ opcodes.set(0xdd19, {
 opcodes.set(0xdd21, {
   name: "LD IX,$NN",
   bytes: "dd 21 XX XX",
-  doc: "ix=nn",
   group: "Load 16bit",
+  doc: "ix=nn",
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RPL}
     z80.abus = z80.regs.pc;
@@ -7603,8 +8552,8 @@ opcodes.set(0xdd21, {
 opcodes.set(0xdd22, {
   name: "LD ($NN),IX",
   bytes: "dd 22 XX XX",
-  doc: "[nn]=ix",
   group: "Load 16bit",
+  doc: "[nn]=ix",
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -7633,8 +8582,8 @@ opcodes.set(0xdd22, {
 opcodes.set(0xdd23, {
   name: "INC IX",
   bytes: "dd 23",
-  doc: "$RDDP+=1",
   group: "ALU 16bit",
+  doc: "$RDDP+=1",
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.inc16($RP)"}
     z80.incTStateCount(2);
@@ -7647,8 +8596,9 @@ opcodes.set(0xdd23, {
 opcodes.set(0xdd24, {
   name: "INC IXH",
   bytes: "dd 24",
-  doc: "ixh+=1",
   group: "ALU 8bit",
+  doc: "ixh+=1",
+  states: [10],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.ixh = z80.alu.inc8(z80.regs.ixh);
@@ -7660,8 +8610,8 @@ opcodes.set(0xdd24, {
 opcodes.set(0xdd25, {
   name: "DEC IXH",
   bytes: "dd 25",
-  doc: "ixh-=1",
   group: "ALU 8bit",
+  doc: "ixh-=1",
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.ixh = z80.alu.dec8(z80.regs.ixh);
@@ -7701,8 +8651,8 @@ opcodes.set(0xdd29, {
 opcodes.set(0xdd2a, {
   name: "LD IX,($NN)",
   bytes: "dd 2a XX XX",
-  doc: "ix=($nn)",
   group: "Load 16bit",
+  doc: "ix=($nn)",
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -7731,8 +8681,8 @@ opcodes.set(0xdd2a, {
 opcodes.set(0xdd2b, {
   name: "DEC IX",
   bytes: "dd 2b",
-  doc: "ix-=1",
   group: "ALU 16bit",
+  doc: "ix-=1",
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.dec16($RP)"}
     z80.incTStateCount(2);
@@ -7745,8 +8695,9 @@ opcodes.set(0xdd2b, {
 opcodes.set(0xdd2c, {
   name: "INC IXL",
   bytes: "dd 2c",
-  doc: "ixl+=1",
   group: "ALU 8bit",
+  doc: "ixl+=1",
+  states: [10],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.ixl = z80.alu.inc8(z80.regs.ixl);
@@ -7758,8 +8709,8 @@ opcodes.set(0xdd2c, {
 opcodes.set(0xdd2d, {
   name: "DEC IXL",
   bytes: "dd 2d",
-  doc: "ixl-=1",
   group: "ALU 8bit",
+  doc: "ixl-=1",
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.ixl = z80.alu.dec8(z80.regs.ixl);
@@ -7782,12 +8733,14 @@ opcodes.set(0xdd2e, {
 });
 
 // {n:52, x:0, y:6, z:4, p:3, q:0}
-// INC ($RI+dd)
+// INC ($RI+$d)
 opcodes.set(0xdd34, {
-  name: "INC (IX+DD)",
+  name: "INC (IX+$D)",
   bytes: "dd 34",
-  doc: "Increment (ix+dd)",
   group: "ALU 8bit",
+  doc: "Increment (ix+d)",
+  flags: "***V0-",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -7807,12 +8760,14 @@ opcodes.set(0xdd34, {
 });
 
 // {n:53, x:0, y:6, z:5, p:3, q:0}
-// DEC ($RI+dd)
+// DEC ($RI+$d)
 opcodes.set(0xdd35, {
-  name: "DEC (IX+DD)",
+  name: "DEC (IX+$D)",
   bytes: "dd 35",
-  doc: "Decrement (ix+dd)",
   group: "ALU 8bit",
+  doc: "Decrement (ix+dd)",
+  flags: "***V1-",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -7832,12 +8787,13 @@ opcodes.set(0xdd35, {
 });
 
 // {n:54, x:0, y:6, z:6, p:3, q:0}
-// LD ($RI+dd),$n
+// LD ($RI+$d),$n
 opcodes.set(0xdd36, {
-  name: "LD (IX+DD),$N",
+  name: "LD (IX+$D),$N",
   bytes: "dd 36 XX",
-  doc: "(ix+dd)=n",
   group: "Load 8bit",
+  doc: "(ix+dd)=n",
+  states: [19],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -7893,12 +8849,13 @@ opcodes.set(0xdd45, {
 });
 
 // {n:70, x:1, y:0, z:6, p:0, q:0}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xdd46, {
-  name: "LD B,(IX+DD)",
+  name: "LD B,(IX+$D)",
   bytes: "dd 46",
-  doc: "b=(ix+dd)",
   group: "Load 8bit",
+  doc: "b=(ix+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -7938,12 +8895,13 @@ opcodes.set(0xdd4d, {
 });
 
 // {n:78, x:1, y:1, z:6, p:0, q:1}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xdd4e, {
-  name: "LD C,(IX+DD)",
+  name: "LD C,(IX+$D)",
   bytes: "dd 4e",
-  doc: "c=(ix+dd)",
   group: "Load 8bit",
+  doc: "c=(ix+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -7983,12 +8941,13 @@ opcodes.set(0xdd55, {
 });
 
 // {n:86, x:1, y:2, z:6, p:1, q:0}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xdd56, {
-  name: "LD D,(IX+DD)",
+  name: "LD D,(IX+$D)",
   bytes: "dd 56",
-  doc: "d=(ix+dd)",
   group: "Load 8bit",
+  doc: "d=(ix+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8028,12 +8987,13 @@ opcodes.set(0xdd5d, {
 });
 
 // {n:94, x:1, y:3, z:6, p:1, q:1}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xdd5e, {
-  name: "LD E,(IX+DD)",
+  name: "LD E,(IX+$D)",
   bytes: "dd 5e",
-  doc: "e=(ix+dd)",
   group: "Load 8bit",
+  doc: "e=(ix+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8121,12 +9081,13 @@ opcodes.set(0xdd65, {
 });
 
 // {n:102, x:1, y:4, z:6, p:2, q:0}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xdd66, {
-  name: "LD H,(IX+DD)",
+  name: "LD H,(IX+$D)",
   bytes: "dd 66",
-  doc: "h=(ix+dd)",
   group: "Load 8bit",
+  doc: "h=(ix+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8226,12 +9187,13 @@ opcodes.set(0xdd6d, {
 });
 
 // {n:110, x:1, y:5, z:6, p:2, q:1}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xdd6e, {
-  name: "LD L,(IX+DD)",
+  name: "LD L,(IX+$D)",
   bytes: "dd 6e",
-  doc: "l=(ix+dd)",
   group: "Load 8bit",
+  doc: "l=(ix+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8259,12 +9221,13 @@ opcodes.set(0xdd6f, {
 });
 
 // {n:112, x:1, y:6, z:0, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xdd70, {
-  name: "LD (IX+DD),B",
+  name: "LD (IX+$D),B",
   bytes: "dd 70",
-  doc: "(ix+dd) = b",
   group: "Load 8bit",
+  doc: "(ix+dd) = b",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8280,12 +9243,13 @@ opcodes.set(0xdd70, {
 });
 
 // {n:113, x:1, y:6, z:1, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xdd71, {
-  name: "LD (IX+DD),C",
+  name: "LD (IX+$D),C",
   bytes: "dd 71",
-  doc: "(ix+dd) = c",
   group: "Load 8bit",
+  doc: "(ix+dd) = c",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8301,12 +9265,13 @@ opcodes.set(0xdd71, {
 });
 
 // {n:114, x:1, y:6, z:2, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xdd72, {
-  name: "LD (IX+DD),D",
+  name: "LD (IX+$D),D",
   bytes: "dd 72",
-  doc: "(ix+dd) = d",
   group: "Load 8bit",
+  doc: "(ix+dd) = d",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8322,12 +9287,13 @@ opcodes.set(0xdd72, {
 });
 
 // {n:115, x:1, y:6, z:3, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xdd73, {
-  name: "LD (IX+DD),E",
+  name: "LD (IX+$D),E",
   bytes: "dd 73",
-  doc: "(ix+dd) = e",
   group: "Load 8bit",
+  doc: "(ix+dd) = e",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8343,12 +9309,13 @@ opcodes.set(0xdd73, {
 });
 
 // {n:116, x:1, y:6, z:4, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xdd74, {
-  name: "LD (IX+DD),H",
+  name: "LD (IX+$D),H",
   bytes: "dd 74",
-  doc: "(ix+dd) = h",
   group: "Load 8bit",
+  doc: "(ix+dd) = h",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8364,12 +9331,13 @@ opcodes.set(0xdd74, {
 });
 
 // {n:117, x:1, y:6, z:5, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xdd75, {
-  name: "LD (IX+DD),L",
+  name: "LD (IX+$D),L",
   bytes: "dd 75",
-  doc: "(ix+dd) = l",
   group: "Load 8bit",
+  doc: "(ix+dd) = l",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8385,12 +9353,13 @@ opcodes.set(0xdd75, {
 });
 
 // {n:119, x:1, y:6, z:7, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xdd77, {
-  name: "LD (IX+DD),A",
+  name: "LD (IX+$D),A",
   bytes: "dd 77",
-  doc: "(ix+dd) = a",
   group: "Load 8bit",
+  doc: "(ix+dd) = a",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8430,12 +9399,13 @@ opcodes.set(0xdd7d, {
 });
 
 // {n:126, x:1, y:7, z:6, p:3, q:1}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xdd7e, {
-  name: "LD A,(IX+DD)",
+  name: "LD A,(IX+$D)",
   bytes: "dd 7e",
-  doc: "a=(ix+dd)",
   group: "Load 8bit",
+  doc: "a=(ix+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8475,12 +9445,14 @@ opcodes.set(0xdd85, {
 });
 
 // {n:134, x:2, y:0, z:6, p:0, q:0}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xdd86, {
-  name: "ADD (IX+DD)",
+  name: "ADD (IX+$D)",
   bytes: "dd 86",
-  doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (ix+dd)",
+  flags: "***V0*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8521,12 +9493,14 @@ opcodes.set(0xdd8d, {
 });
 
 // {n:142, x:2, y:1, z:6, p:0, q:1}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xdd8e, {
-  name: "ADC (IX+DD)",
+  name: "ADC (IX+$D)",
   bytes: "dd 8e",
-  doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (ix+dd)",
+  flags: "***V0*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8567,12 +9541,14 @@ opcodes.set(0xdd95, {
 });
 
 // {n:150, x:2, y:2, z:6, p:1, q:0}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xdd96, {
-  name: "SUB (IX+DD)",
+  name: "SUB (IX+$D)",
   bytes: "dd 96",
-  doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (ix+dd)",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8613,12 +9589,14 @@ opcodes.set(0xdd9d, {
 });
 
 // {n:158, x:2, y:3, z:6, p:1, q:1}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xdd9e, {
-  name: "SBC (IX+DD)",
+  name: "SBC (IX+$D)",
   bytes: "dd 9e",
-  doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (ix+dd)",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8659,12 +9637,14 @@ opcodes.set(0xdda5, {
 });
 
 // {n:166, x:2, y:4, z:6, p:2, q:0}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xdda6, {
-  name: "AND (IX+DD)",
+  name: "AND (IX+$D)",
   bytes: "dd a6",
-  doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (ix+dd)",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8705,12 +9685,14 @@ opcodes.set(0xddad, {
 });
 
 // {n:174, x:2, y:5, z:6, p:2, q:1}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xddae, {
-  name: "XOR (IX+DD)",
+  name: "XOR (IX+$D)",
   bytes: "dd ae",
-  doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (ix+dd)",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8751,12 +9733,14 @@ opcodes.set(0xddb5, {
 });
 
 // {n:182, x:2, y:6, z:6, p:3, q:0}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xddb6, {
-  name: "OR (IX+DD)",
+  name: "OR (IX+$D)",
   bytes: "dd b6",
-  doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (ix+dd)",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8797,12 +9781,14 @@ opcodes.set(0xddbd, {
 });
 
 // {n:190, x:2, y:7, z:6, p:3, q:1}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xddbe, {
-  name: "CP (IX+DD)",
+  name: "CP (IX+$D)",
   bytes: "dd be",
-  doc: "A=A $ALU (ix+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (ix+dd)",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -8906,8 +9892,8 @@ opcodes.set(0xdde5, {
 opcodes.set(0xdde9, {
   name: "JP IX",
   bytes: "dd e9",
-  doc: "JMP to ix",
   group: "Control flow",
+  doc: "JMP to ix",
   fn: (z80) => {
     // overlapped: {action: "$PC=$RP"}
     z80.regs.pc = z80.regs.ix;
@@ -8933,6 +9919,9 @@ opcodes.set(0xed40, {
   name: "IN B,(C)",
   bytes: "ed 40",
   group: "IO",
+  doc: "b=[C]",
+  flags: "***P0-",
+  states: [12],
   fn: (z80) => {
     // ioread: {ab: $BC, dst: $DLATCH, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -8949,6 +9938,8 @@ opcodes.set(0xed41, {
   name: "OUT (C),B",
   bytes: "ed 41",
   group: "IO",
+  doc: "[C]=b",
+  states: [12],
   fn: (z80) => {
     // iowrite: {ab: $BC, db: $RY, action: "$WZ=$BC+1"}
     z80.dbus = z80.regs.b;
@@ -8963,8 +9954,10 @@ opcodes.set(0xed41, {
 opcodes.set(0xed42, {
   name: "SBC HL,BC",
   bytes: "ed 42",
-  doc: "16bit sub with carry",
   group: "ALU 16bit",
+  doc: "16bit subtract with carry: A:=HL-bc-CY",
+  flags: "***V1*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "z80.alu.sbc16($RP)"}
     z80.incTStateCount(7);
@@ -8977,8 +9970,9 @@ opcodes.set(0xed42, {
 opcodes.set(0xed43, {
   name: "LD ($NN),BC",
   bytes: "ed 43 XX XX",
-  doc: "($nn)=bc",
   group: "Load 16bit",
+  doc: "[nn]=c, [nn+1]=b",
+  states: [20],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -9007,8 +10001,10 @@ opcodes.set(0xed43, {
 opcodes.set(0xed44, {
   name: "NEG",
   bytes: "ed 44",
-  doc: "A=-A",
   group: "ALU 8bit",
+  doc: "A=-A",
+  flags: " ***V1*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.neg8()"}
     z80.alu.neg8();
@@ -9020,8 +10016,9 @@ opcodes.set(0xed44, {
 opcodes.set(0xed45, {
   name: "RETN",
   bytes: "ed 45",
-  doc: "Return from NMI",
   group: "Control flow",
+  doc: "Return from NMI",
+  states: [14],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL}
     z80.abus = z80.regs.sp;
@@ -9044,8 +10041,9 @@ opcodes.set(0xed45, {
 opcodes.set(0xed46, {
   name: "IM 0",
   bytes: "ed 46",
-  doc: "Interrupt mode",
   group: "Interrupt",
+  doc: "Set interrupt mode to 0",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$IM=$IMY"}
     z80.regs.im = 0;
@@ -9057,8 +10055,9 @@ opcodes.set(0xed46, {
 opcodes.set(0xed47, {
   name: "LD I,A",
   bytes: "ed 47",
+  group: "Load 8bit",
   doc: "I=A",
-  group: "Load 1bit",
+  states: [9],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -9073,6 +10072,9 @@ opcodes.set(0xed48, {
   name: "IN C,(C)",
   bytes: "ed 48",
   group: "IO",
+  doc: "c=[C]",
+  flags: "***P0-",
+  states: [12],
   fn: (z80) => {
     // ioread: {ab: $BC, dst: $DLATCH, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -9089,6 +10091,8 @@ opcodes.set(0xed49, {
   name: "OUT (C),C",
   bytes: "ed 49",
   group: "IO",
+  doc: "[C]=c",
+  states: [12],
   fn: (z80) => {
     // iowrite: {ab: $BC, db: $RY, action: "$WZ=$BC+1"}
     z80.dbus = z80.regs.c;
@@ -9103,8 +10107,10 @@ opcodes.set(0xed49, {
 opcodes.set(0xed4a, {
   name: "ADC HL,BC",
   bytes: "ed 4a",
-  doc: "16bit add with carry",
   group: "ALU 16bit",
+  doc: "16bit add with carry: A:=HL+bc+CY",
+  flags: "***V0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "z80.alu.adc16($RP)"}
     z80.incTStateCount(7);
@@ -9117,8 +10123,9 @@ opcodes.set(0xed4a, {
 opcodes.set(0xed4b, {
   name: "LD BC,($NN)",
   bytes: "ed 4b XX XX",
-  doc: "bc=nn",
   group: "Load 16bit",
+  doc: "c=[nn], b=[nn+1]",
+  states: [20],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -9147,8 +10154,10 @@ opcodes.set(0xed4b, {
 opcodes.set(0xed4c, {
   name: "NEG",
   bytes: "ed 4c",
-  doc: "A=-A",
   group: "ALU 8bit",
+  doc: "A=-A",
+  flags: " ***V1*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.neg8()"}
     z80.alu.neg8();
@@ -9160,8 +10169,9 @@ opcodes.set(0xed4c, {
 opcodes.set(0xed4d, {
   name: "RETI",
   bytes: "ed 4d",
-  doc: "Return from interrupt",
   group: "Control flow",
+  doc: "Return from interrupt",
+  states: [14],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL, action: "z80.pins|=z80.PINS.RETI"}
     z80.abus = z80.regs.sp;
@@ -9185,8 +10195,9 @@ opcodes.set(0xed4d, {
 opcodes.set(0xed4e, {
   name: "IM 0",
   bytes: "ed 4e",
-  doc: "Interrupt mode",
   group: "Interrupt",
+  doc: "Set interrupt mode to 0",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$IM=$IMY"}
     z80.regs.im = 0;
@@ -9198,8 +10209,9 @@ opcodes.set(0xed4e, {
 opcodes.set(0xed4f, {
   name: "LD R,A",
   bytes: "ed 4f",
+  group: "Load 8bit",
   doc: "R=A",
-  group: "Load 1bit",
+  states: [9],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -9214,6 +10226,9 @@ opcodes.set(0xed50, {
   name: "IN D,(C)",
   bytes: "ed 50",
   group: "IO",
+  doc: "d=[C]",
+  flags: "***P0-",
+  states: [12],
   fn: (z80) => {
     // ioread: {ab: $BC, dst: $DLATCH, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -9230,6 +10245,8 @@ opcodes.set(0xed51, {
   name: "OUT (C),D",
   bytes: "ed 51",
   group: "IO",
+  doc: "[C]=d",
+  states: [12],
   fn: (z80) => {
     // iowrite: {ab: $BC, db: $RY, action: "$WZ=$BC+1"}
     z80.dbus = z80.regs.d;
@@ -9244,8 +10261,10 @@ opcodes.set(0xed51, {
 opcodes.set(0xed52, {
   name: "SBC HL,DE",
   bytes: "ed 52",
-  doc: "16bit sub with carry",
   group: "ALU 16bit",
+  doc: "16bit subtract with carry: A:=HL-de-CY",
+  flags: "***V1*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "z80.alu.sbc16($RP)"}
     z80.incTStateCount(7);
@@ -9258,8 +10277,9 @@ opcodes.set(0xed52, {
 opcodes.set(0xed53, {
   name: "LD ($NN),DE",
   bytes: "ed 53 XX XX",
-  doc: "($nn)=de",
   group: "Load 16bit",
+  doc: "[nn]=e, [nn+1]=d",
+  states: [20],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -9288,8 +10308,10 @@ opcodes.set(0xed53, {
 opcodes.set(0xed54, {
   name: "NEG",
   bytes: "ed 54",
-  doc: "A=-A",
   group: "ALU 8bit",
+  doc: "A=-A",
+  flags: " ***V1*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.neg8()"}
     z80.alu.neg8();
@@ -9301,8 +10323,9 @@ opcodes.set(0xed54, {
 opcodes.set(0xed55, {
   name: "RETI",
   bytes: "ed 55",
-  doc: "Return from interrupt",
   group: "Control flow",
+  doc: "Return from interrupt",
+  states: [14],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL, action: "z80.pins|=z80.PINS.RETI"}
     z80.abus = z80.regs.sp;
@@ -9326,8 +10349,9 @@ opcodes.set(0xed55, {
 opcodes.set(0xed56, {
   name: "IM 1",
   bytes: "ed 56",
-  doc: "Interrupt mode",
   group: "Interrupt",
+  doc: "Set interrupt mode to 1",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$IM=$IMY"}
     z80.regs.im = 1;
@@ -9339,8 +10363,10 @@ opcodes.set(0xed56, {
 opcodes.set(0xed57, {
   name: "LD A,I",
   bytes: "ed 57",
+  group: "Load 8bit",
   doc: "A=I",
-  group: "Load 1bit",
+  flags: "**0*0-",
+  states: [9],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -9356,6 +10382,9 @@ opcodes.set(0xed58, {
   name: "IN E,(C)",
   bytes: "ed 58",
   group: "IO",
+  doc: "e=[C]",
+  flags: "***P0-",
+  states: [12],
   fn: (z80) => {
     // ioread: {ab: $BC, dst: $DLATCH, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -9372,6 +10401,8 @@ opcodes.set(0xed59, {
   name: "OUT (C),E",
   bytes: "ed 59",
   group: "IO",
+  doc: "[C]=e",
+  states: [12],
   fn: (z80) => {
     // iowrite: {ab: $BC, db: $RY, action: "$WZ=$BC+1"}
     z80.dbus = z80.regs.e;
@@ -9386,8 +10417,10 @@ opcodes.set(0xed59, {
 opcodes.set(0xed5a, {
   name: "ADC HL,DE",
   bytes: "ed 5a",
-  doc: "16bit add with carry",
   group: "ALU 16bit",
+  doc: "16bit add with carry: A:=HL+de+CY",
+  flags: "***V0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "z80.alu.adc16($RP)"}
     z80.incTStateCount(7);
@@ -9400,8 +10433,9 @@ opcodes.set(0xed5a, {
 opcodes.set(0xed5b, {
   name: "LD DE,($NN)",
   bytes: "ed 5b XX XX",
-  doc: "de=nn",
   group: "Load 16bit",
+  doc: "e=[nn], d=[nn+1]",
+  states: [20],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -9430,8 +10464,10 @@ opcodes.set(0xed5b, {
 opcodes.set(0xed5c, {
   name: "NEG",
   bytes: "ed 5c",
-  doc: "A=-A",
   group: "ALU 8bit",
+  doc: "A=-A",
+  flags: " ***V1*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.neg8()"}
     z80.alu.neg8();
@@ -9443,8 +10479,9 @@ opcodes.set(0xed5c, {
 opcodes.set(0xed5d, {
   name: "RETI",
   bytes: "ed 5d",
-  doc: "Return from interrupt",
   group: "Control flow",
+  doc: "Return from interrupt",
+  states: [14],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL, action: "z80.pins|=z80.PINS.RETI"}
     z80.abus = z80.regs.sp;
@@ -9468,8 +10505,9 @@ opcodes.set(0xed5d, {
 opcodes.set(0xed5e, {
   name: "IM 2",
   bytes: "ed 5e",
-  doc: "Interrupt mode",
   group: "Interrupt",
+  doc: "Set interrupt mode to 2",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$IM=$IMY"}
     z80.regs.im = 2;
@@ -9481,8 +10519,10 @@ opcodes.set(0xed5e, {
 opcodes.set(0xed5f, {
   name: "LD A,R",
   bytes: "ed 5f",
+  group: "Load 8bit",
   doc: "A=R",
-  group: "Load 1bit",
+  flags: "**0*0-",
+  states: [9],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -9498,6 +10538,9 @@ opcodes.set(0xed60, {
   name: "IN H,(C)",
   bytes: "ed 60",
   group: "IO",
+  doc: "h=[C]",
+  flags: "***P0-",
+  states: [12],
   fn: (z80) => {
     // ioread: {ab: $BC, dst: $DLATCH, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -9514,6 +10557,8 @@ opcodes.set(0xed61, {
   name: "OUT (C),H",
   bytes: "ed 61",
   group: "IO",
+  doc: "[C]=h",
+  states: [12],
   fn: (z80) => {
     // iowrite: {ab: $BC, db: $RY, action: "$WZ=$BC+1"}
     z80.dbus = z80.regs.h;
@@ -9528,8 +10573,10 @@ opcodes.set(0xed61, {
 opcodes.set(0xed62, {
   name: "SBC HL,HL",
   bytes: "ed 62",
-  doc: "16bit sub with carry",
   group: "ALU 16bit",
+  doc: "16bit subtract with carry: A:=HL-hl-CY",
+  flags: "***V1*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "z80.alu.sbc16($RP)"}
     z80.incTStateCount(7);
@@ -9542,8 +10589,9 @@ opcodes.set(0xed62, {
 opcodes.set(0xed63, {
   name: "LD ($NN),HL",
   bytes: "ed 63 XX XX",
-  doc: "($nn)=hl",
   group: "Load 16bit",
+  doc: "[nn]=l, [nn+1]=h",
+  states: [20],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -9572,8 +10620,10 @@ opcodes.set(0xed63, {
 opcodes.set(0xed64, {
   name: "NEG",
   bytes: "ed 64",
-  doc: "A=-A",
   group: "ALU 8bit",
+  doc: "A=-A",
+  flags: " ***V1*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.neg8()"}
     z80.alu.neg8();
@@ -9585,8 +10635,9 @@ opcodes.set(0xed64, {
 opcodes.set(0xed65, {
   name: "RETI",
   bytes: "ed 65",
-  doc: "Return from interrupt",
   group: "Control flow",
+  doc: "Return from interrupt",
+  states: [14],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL, action: "z80.pins|=z80.PINS.RETI"}
     z80.abus = z80.regs.sp;
@@ -9610,8 +10661,9 @@ opcodes.set(0xed65, {
 opcodes.set(0xed66, {
   name: "IM 0",
   bytes: "ed 66",
-  doc: "Interrupt mode",
   group: "Interrupt",
+  doc: "Set interrupt mode to 0",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$IM=$IMY"}
     z80.regs.im = 0;
@@ -9623,8 +10675,10 @@ opcodes.set(0xed66, {
 opcodes.set(0xed67, {
   name: "RRD",
   bytes: "ed 67",
-  doc: "Rotate right 4 bits: {A,[HL]}=4->{A,[HL]}",
   group: "ALU 8bit",
+  doc: "Rotate right 4 bits: {A,[HL]}=4->{A,[HL]}",
+  flags: "**0P0-",
+  states: [18],
   fn: (z80) => {
     // mread: {ab: $HL, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -9645,6 +10699,9 @@ opcodes.set(0xed68, {
   name: "IN L,(C)",
   bytes: "ed 68",
   group: "IO",
+  doc: "l=[C]",
+  flags: "***P0-",
+  states: [12],
   fn: (z80) => {
     // ioread: {ab: $BC, dst: $DLATCH, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -9661,6 +10718,8 @@ opcodes.set(0xed69, {
   name: "OUT (C),L",
   bytes: "ed 69",
   group: "IO",
+  doc: "[C]=l",
+  states: [12],
   fn: (z80) => {
     // iowrite: {ab: $BC, db: $RY, action: "$WZ=$BC+1"}
     z80.dbus = z80.regs.l;
@@ -9675,8 +10734,10 @@ opcodes.set(0xed69, {
 opcodes.set(0xed6a, {
   name: "ADC HL,HL",
   bytes: "ed 6a",
-  doc: "16bit add with carry",
   group: "ALU 16bit",
+  doc: "16bit add with carry: A:=HL+hl+CY",
+  flags: "***V0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "z80.alu.adc16($RP)"}
     z80.incTStateCount(7);
@@ -9689,8 +10750,9 @@ opcodes.set(0xed6a, {
 opcodes.set(0xed6b, {
   name: "LD HL,($NN)",
   bytes: "ed 6b XX XX",
-  doc: "hl=nn",
   group: "Load 16bit",
+  doc: "l=[nn], h=[nn+1]",
+  states: [20],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -9719,8 +10781,10 @@ opcodes.set(0xed6b, {
 opcodes.set(0xed6c, {
   name: "NEG",
   bytes: "ed 6c",
-  doc: "A=-A",
   group: "ALU 8bit",
+  doc: "A=-A",
+  flags: " ***V1*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.neg8()"}
     z80.alu.neg8();
@@ -9732,8 +10796,9 @@ opcodes.set(0xed6c, {
 opcodes.set(0xed6d, {
   name: "RETI",
   bytes: "ed 6d",
-  doc: "Return from interrupt",
   group: "Control flow",
+  doc: "Return from interrupt",
+  states: [14],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL, action: "z80.pins|=z80.PINS.RETI"}
     z80.abus = z80.regs.sp;
@@ -9757,8 +10822,9 @@ opcodes.set(0xed6d, {
 opcodes.set(0xed6e, {
   name: "IM 0",
   bytes: "ed 6e",
-  doc: "Interrupt mode",
   group: "Interrupt",
+  doc: "Set interrupt mode to 0",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$IM=$IMY"}
     z80.regs.im = 0;
@@ -9770,8 +10836,10 @@ opcodes.set(0xed6e, {
 opcodes.set(0xed6f, {
   name: "RLD",
   bytes: "ed 6f",
-  doc: "Rotate left 4 bits: {A,[HL]}={A,[HL]}<-4",
   group: "ALU 8bit",
+  doc: "Rotate left 4 bits: {A,[HL]}={A,[HL]}<-4",
+  flags: "**0P0-",
+  states: [18],
   fn: (z80) => {
     // mread: {ab: $HL, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -9792,6 +10860,9 @@ opcodes.set(0xed70, {
   name: "IN (C)",
   bytes: "ed 70",
   group: "IO",
+  doc: "[UNDOC] Read byte from port BC and set flags only",
+  flags: "***P0-",
+  states: [12],
   fn: (z80) => {
     // ioread: {ab: $BC, dst: $DLATCH, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -9808,6 +10879,8 @@ opcodes.set(0xed71, {
   name: "OUT (C),0",
   bytes: "ed 71",
   group: "IO",
+  doc: "[UNDOC] Output zero to port BC",
+  states: [12],
   fn: (z80) => {
     // iowrite: {ab: $BC, db: $ZERO, action: "$WZ=$BC+1"}
     z80.dbus = 0;
@@ -9822,8 +10895,10 @@ opcodes.set(0xed71, {
 opcodes.set(0xed72, {
   name: "SBC HL,SP",
   bytes: "ed 72",
-  doc: "16bit sub with carry",
   group: "ALU 16bit",
+  doc: "16bit subtract with carry: A:=HL-sp-CY",
+  flags: "***V1*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "z80.alu.sbc16($RP)"}
     z80.incTStateCount(7);
@@ -9836,8 +10911,9 @@ opcodes.set(0xed72, {
 opcodes.set(0xed73, {
   name: "LD ($NN),SP",
   bytes: "ed 73 XX XX",
-  doc: "($nn)=sp",
   group: "Load 16bit",
+  doc: "[nn]=spl, [nn+1]=sph",
+  states: [20],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -9866,8 +10942,10 @@ opcodes.set(0xed73, {
 opcodes.set(0xed74, {
   name: "NEG",
   bytes: "ed 74",
-  doc: "A=-A",
   group: "ALU 8bit",
+  doc: "A=-A",
+  flags: " ***V1*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.neg8()"}
     z80.alu.neg8();
@@ -9879,8 +10957,9 @@ opcodes.set(0xed74, {
 opcodes.set(0xed75, {
   name: "RETI",
   bytes: "ed 75",
-  doc: "Return from interrupt",
   group: "Control flow",
+  doc: "Return from interrupt",
+  states: [14],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL, action: "z80.pins|=z80.PINS.RETI"}
     z80.abus = z80.regs.sp;
@@ -9904,8 +10983,9 @@ opcodes.set(0xed75, {
 opcodes.set(0xed76, {
   name: "IM 1",
   bytes: "ed 76",
-  doc: "Interrupt mode",
   group: "Interrupt",
+  doc: "Set interrupt mode to 1",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$IM=$IMY"}
     z80.regs.im = 1;
@@ -9918,6 +10998,9 @@ opcodes.set(0xed78, {
   name: "IN A,(C)",
   bytes: "ed 78",
   group: "IO",
+  doc: "a=[C]",
+  flags: "***P0-",
+  states: [12],
   fn: (z80) => {
     // ioread: {ab: $BC, dst: $DLATCH, action: "$WZ=$BC+1"}
     z80.abus = z80.regs.bc;
@@ -9934,6 +11017,8 @@ opcodes.set(0xed79, {
   name: "OUT (C),A",
   bytes: "ed 79",
   group: "IO",
+  doc: "[C]=a",
+  states: [12],
   fn: (z80) => {
     // iowrite: {ab: $BC, db: $RY, action: "$WZ=$BC+1"}
     z80.dbus = z80.regs.a;
@@ -9948,8 +11033,10 @@ opcodes.set(0xed79, {
 opcodes.set(0xed7a, {
   name: "ADC HL,SP",
   bytes: "ed 7a",
-  doc: "16bit add with carry",
   group: "ALU 16bit",
+  doc: "16bit add with carry: A:=HL+sp+CY",
+  flags: "***V0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "z80.alu.adc16($RP)"}
     z80.incTStateCount(7);
@@ -9962,8 +11049,9 @@ opcodes.set(0xed7a, {
 opcodes.set(0xed7b, {
   name: "LD SP,($NN)",
   bytes: "ed 7b XX XX",
-  doc: "sp=nn",
   group: "Load 16bit",
+  doc: "spl=[nn], sph=[nn+1]",
+  states: [20],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -9992,8 +11080,10 @@ opcodes.set(0xed7b, {
 opcodes.set(0xed7c, {
   name: "NEG",
   bytes: "ed 7c",
-  doc: "A=-A",
   group: "ALU 8bit",
+  doc: "A=-A",
+  flags: " ***V1*",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "z80.alu.neg8()"}
     z80.alu.neg8();
@@ -10005,8 +11095,9 @@ opcodes.set(0xed7c, {
 opcodes.set(0xed7d, {
   name: "RETI",
   bytes: "ed 7d",
-  doc: "Return from interrupt",
   group: "Control flow",
+  doc: "Return from interrupt",
+  states: [14],
   fn: (z80) => {
     // mread: {ab: $SP++, dst: $WZL, action: "z80.pins|=z80.PINS.RETI"}
     z80.abus = z80.regs.sp;
@@ -10030,8 +11121,9 @@ opcodes.set(0xed7d, {
 opcodes.set(0xed7e, {
   name: "IM 2",
   bytes: "ed 7e",
-  doc: "Interrupt mode",
   group: "Interrupt",
+  doc: "Set interrupt mode to 2",
+  states: [8],
   fn: (z80) => {
     // overlapped: {action: "$IM=$IMY"}
     z80.regs.im = 2;
@@ -10043,8 +11135,10 @@ opcodes.set(0xed7e, {
 opcodes.set(0xeda0, {
   name: "LDI",
   bytes: "ed a0",
-  doc: "Load and increment: [DE]=[HL],HL+=1,DE+=1,BC-=1",
   group: "Transfer 16bit",
+  doc: "Load and increment: [DE]=[HL],HL+=1,DE+=1,BC-=1",
+  flags: "--0*0-",
+  states: [16],
   fn: (z80) => {
     // mread: {ab: $HL++, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -10065,8 +11159,10 @@ opcodes.set(0xeda0, {
 opcodes.set(0xeda1, {
   name: "CPI",
   bytes: "ed a1",
-  doc: "Compare and increment: A-[HL],HL=HL+1,BC=BC-1",
   group: "ALU 8bit",
+  doc: "Compare and increment: A-[HL],HL=HL+1,BC=BC-1",
+  flags: "****1-",
+  states: [16],
   fn: (z80) => {
     // mread: {ab: $HL++, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -10084,8 +11180,10 @@ opcodes.set(0xeda1, {
 opcodes.set(0xeda2, {
   name: "INI",
   bytes: "ed a2",
-  doc: "Input and increment: [HL]=[C],HL=HL+1,B=B-1",
   group: "IO",
+  doc: "Input and increment: [HL]=[C],HL=HL+1,B=B-1",
+  flags: "***?1-",
+  states: [16],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -10107,8 +11205,10 @@ opcodes.set(0xeda2, {
 opcodes.set(0xeda3, {
   name: "OUTI",
   bytes: "ed a3",
-  doc: "Output and increment: [C]=[HL],HL=HL+1,B=B-1",
   group: "IO",
+  doc: "Output and increment: [C]=[HL],HL=HL+1,B=B-1",
+  flags: "***?1-",
+  states: [16],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -10130,8 +11230,10 @@ opcodes.set(0xeda3, {
 opcodes.set(0xeda8, {
   name: "LDD",
   bytes: "ed a8",
-  doc: "Load and decrement: [DE]=[HL],HL-=1,DE-=1,BC-=1",
   group: "Transfer 16bit",
+  doc: "Load and decrement: [DE]=[HL],HL-=1,DE-=1,BC-=1",
+  flags: "--0*0-",
+  states: [16],
   fn: (z80) => {
     // mread: {ab: $HL--, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -10152,8 +11254,10 @@ opcodes.set(0xeda8, {
 opcodes.set(0xeda9, {
   name: "CPD",
   bytes: "ed a9",
-  doc: "Compare and decrement: A-[HL],HL=HL-1,BC=BC-1",
   group: "ALU 8bit",
+  doc: "Compare and decrement: A-[HL],HL=HL-1,BC=BC-1",
+  flags: "****1-",
+  states: [16],
   fn: (z80) => {
     // mread: {ab: $HL--, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -10171,8 +11275,10 @@ opcodes.set(0xeda9, {
 opcodes.set(0xedaa, {
   name: "IND",
   bytes: "ed aa",
-  doc: "Input and decrement: [HL]=[C],HL=HL-1,B=B-1",
   group: "IO",
+  doc: "Input and decrement: [HL]=[C],HL=HL-1,B=B-1",
+  flags: "***?1-",
+  states: [16],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -10194,8 +11300,10 @@ opcodes.set(0xedaa, {
 opcodes.set(0xedab, {
   name: "OUTD",
   bytes: "ed ab",
-  doc: "Output and decrement: Output and increment: [C]=[HL],HL=HL-1,B=B-1",
   group: "IO",
+  doc: "Output and decrement: Output and increment: [C]=[HL],HL=HL-1,B=B-1",
+  flags: "***?1-",
+  states: [16],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -10217,8 +11325,10 @@ opcodes.set(0xedab, {
 opcodes.set(0xedb0, {
   name: "LDIR",
   bytes: "ed b0",
-  doc: "LDI until BC==0",
   group: "Transfer 16bit",
+  doc: "Load and increment until BC==0",
+  flags: "--000-",
+  states: [21, 16],
   fn: (z80) => {
     // mread: {ab: $HL++, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -10246,8 +11356,10 @@ opcodes.set(0xedb0, {
 opcodes.set(0xedb1, {
   name: "CPIR",
   bytes: "ed b1",
-  doc: "CPI until A=[HL] or BC=0",
   group: "ALU 8bit",
+  doc: "CPI until A=[HL] or BC=0",
+  flags: "****1-",
+  states: [21, 16],
   fn: (z80) => {
     // mread: {ab: $HL++, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -10269,8 +11381,10 @@ opcodes.set(0xedb1, {
 opcodes.set(0xedb2, {
   name: "INIR",
   bytes: "ed b2",
-  doc: "INI until B==0",
   group: "IO",
+  doc: "INI until B==0",
+  flags: "01*?1-",
+  states: [21, 16],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -10295,8 +11409,10 @@ opcodes.set(0xedb2, {
 opcodes.set(0xedb3, {
   name: "OTIR",
   bytes: "ed b3",
-  doc: "OUTI until B==0",
   group: "IO",
+  doc: "OUTI until B==0",
+  flags: "01*?1-",
+  states: [21, 16],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -10321,8 +11437,10 @@ opcodes.set(0xedb3, {
 opcodes.set(0xedb8, {
   name: "LDDR",
   bytes: "ed b8",
-  doc: "LDR until BC==0",
   group: "Transfer 16bit",
+  doc: "LDR until BC==0",
+  flags: "--000-",
+  states: [21, 16],
   fn: (z80) => {
     // mread: {ab: $HL--, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -10350,8 +11468,10 @@ opcodes.set(0xedb8, {
 opcodes.set(0xedb9, {
   name: "CPDR",
   bytes: "ed b9",
-  doc: "CPD until A=[HL] or BC=0",
   group: "ALU 8bit",
+  doc: "CPD until A=[HL] or BC=0",
+  flags: "****1-",
+  states: [21, 16],
   fn: (z80) => {
     // mread: {ab: $HL--, dst: $DLATCH}
     z80.abus = z80.regs.hl;
@@ -10373,8 +11493,10 @@ opcodes.set(0xedb9, {
 opcodes.set(0xedba, {
   name: "INDR",
   bytes: "ed ba",
-  doc: "IND until B==0",
   group: "IO",
+  doc: "IND until B==0",
+  flags: "01*?1-",
+  states: [21, 16],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -10399,8 +11521,10 @@ opcodes.set(0xedba, {
 opcodes.set(0xedbb, {
   name: "OTDR",
   bytes: "ed bb",
-  doc: "OUTD until B==0",
   group: "IO",
+  doc: "OUTD until B==0",
+  flags: "01*?1-",
+  states: [21, 16],
   fn: (z80) => {
     // generic: {tcycles: 1}
     z80.incTStateCount(1);
@@ -10451,8 +11575,8 @@ opcodes.set(0xfd19, {
 opcodes.set(0xfd21, {
   name: "LD IY,$NN",
   bytes: "fd 21 XX XX",
-  doc: "iy=nn",
   group: "Load 16bit",
+  doc: "iy=nn",
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $RPL}
     z80.abus = z80.regs.pc;
@@ -10472,8 +11596,8 @@ opcodes.set(0xfd21, {
 opcodes.set(0xfd22, {
   name: "LD ($NN),IY",
   bytes: "fd 22 XX XX",
-  doc: "[nn]=iy",
   group: "Load 16bit",
+  doc: "[nn]=iy",
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -10502,8 +11626,8 @@ opcodes.set(0xfd22, {
 opcodes.set(0xfd23, {
   name: "INC IY",
   bytes: "fd 23",
-  doc: "$RDDP+=1",
   group: "ALU 16bit",
+  doc: "$RDDP+=1",
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.inc16($RP)"}
     z80.incTStateCount(2);
@@ -10516,8 +11640,9 @@ opcodes.set(0xfd23, {
 opcodes.set(0xfd24, {
   name: "INC IYH",
   bytes: "fd 24",
-  doc: "iyh+=1",
   group: "ALU 8bit",
+  doc: "iyh+=1",
+  states: [10],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.iyh = z80.alu.inc8(z80.regs.iyh);
@@ -10529,8 +11654,8 @@ opcodes.set(0xfd24, {
 opcodes.set(0xfd25, {
   name: "DEC IYH",
   bytes: "fd 25",
-  doc: "iyh-=1",
   group: "ALU 8bit",
+  doc: "iyh-=1",
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.iyh = z80.alu.dec8(z80.regs.iyh);
@@ -10570,8 +11695,8 @@ opcodes.set(0xfd29, {
 opcodes.set(0xfd2a, {
   name: "LD IY,($NN)",
   bytes: "fd 2a XX XX",
-  doc: "iy=($nn)",
   group: "Load 16bit",
+  doc: "iy=($nn)",
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $WZL}
     z80.abus = z80.regs.pc;
@@ -10600,8 +11725,8 @@ opcodes.set(0xfd2a, {
 opcodes.set(0xfd2b, {
   name: "DEC IY",
   bytes: "fd 2b",
-  doc: "iy-=1",
   group: "ALU 16bit",
+  doc: "iy-=1",
   fn: (z80) => {
     // generic: {tcycles: 2, action: "$RP=z80.alu.dec16($RP)"}
     z80.incTStateCount(2);
@@ -10614,8 +11739,9 @@ opcodes.set(0xfd2b, {
 opcodes.set(0xfd2c, {
   name: "INC IYL",
   bytes: "fd 2c",
-  doc: "iyl+=1",
   group: "ALU 8bit",
+  doc: "iyl+=1",
+  states: [10],
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.inc8($RY)"}
     z80.regs.iyl = z80.alu.inc8(z80.regs.iyl);
@@ -10627,8 +11753,8 @@ opcodes.set(0xfd2c, {
 opcodes.set(0xfd2d, {
   name: "DEC IYL",
   bytes: "fd 2d",
-  doc: "iyl-=1",
   group: "ALU 8bit",
+  doc: "iyl-=1",
   fn: (z80) => {
     // overlapped: {action: "$RY=z80.alu.dec8($RY)"}
     z80.regs.iyl = z80.alu.dec8(z80.regs.iyl);
@@ -10651,12 +11777,14 @@ opcodes.set(0xfd2e, {
 });
 
 // {n:52, x:0, y:6, z:4, p:3, q:0}
-// INC ($RI+dd)
+// INC ($RI+$d)
 opcodes.set(0xfd34, {
-  name: "INC (IY+DD)",
+  name: "INC (IY+$D)",
   bytes: "fd 34",
-  doc: "Increment (iy+dd)",
   group: "ALU 8bit",
+  doc: "Increment (iy+d)",
+  flags: "***V0-",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -10676,12 +11804,14 @@ opcodes.set(0xfd34, {
 });
 
 // {n:53, x:0, y:6, z:5, p:3, q:0}
-// DEC ($RI+dd)
+// DEC ($RI+$d)
 opcodes.set(0xfd35, {
-  name: "DEC (IY+DD)",
+  name: "DEC (IY+$D)",
   bytes: "fd 35",
-  doc: "Decrement (iy+dd)",
   group: "ALU 8bit",
+  doc: "Decrement (iy+dd)",
+  flags: "***V1-",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -10701,12 +11831,13 @@ opcodes.set(0xfd35, {
 });
 
 // {n:54, x:0, y:6, z:6, p:3, q:0}
-// LD ($RI+dd),$n
+// LD ($RI+$d),$n
 opcodes.set(0xfd36, {
-  name: "LD (IY+DD),$N",
+  name: "LD (IY+$D),$N",
   bytes: "fd 36 XX",
-  doc: "(iy+dd)=n",
   group: "Load 8bit",
+  doc: "(iy+dd)=n",
+  states: [19],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -10762,12 +11893,13 @@ opcodes.set(0xfd45, {
 });
 
 // {n:70, x:1, y:0, z:6, p:0, q:0}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xfd46, {
-  name: "LD B,(IY+DD)",
+  name: "LD B,(IY+$D)",
   bytes: "fd 46",
-  doc: "b=(iy+dd)",
   group: "Load 8bit",
+  doc: "b=(iy+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -10807,12 +11939,13 @@ opcodes.set(0xfd4d, {
 });
 
 // {n:78, x:1, y:1, z:6, p:0, q:1}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xfd4e, {
-  name: "LD C,(IY+DD)",
+  name: "LD C,(IY+$D)",
   bytes: "fd 4e",
-  doc: "c=(iy+dd)",
   group: "Load 8bit",
+  doc: "c=(iy+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -10852,12 +11985,13 @@ opcodes.set(0xfd55, {
 });
 
 // {n:86, x:1, y:2, z:6, p:1, q:0}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xfd56, {
-  name: "LD D,(IY+DD)",
+  name: "LD D,(IY+$D)",
   bytes: "fd 56",
-  doc: "d=(iy+dd)",
   group: "Load 8bit",
+  doc: "d=(iy+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -10897,12 +12031,13 @@ opcodes.set(0xfd5d, {
 });
 
 // {n:94, x:1, y:3, z:6, p:1, q:1}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xfd5e, {
-  name: "LD E,(IY+DD)",
+  name: "LD E,(IY+$D)",
   bytes: "fd 5e",
-  doc: "e=(iy+dd)",
   group: "Load 8bit",
+  doc: "e=(iy+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -10990,12 +12125,13 @@ opcodes.set(0xfd65, {
 });
 
 // {n:102, x:1, y:4, z:6, p:2, q:0}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xfd66, {
-  name: "LD H,(IY+DD)",
+  name: "LD H,(IY+$D)",
   bytes: "fd 66",
-  doc: "h=(iy+dd)",
   group: "Load 8bit",
+  doc: "h=(iy+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11095,12 +12231,13 @@ opcodes.set(0xfd6d, {
 });
 
 // {n:110, x:1, y:5, z:6, p:2, q:1}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xfd6e, {
-  name: "LD L,(IY+DD)",
+  name: "LD L,(IY+$D)",
   bytes: "fd 6e",
-  doc: "l=(iy+dd)",
   group: "Load 8bit",
+  doc: "l=(iy+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11128,12 +12265,13 @@ opcodes.set(0xfd6f, {
 });
 
 // {n:112, x:1, y:6, z:0, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xfd70, {
-  name: "LD (IY+DD),B",
+  name: "LD (IY+$D),B",
   bytes: "fd 70",
-  doc: "(iy+dd) = b",
   group: "Load 8bit",
+  doc: "(iy+dd) = b",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11149,12 +12287,13 @@ opcodes.set(0xfd70, {
 });
 
 // {n:113, x:1, y:6, z:1, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xfd71, {
-  name: "LD (IY+DD),C",
+  name: "LD (IY+$D),C",
   bytes: "fd 71",
-  doc: "(iy+dd) = c",
   group: "Load 8bit",
+  doc: "(iy+dd) = c",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11170,12 +12309,13 @@ opcodes.set(0xfd71, {
 });
 
 // {n:114, x:1, y:6, z:2, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xfd72, {
-  name: "LD (IY+DD),D",
+  name: "LD (IY+$D),D",
   bytes: "fd 72",
-  doc: "(iy+dd) = d",
   group: "Load 8bit",
+  doc: "(iy+dd) = d",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11191,12 +12331,13 @@ opcodes.set(0xfd72, {
 });
 
 // {n:115, x:1, y:6, z:3, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xfd73, {
-  name: "LD (IY+DD),E",
+  name: "LD (IY+$D),E",
   bytes: "fd 73",
-  doc: "(iy+dd) = e",
   group: "Load 8bit",
+  doc: "(iy+dd) = e",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11212,12 +12353,13 @@ opcodes.set(0xfd73, {
 });
 
 // {n:116, x:1, y:6, z:4, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xfd74, {
-  name: "LD (IY+DD),H",
+  name: "LD (IY+$D),H",
   bytes: "fd 74",
-  doc: "(iy+dd) = h",
   group: "Load 8bit",
+  doc: "(iy+dd) = h",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11233,12 +12375,13 @@ opcodes.set(0xfd74, {
 });
 
 // {n:117, x:1, y:6, z:5, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xfd75, {
-  name: "LD (IY+DD),L",
+  name: "LD (IY+$D),L",
   bytes: "fd 75",
-  doc: "(iy+dd) = l",
   group: "Load 8bit",
+  doc: "(iy+dd) = l",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11254,12 +12397,13 @@ opcodes.set(0xfd75, {
 });
 
 // {n:119, x:1, y:6, z:7, p:3, q:0}
-// LD ($RI+dd),$RRZ
+// LD ($RI+$d),$RRZ
 opcodes.set(0xfd77, {
-  name: "LD (IY+DD),A",
+  name: "LD (IY+$D),A",
   bytes: "fd 77",
-  doc: "(iy+dd) = a",
   group: "Load 8bit",
+  doc: "(iy+dd) = a",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11299,12 +12443,13 @@ opcodes.set(0xfd7d, {
 });
 
 // {n:126, x:1, y:7, z:6, p:3, q:1}
-// LD $RRY,($RI+dd)
+// LD $RRY,($RI+$d)
 opcodes.set(0xfd7e, {
-  name: "LD A,(IY+DD)",
+  name: "LD A,(IY+$D)",
   bytes: "fd 7e",
-  doc: "a=(iy+dd)",
   group: "Load 8bit",
+  doc: "a=(iy+dd)",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11344,12 +12489,14 @@ opcodes.set(0xfd85, {
 });
 
 // {n:134, x:2, y:0, z:6, p:0, q:0}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xfd86, {
-  name: "ADD (IY+DD)",
+  name: "ADD (IY+$D)",
   bytes: "fd 86",
-  doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (iy+dd)",
+  flags: "***V0*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11390,12 +12537,14 @@ opcodes.set(0xfd8d, {
 });
 
 // {n:142, x:2, y:1, z:6, p:0, q:1}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xfd8e, {
-  name: "ADC (IY+DD)",
+  name: "ADC (IY+$D)",
   bytes: "fd 8e",
-  doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (iy+dd)",
+  flags: "***V0*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11436,12 +12585,14 @@ opcodes.set(0xfd95, {
 });
 
 // {n:150, x:2, y:2, z:6, p:1, q:0}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xfd96, {
-  name: "SUB (IY+DD)",
+  name: "SUB (IY+$D)",
   bytes: "fd 96",
-  doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (iy+dd)",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11482,12 +12633,14 @@ opcodes.set(0xfd9d, {
 });
 
 // {n:158, x:2, y:3, z:6, p:1, q:1}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xfd9e, {
-  name: "SBC (IY+DD)",
+  name: "SBC (IY+$D)",
   bytes: "fd 9e",
-  doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (iy+dd)",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11528,12 +12681,14 @@ opcodes.set(0xfda5, {
 });
 
 // {n:166, x:2, y:4, z:6, p:2, q:0}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xfda6, {
-  name: "AND (IY+DD)",
+  name: "AND (IY+$D)",
   bytes: "fd a6",
-  doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (iy+dd)",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11574,12 +12729,14 @@ opcodes.set(0xfdad, {
 });
 
 // {n:174, x:2, y:5, z:6, p:2, q:1}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xfdae, {
-  name: "XOR (IY+DD)",
+  name: "XOR (IY+$D)",
   bytes: "fd ae",
-  doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (iy+dd)",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11620,12 +12777,14 @@ opcodes.set(0xfdb5, {
 });
 
 // {n:182, x:2, y:6, z:6, p:3, q:0}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xfdb6, {
-  name: "OR (IY+DD)",
+  name: "OR (IY+$D)",
   bytes: "fd b6",
-  doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (iy+dd)",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11666,12 +12825,14 @@ opcodes.set(0xfdbd, {
 });
 
 // {n:190, x:2, y:7, z:6, p:3, q:1}
-// $ALU ($RI+dd)
+// $ALU ($RI+$d)
 opcodes.set(0xfdbe, {
-  name: "CP (IY+DD)",
+  name: "CP (IY+$D)",
   bytes: "fd be",
-  doc: "A=A $ALU (iy+dd)",
   group: "ALU 8bit",
+  doc: "A=A $ALU (iy+dd)",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // mread: {tcycles: 8, ab: $PC++, dst: $DLATCH, action: "$WZ=add16($RI, signedByte($DLATCH))"}
     z80.abus = z80.regs.pc;
@@ -11775,8 +12936,8 @@ opcodes.set(0xfde5, {
 opcodes.set(0xfde9, {
   name: "JP IY",
   bytes: "fd e9",
-  doc: "JMP to iy",
   group: "Control flow",
+  doc: "JMP to iy",
   fn: (z80) => {
     // overlapped: {action: "$PC=$RP"}
     z80.regs.pc = z80.regs.iy;
@@ -11797,12 +12958,14 @@ opcodes.set(0xfdf9, {
 });
 
 // {n:0, x:0, y:0, z:0, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb00, {
-  name: "RLC (IX+DD),B",
+  name: "RLC (IX+$D),B",
   bytes: "dd cb 00",
-  doc: "b = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Rotate left through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11819,12 +12982,14 @@ opcodes.set(0xddcb00, {
 });
 
 // {n:1, x:0, y:0, z:1, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb01, {
-  name: "RLC (IX+DD),C",
+  name: "RLC (IX+$D),C",
   bytes: "dd cb 01",
-  doc: "c = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Rotate left through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11841,12 +13006,14 @@ opcodes.set(0xddcb01, {
 });
 
 // {n:2, x:0, y:0, z:2, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb02, {
-  name: "RLC (IX+DD),D",
+  name: "RLC (IX+$D),D",
   bytes: "dd cb 02",
-  doc: "d = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Rotate left through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11863,12 +13030,14 @@ opcodes.set(0xddcb02, {
 });
 
 // {n:3, x:0, y:0, z:3, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb03, {
-  name: "RLC (IX+DD),E",
+  name: "RLC (IX+$D),E",
   bytes: "dd cb 03",
-  doc: "e = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Rotate left through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11885,12 +13054,14 @@ opcodes.set(0xddcb03, {
 });
 
 // {n:4, x:0, y:0, z:4, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb04, {
-  name: "RLC (IX+DD),IXH",
+  name: "RLC (IX+$D),IXH",
   bytes: "dd cb 04",
-  doc: "ixh = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixh = Rotate left through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11907,12 +13078,14 @@ opcodes.set(0xddcb04, {
 });
 
 // {n:5, x:0, y:0, z:5, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb05, {
-  name: "RLC (IX+DD),IXL",
+  name: "RLC (IX+$D),IXL",
   bytes: "dd cb 05",
-  doc: "ixl = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixl = Rotate left through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11929,12 +13102,14 @@ opcodes.set(0xddcb05, {
 });
 
 // {n:7, x:0, y:0, z:7, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb07, {
-  name: "RLC (IX+DD),A",
+  name: "RLC (IX+$D),A",
   bytes: "dd cb 07",
-  doc: "a = Rotate left through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Rotate left through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11951,12 +13126,14 @@ opcodes.set(0xddcb07, {
 });
 
 // {n:8, x:0, y:1, z:0, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb08, {
-  name: "RRC (IX+DD),B",
+  name: "RRC (IX+$D),B",
   bytes: "dd cb 08",
-  doc: "b = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Rotate right through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11973,12 +13150,14 @@ opcodes.set(0xddcb08, {
 });
 
 // {n:9, x:0, y:1, z:1, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb09, {
-  name: "RRC (IX+DD),C",
+  name: "RRC (IX+$D),C",
   bytes: "dd cb 09",
-  doc: "c = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Rotate right through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -11995,12 +13174,14 @@ opcodes.set(0xddcb09, {
 });
 
 // {n:10, x:0, y:1, z:2, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb0a, {
-  name: "RRC (IX+DD),D",
+  name: "RRC (IX+$D),D",
   bytes: "dd cb 0a",
-  doc: "d = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Rotate right through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12017,12 +13198,14 @@ opcodes.set(0xddcb0a, {
 });
 
 // {n:11, x:0, y:1, z:3, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb0b, {
-  name: "RRC (IX+DD),E",
+  name: "RRC (IX+$D),E",
   bytes: "dd cb 0b",
-  doc: "e = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Rotate right through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12039,12 +13222,14 @@ opcodes.set(0xddcb0b, {
 });
 
 // {n:12, x:0, y:1, z:4, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb0c, {
-  name: "RRC (IX+DD),IXH",
+  name: "RRC (IX+$D),IXH",
   bytes: "dd cb 0c",
-  doc: "ixh = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixh = Rotate right through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12061,12 +13246,14 @@ opcodes.set(0xddcb0c, {
 });
 
 // {n:13, x:0, y:1, z:5, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb0d, {
-  name: "RRC (IX+DD),IXL",
+  name: "RRC (IX+$D),IXL",
   bytes: "dd cb 0d",
-  doc: "ixl = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixl = Rotate right through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12083,12 +13270,14 @@ opcodes.set(0xddcb0d, {
 });
 
 // {n:15, x:0, y:1, z:7, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb0f, {
-  name: "RRC (IX+DD),A",
+  name: "RRC (IX+$D),A",
   bytes: "dd cb 0f",
-  doc: "a = Rotate right through carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Rotate right through carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12105,12 +13294,14 @@ opcodes.set(0xddcb0f, {
 });
 
 // {n:16, x:0, y:2, z:0, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb10, {
-  name: "RL (IX+DD),B",
+  name: "RL (IX+$D),B",
   bytes: "dd cb 10",
-  doc: "b = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Rotate left from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12127,12 +13318,14 @@ opcodes.set(0xddcb10, {
 });
 
 // {n:17, x:0, y:2, z:1, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb11, {
-  name: "RL (IX+DD),C",
+  name: "RL (IX+$D),C",
   bytes: "dd cb 11",
-  doc: "c = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Rotate left from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12149,12 +13342,14 @@ opcodes.set(0xddcb11, {
 });
 
 // {n:18, x:0, y:2, z:2, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb12, {
-  name: "RL (IX+DD),D",
+  name: "RL (IX+$D),D",
   bytes: "dd cb 12",
-  doc: "d = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Rotate left from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12171,12 +13366,14 @@ opcodes.set(0xddcb12, {
 });
 
 // {n:19, x:0, y:2, z:3, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb13, {
-  name: "RL (IX+DD),E",
+  name: "RL (IX+$D),E",
   bytes: "dd cb 13",
-  doc: "e = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Rotate left from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12193,12 +13390,14 @@ opcodes.set(0xddcb13, {
 });
 
 // {n:20, x:0, y:2, z:4, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb14, {
-  name: "RL (IX+DD),IXH",
+  name: "RL (IX+$D),IXH",
   bytes: "dd cb 14",
-  doc: "ixh = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixh = Rotate left from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12215,12 +13414,14 @@ opcodes.set(0xddcb14, {
 });
 
 // {n:21, x:0, y:2, z:5, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb15, {
-  name: "RL (IX+DD),IXL",
+  name: "RL (IX+$D),IXL",
   bytes: "dd cb 15",
-  doc: "ixl = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixl = Rotate left from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12237,12 +13438,14 @@ opcodes.set(0xddcb15, {
 });
 
 // {n:23, x:0, y:2, z:7, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb17, {
-  name: "RL (IX+DD),A",
+  name: "RL (IX+$D),A",
   bytes: "dd cb 17",
-  doc: "a = Rotate left from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Rotate left from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12259,12 +13462,14 @@ opcodes.set(0xddcb17, {
 });
 
 // {n:24, x:0, y:3, z:0, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb18, {
-  name: "RR (IX+DD),B",
+  name: "RR (IX+$D),B",
   bytes: "dd cb 18",
-  doc: "b = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Rotate right from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12281,12 +13486,14 @@ opcodes.set(0xddcb18, {
 });
 
 // {n:25, x:0, y:3, z:1, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb19, {
-  name: "RR (IX+DD),C",
+  name: "RR (IX+$D),C",
   bytes: "dd cb 19",
-  doc: "c = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Rotate right from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12303,12 +13510,14 @@ opcodes.set(0xddcb19, {
 });
 
 // {n:26, x:0, y:3, z:2, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb1a, {
-  name: "RR (IX+DD),D",
+  name: "RR (IX+$D),D",
   bytes: "dd cb 1a",
-  doc: "d = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Rotate right from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12325,12 +13534,14 @@ opcodes.set(0xddcb1a, {
 });
 
 // {n:27, x:0, y:3, z:3, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb1b, {
-  name: "RR (IX+DD),E",
+  name: "RR (IX+$D),E",
   bytes: "dd cb 1b",
-  doc: "e = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Rotate right from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12347,12 +13558,14 @@ opcodes.set(0xddcb1b, {
 });
 
 // {n:28, x:0, y:3, z:4, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb1c, {
-  name: "RR (IX+DD),IXH",
+  name: "RR (IX+$D),IXH",
   bytes: "dd cb 1c",
-  doc: "ixh = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixh = Rotate right from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12369,12 +13582,14 @@ opcodes.set(0xddcb1c, {
 });
 
 // {n:29, x:0, y:3, z:5, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb1d, {
-  name: "RR (IX+DD),IXL",
+  name: "RR (IX+$D),IXL",
   bytes: "dd cb 1d",
-  doc: "ixl = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixl = Rotate right from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12391,12 +13606,14 @@ opcodes.set(0xddcb1d, {
 });
 
 // {n:31, x:0, y:3, z:7, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb1f, {
-  name: "RR (IX+DD),A",
+  name: "RR (IX+$D),A",
   bytes: "dd cb 1f",
-  doc: "a = Rotate right from carry (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Rotate right from carry (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12413,12 +13630,14 @@ opcodes.set(0xddcb1f, {
 });
 
 // {n:32, x:0, y:4, z:0, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb20, {
-  name: "SLA (IX+DD),B",
+  name: "SLA (IX+$D),B",
   bytes: "dd cb 20",
-  doc: "b = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Shift left arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12435,12 +13654,14 @@ opcodes.set(0xddcb20, {
 });
 
 // {n:33, x:0, y:4, z:1, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb21, {
-  name: "SLA (IX+DD),C",
+  name: "SLA (IX+$D),C",
   bytes: "dd cb 21",
-  doc: "c = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Shift left arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12457,12 +13678,14 @@ opcodes.set(0xddcb21, {
 });
 
 // {n:34, x:0, y:4, z:2, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb22, {
-  name: "SLA (IX+DD),D",
+  name: "SLA (IX+$D),D",
   bytes: "dd cb 22",
-  doc: "d = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Shift left arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12479,12 +13702,14 @@ opcodes.set(0xddcb22, {
 });
 
 // {n:35, x:0, y:4, z:3, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb23, {
-  name: "SLA (IX+DD),E",
+  name: "SLA (IX+$D),E",
   bytes: "dd cb 23",
-  doc: "e = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Shift left arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12501,12 +13726,14 @@ opcodes.set(0xddcb23, {
 });
 
 // {n:36, x:0, y:4, z:4, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb24, {
-  name: "SLA (IX+DD),IXH",
+  name: "SLA (IX+$D),IXH",
   bytes: "dd cb 24",
-  doc: "ixh = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixh = Shift left arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12523,12 +13750,14 @@ opcodes.set(0xddcb24, {
 });
 
 // {n:37, x:0, y:4, z:5, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb25, {
-  name: "SLA (IX+DD),IXL",
+  name: "SLA (IX+$D),IXL",
   bytes: "dd cb 25",
-  doc: "ixl = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixl = Shift left arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12545,12 +13774,14 @@ opcodes.set(0xddcb25, {
 });
 
 // {n:39, x:0, y:4, z:7, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb27, {
-  name: "SLA (IX+DD),A",
+  name: "SLA (IX+$D),A",
   bytes: "dd cb 27",
-  doc: "a = Shift left arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Shift left arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12567,12 +13798,14 @@ opcodes.set(0xddcb27, {
 });
 
 // {n:40, x:0, y:5, z:0, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb28, {
-  name: "SRA (IX+DD),B",
+  name: "SRA (IX+$D),B",
   bytes: "dd cb 28",
-  doc: "b = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Shift right arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12589,12 +13822,14 @@ opcodes.set(0xddcb28, {
 });
 
 // {n:41, x:0, y:5, z:1, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb29, {
-  name: "SRA (IX+DD),C",
+  name: "SRA (IX+$D),C",
   bytes: "dd cb 29",
-  doc: "c = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Shift right arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12611,12 +13846,14 @@ opcodes.set(0xddcb29, {
 });
 
 // {n:42, x:0, y:5, z:2, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb2a, {
-  name: "SRA (IX+DD),D",
+  name: "SRA (IX+$D),D",
   bytes: "dd cb 2a",
-  doc: "d = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Shift right arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12633,12 +13870,14 @@ opcodes.set(0xddcb2a, {
 });
 
 // {n:43, x:0, y:5, z:3, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb2b, {
-  name: "SRA (IX+DD),E",
+  name: "SRA (IX+$D),E",
   bytes: "dd cb 2b",
-  doc: "e = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Shift right arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12655,12 +13894,14 @@ opcodes.set(0xddcb2b, {
 });
 
 // {n:44, x:0, y:5, z:4, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb2c, {
-  name: "SRA (IX+DD),IXH",
+  name: "SRA (IX+$D),IXH",
   bytes: "dd cb 2c",
-  doc: "ixh = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixh = Shift right arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12677,12 +13918,14 @@ opcodes.set(0xddcb2c, {
 });
 
 // {n:45, x:0, y:5, z:5, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb2d, {
-  name: "SRA (IX+DD),IXL",
+  name: "SRA (IX+$D),IXL",
   bytes: "dd cb 2d",
-  doc: "ixl = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixl = Shift right arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12699,12 +13942,14 @@ opcodes.set(0xddcb2d, {
 });
 
 // {n:47, x:0, y:5, z:7, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb2f, {
-  name: "SRA (IX+DD),A",
+  name: "SRA (IX+$D),A",
   bytes: "dd cb 2f",
-  doc: "a = Shift right arithmetic (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Shift right arithmetic (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12721,12 +13966,14 @@ opcodes.set(0xddcb2f, {
 });
 
 // {n:48, x:0, y:6, z:0, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb30, {
-  name: "SLL (IX+DD),B",
+  name: "SLL (IX+$D),B",
   bytes: "dd cb 30",
-  doc: "b = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Shift left logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12743,12 +13990,14 @@ opcodes.set(0xddcb30, {
 });
 
 // {n:49, x:0, y:6, z:1, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb31, {
-  name: "SLL (IX+DD),C",
+  name: "SLL (IX+$D),C",
   bytes: "dd cb 31",
-  doc: "c = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Shift left logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12765,12 +14014,14 @@ opcodes.set(0xddcb31, {
 });
 
 // {n:50, x:0, y:6, z:2, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb32, {
-  name: "SLL (IX+DD),D",
+  name: "SLL (IX+$D),D",
   bytes: "dd cb 32",
-  doc: "d = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Shift left logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12787,12 +14038,14 @@ opcodes.set(0xddcb32, {
 });
 
 // {n:51, x:0, y:6, z:3, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb33, {
-  name: "SLL (IX+DD),E",
+  name: "SLL (IX+$D),E",
   bytes: "dd cb 33",
-  doc: "e = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Shift left logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12809,12 +14062,14 @@ opcodes.set(0xddcb33, {
 });
 
 // {n:52, x:0, y:6, z:4, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb34, {
-  name: "SLL (IX+DD),IXH",
+  name: "SLL (IX+$D),IXH",
   bytes: "dd cb 34",
-  doc: "ixh = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixh = Shift left logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12831,12 +14086,14 @@ opcodes.set(0xddcb34, {
 });
 
 // {n:53, x:0, y:6, z:5, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb35, {
-  name: "SLL (IX+DD),IXL",
+  name: "SLL (IX+$D),IXL",
   bytes: "dd cb 35",
-  doc: "ixl = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixl = Shift left logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12853,12 +14110,14 @@ opcodes.set(0xddcb35, {
 });
 
 // {n:55, x:0, y:6, z:7, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb37, {
-  name: "SLL (IX+DD),A",
+  name: "SLL (IX+$D),A",
   bytes: "dd cb 37",
-  doc: "a = Shift left logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Shift left logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12875,12 +14134,14 @@ opcodes.set(0xddcb37, {
 });
 
 // {n:56, x:0, y:7, z:0, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb38, {
-  name: "SRL (IX+DD),B",
+  name: "SRL (IX+$D),B",
   bytes: "dd cb 38",
-  doc: "b = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Shift right logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12897,12 +14158,14 @@ opcodes.set(0xddcb38, {
 });
 
 // {n:57, x:0, y:7, z:1, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb39, {
-  name: "SRL (IX+DD),C",
+  name: "SRL (IX+$D),C",
   bytes: "dd cb 39",
-  doc: "c = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Shift right logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12919,12 +14182,14 @@ opcodes.set(0xddcb39, {
 });
 
 // {n:58, x:0, y:7, z:2, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb3a, {
-  name: "SRL (IX+DD),D",
+  name: "SRL (IX+$D),D",
   bytes: "dd cb 3a",
-  doc: "d = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Shift right logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12941,12 +14206,14 @@ opcodes.set(0xddcb3a, {
 });
 
 // {n:59, x:0, y:7, z:3, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb3b, {
-  name: "SRL (IX+DD),E",
+  name: "SRL (IX+$D),E",
   bytes: "dd cb 3b",
-  doc: "e = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Shift right logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12963,12 +14230,14 @@ opcodes.set(0xddcb3b, {
 });
 
 // {n:60, x:0, y:7, z:4, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb3c, {
-  name: "SRL (IX+DD),IXH",
+  name: "SRL (IX+$D),IXH",
   bytes: "dd cb 3c",
-  doc: "ixh = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixh = Shift right logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -12985,12 +14254,14 @@ opcodes.set(0xddcb3c, {
 });
 
 // {n:61, x:0, y:7, z:5, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb3d, {
-  name: "SRL (IX+DD),IXL",
+  name: "SRL (IX+$D),IXL",
   bytes: "dd cb 3d",
-  doc: "ixl = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "ixl = Shift right logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -13007,12 +14278,14 @@ opcodes.set(0xddcb3d, {
 });
 
 // {n:63, x:0, y:7, z:7, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xddcb3f, {
-  name: "SRL (IX+DD),A",
+  name: "SRL (IX+$D),A",
   bytes: "dd cb 3f",
-  doc: "a = Shift right logical (ix+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Shift right logical (ix+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -13029,12 +14302,14 @@ opcodes.set(0xddcb3f, {
 });
 
 // {n:70, x:1, y:0, z:6, p:0, q:0}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xddcb46, {
-  name: "BIT 0,(IX+DD)",
+  name: "BIT 0,(IX+$D)",
   bytes: "dd cb 46",
-  doc: "f.Z = bit 0 of (ix+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 0 of (ix+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13046,12 +14321,14 @@ opcodes.set(0xddcb46, {
 });
 
 // {n:78, x:1, y:1, z:6, p:0, q:1}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xddcb4e, {
-  name: "BIT 1,(IX+DD)",
+  name: "BIT 1,(IX+$D)",
   bytes: "dd cb 4e",
-  doc: "f.Z = bit 1 of (ix+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 1 of (ix+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13063,12 +14340,14 @@ opcodes.set(0xddcb4e, {
 });
 
 // {n:86, x:1, y:2, z:6, p:1, q:0}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xddcb56, {
-  name: "BIT 2,(IX+DD)",
+  name: "BIT 2,(IX+$D)",
   bytes: "dd cb 56",
-  doc: "f.Z = bit 2 of (ix+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 2 of (ix+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13080,12 +14359,14 @@ opcodes.set(0xddcb56, {
 });
 
 // {n:94, x:1, y:3, z:6, p:1, q:1}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xddcb5e, {
-  name: "BIT 3,(IX+DD)",
+  name: "BIT 3,(IX+$D)",
   bytes: "dd cb 5e",
-  doc: "f.Z = bit 3 of (ix+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 3 of (ix+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13097,12 +14378,14 @@ opcodes.set(0xddcb5e, {
 });
 
 // {n:102, x:1, y:4, z:6, p:2, q:0}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xddcb66, {
-  name: "BIT 4,(IX+DD)",
+  name: "BIT 4,(IX+$D)",
   bytes: "dd cb 66",
-  doc: "f.Z = bit 4 of (ix+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 4 of (ix+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13114,12 +14397,14 @@ opcodes.set(0xddcb66, {
 });
 
 // {n:110, x:1, y:5, z:6, p:2, q:1}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xddcb6e, {
-  name: "BIT 5,(IX+DD)",
+  name: "BIT 5,(IX+$D)",
   bytes: "dd cb 6e",
-  doc: "f.Z = bit 5 of (ix+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 5 of (ix+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13131,12 +14416,14 @@ opcodes.set(0xddcb6e, {
 });
 
 // {n:118, x:1, y:6, z:6, p:3, q:0}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xddcb76, {
-  name: "BIT 6,(IX+DD)",
+  name: "BIT 6,(IX+$D)",
   bytes: "dd cb 76",
-  doc: "f.Z = bit 6 of (ix+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 6 of (ix+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13148,12 +14435,14 @@ opcodes.set(0xddcb76, {
 });
 
 // {n:126, x:1, y:7, z:6, p:3, q:1}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xddcb7e, {
-  name: "BIT 7,(IX+DD)",
+  name: "BIT 7,(IX+$D)",
   bytes: "dd cb 7e",
-  doc: "f.Z = bit 7 of (ix+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 7 of (ix+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13165,12 +14454,14 @@ opcodes.set(0xddcb7e, {
 });
 
 // {n:128, x:2, y:0, z:0, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb80, {
-  name: "RES 0,(IX+DD),B",
+  name: "RES 0,(IX+$D),B",
   bytes: "dd cb 80",
-  doc: "Reset bit 0 of (ix+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (ix+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13186,12 +14477,14 @@ opcodes.set(0xddcb80, {
 });
 
 // {n:129, x:2, y:0, z:1, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb81, {
-  name: "RES 0,(IX+DD),C",
+  name: "RES 0,(IX+$D),C",
   bytes: "dd cb 81",
-  doc: "Reset bit 0 of (ix+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (ix+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13207,12 +14500,14 @@ opcodes.set(0xddcb81, {
 });
 
 // {n:130, x:2, y:0, z:2, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb82, {
-  name: "RES 0,(IX+DD),D",
+  name: "RES 0,(IX+$D),D",
   bytes: "dd cb 82",
-  doc: "Reset bit 0 of (ix+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (ix+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13228,12 +14523,14 @@ opcodes.set(0xddcb82, {
 });
 
 // {n:131, x:2, y:0, z:3, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb83, {
-  name: "RES 0,(IX+DD),E",
+  name: "RES 0,(IX+$D),E",
   bytes: "dd cb 83",
-  doc: "Reset bit 0 of (ix+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (ix+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13249,12 +14546,14 @@ opcodes.set(0xddcb83, {
 });
 
 // {n:132, x:2, y:0, z:4, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb84, {
-  name: "RES 0,(IX+DD),H",
+  name: "RES 0,(IX+$D),H",
   bytes: "dd cb 84",
-  doc: "Reset bit 0 of (ix+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (ix+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13270,12 +14569,14 @@ opcodes.set(0xddcb84, {
 });
 
 // {n:133, x:2, y:0, z:5, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb85, {
-  name: "RES 0,(IX+DD),L",
+  name: "RES 0,(IX+$D),L",
   bytes: "dd cb 85",
-  doc: "Reset bit 0 of (ix+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (ix+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13291,12 +14592,12 @@ opcodes.set(0xddcb85, {
 });
 
 // {n:134, x:2, y:0, z:6, p:0, q:0}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcb86, {
-  name: "RES 0,(IX+DD),(IX+DD)",
+  name: "RES 0,(IX+$D),(IX+$D)",
   bytes: "dd cb 86",
+  group: "Bits",
   doc: "Reset bit 0 of (ix+dd) load into (ix+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13311,12 +14612,14 @@ opcodes.set(0xddcb86, {
 });
 
 // {n:135, x:2, y:0, z:7, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb87, {
-  name: "RES 0,(IX+DD),A",
+  name: "RES 0,(IX+$D),A",
   bytes: "dd cb 87",
-  doc: "Reset bit 0 of (ix+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (ix+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13332,12 +14635,14 @@ opcodes.set(0xddcb87, {
 });
 
 // {n:136, x:2, y:1, z:0, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb88, {
-  name: "RES 1,(IX+DD),B",
+  name: "RES 1,(IX+$D),B",
   bytes: "dd cb 88",
-  doc: "Reset bit 1 of (ix+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (ix+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13353,12 +14658,14 @@ opcodes.set(0xddcb88, {
 });
 
 // {n:137, x:2, y:1, z:1, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb89, {
-  name: "RES 1,(IX+DD),C",
+  name: "RES 1,(IX+$D),C",
   bytes: "dd cb 89",
-  doc: "Reset bit 1 of (ix+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (ix+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13374,12 +14681,14 @@ opcodes.set(0xddcb89, {
 });
 
 // {n:138, x:2, y:1, z:2, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb8a, {
-  name: "RES 1,(IX+DD),D",
+  name: "RES 1,(IX+$D),D",
   bytes: "dd cb 8a",
-  doc: "Reset bit 1 of (ix+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (ix+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13395,12 +14704,14 @@ opcodes.set(0xddcb8a, {
 });
 
 // {n:139, x:2, y:1, z:3, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb8b, {
-  name: "RES 1,(IX+DD),E",
+  name: "RES 1,(IX+$D),E",
   bytes: "dd cb 8b",
-  doc: "Reset bit 1 of (ix+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (ix+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13416,12 +14727,14 @@ opcodes.set(0xddcb8b, {
 });
 
 // {n:140, x:2, y:1, z:4, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb8c, {
-  name: "RES 1,(IX+DD),H",
+  name: "RES 1,(IX+$D),H",
   bytes: "dd cb 8c",
-  doc: "Reset bit 1 of (ix+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (ix+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13437,12 +14750,14 @@ opcodes.set(0xddcb8c, {
 });
 
 // {n:141, x:2, y:1, z:5, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb8d, {
-  name: "RES 1,(IX+DD),L",
+  name: "RES 1,(IX+$D),L",
   bytes: "dd cb 8d",
-  doc: "Reset bit 1 of (ix+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (ix+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13458,12 +14773,12 @@ opcodes.set(0xddcb8d, {
 });
 
 // {n:142, x:2, y:1, z:6, p:0, q:1}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcb8e, {
-  name: "RES 1,(IX+DD),(IX+DD)",
+  name: "RES 1,(IX+$D),(IX+$D)",
   bytes: "dd cb 8e",
+  group: "Bits",
   doc: "Reset bit 1 of (ix+dd) load into (ix+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13478,12 +14793,14 @@ opcodes.set(0xddcb8e, {
 });
 
 // {n:143, x:2, y:1, z:7, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb8f, {
-  name: "RES 1,(IX+DD),A",
+  name: "RES 1,(IX+$D),A",
   bytes: "dd cb 8f",
-  doc: "Reset bit 1 of (ix+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (ix+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13499,12 +14816,14 @@ opcodes.set(0xddcb8f, {
 });
 
 // {n:144, x:2, y:2, z:0, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb90, {
-  name: "RES 2,(IX+DD),B",
+  name: "RES 2,(IX+$D),B",
   bytes: "dd cb 90",
-  doc: "Reset bit 2 of (ix+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (ix+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13520,12 +14839,14 @@ opcodes.set(0xddcb90, {
 });
 
 // {n:145, x:2, y:2, z:1, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb91, {
-  name: "RES 2,(IX+DD),C",
+  name: "RES 2,(IX+$D),C",
   bytes: "dd cb 91",
-  doc: "Reset bit 2 of (ix+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (ix+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13541,12 +14862,14 @@ opcodes.set(0xddcb91, {
 });
 
 // {n:146, x:2, y:2, z:2, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb92, {
-  name: "RES 2,(IX+DD),D",
+  name: "RES 2,(IX+$D),D",
   bytes: "dd cb 92",
-  doc: "Reset bit 2 of (ix+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (ix+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13562,12 +14885,14 @@ opcodes.set(0xddcb92, {
 });
 
 // {n:147, x:2, y:2, z:3, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb93, {
-  name: "RES 2,(IX+DD),E",
+  name: "RES 2,(IX+$D),E",
   bytes: "dd cb 93",
-  doc: "Reset bit 2 of (ix+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (ix+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13583,12 +14908,14 @@ opcodes.set(0xddcb93, {
 });
 
 // {n:148, x:2, y:2, z:4, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb94, {
-  name: "RES 2,(IX+DD),H",
+  name: "RES 2,(IX+$D),H",
   bytes: "dd cb 94",
-  doc: "Reset bit 2 of (ix+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (ix+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13604,12 +14931,14 @@ opcodes.set(0xddcb94, {
 });
 
 // {n:149, x:2, y:2, z:5, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb95, {
-  name: "RES 2,(IX+DD),L",
+  name: "RES 2,(IX+$D),L",
   bytes: "dd cb 95",
-  doc: "Reset bit 2 of (ix+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (ix+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13625,12 +14954,12 @@ opcodes.set(0xddcb95, {
 });
 
 // {n:150, x:2, y:2, z:6, p:1, q:0}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcb96, {
-  name: "RES 2,(IX+DD),(IX+DD)",
+  name: "RES 2,(IX+$D),(IX+$D)",
   bytes: "dd cb 96",
+  group: "Bits",
   doc: "Reset bit 2 of (ix+dd) load into (ix+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13645,12 +14974,14 @@ opcodes.set(0xddcb96, {
 });
 
 // {n:151, x:2, y:2, z:7, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb97, {
-  name: "RES 2,(IX+DD),A",
+  name: "RES 2,(IX+$D),A",
   bytes: "dd cb 97",
-  doc: "Reset bit 2 of (ix+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (ix+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13666,12 +14997,14 @@ opcodes.set(0xddcb97, {
 });
 
 // {n:152, x:2, y:3, z:0, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb98, {
-  name: "RES 3,(IX+DD),B",
+  name: "RES 3,(IX+$D),B",
   bytes: "dd cb 98",
-  doc: "Reset bit 3 of (ix+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (ix+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13687,12 +15020,14 @@ opcodes.set(0xddcb98, {
 });
 
 // {n:153, x:2, y:3, z:1, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb99, {
-  name: "RES 3,(IX+DD),C",
+  name: "RES 3,(IX+$D),C",
   bytes: "dd cb 99",
-  doc: "Reset bit 3 of (ix+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (ix+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13708,12 +15043,14 @@ opcodes.set(0xddcb99, {
 });
 
 // {n:154, x:2, y:3, z:2, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb9a, {
-  name: "RES 3,(IX+DD),D",
+  name: "RES 3,(IX+$D),D",
   bytes: "dd cb 9a",
-  doc: "Reset bit 3 of (ix+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (ix+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13729,12 +15066,14 @@ opcodes.set(0xddcb9a, {
 });
 
 // {n:155, x:2, y:3, z:3, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb9b, {
-  name: "RES 3,(IX+DD),E",
+  name: "RES 3,(IX+$D),E",
   bytes: "dd cb 9b",
-  doc: "Reset bit 3 of (ix+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (ix+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13750,12 +15089,14 @@ opcodes.set(0xddcb9b, {
 });
 
 // {n:156, x:2, y:3, z:4, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb9c, {
-  name: "RES 3,(IX+DD),H",
+  name: "RES 3,(IX+$D),H",
   bytes: "dd cb 9c",
-  doc: "Reset bit 3 of (ix+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (ix+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13771,12 +15112,14 @@ opcodes.set(0xddcb9c, {
 });
 
 // {n:157, x:2, y:3, z:5, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb9d, {
-  name: "RES 3,(IX+DD),L",
+  name: "RES 3,(IX+$D),L",
   bytes: "dd cb 9d",
-  doc: "Reset bit 3 of (ix+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (ix+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13792,12 +15135,12 @@ opcodes.set(0xddcb9d, {
 });
 
 // {n:158, x:2, y:3, z:6, p:1, q:1}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcb9e, {
-  name: "RES 3,(IX+DD),(IX+DD)",
+  name: "RES 3,(IX+$D),(IX+$D)",
   bytes: "dd cb 9e",
+  group: "Bits",
   doc: "Reset bit 3 of (ix+dd) load into (ix+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13812,12 +15155,14 @@ opcodes.set(0xddcb9e, {
 });
 
 // {n:159, x:2, y:3, z:7, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcb9f, {
-  name: "RES 3,(IX+DD),A",
+  name: "RES 3,(IX+$D),A",
   bytes: "dd cb 9f",
-  doc: "Reset bit 3 of (ix+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (ix+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13833,12 +15178,14 @@ opcodes.set(0xddcb9f, {
 });
 
 // {n:160, x:2, y:4, z:0, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba0, {
-  name: "RES 4,(IX+DD),B",
+  name: "RES 4,(IX+$D),B",
   bytes: "dd cb a0",
-  doc: "Reset bit 4 of (ix+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (ix+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13854,12 +15201,14 @@ opcodes.set(0xddcba0, {
 });
 
 // {n:161, x:2, y:4, z:1, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba1, {
-  name: "RES 4,(IX+DD),C",
+  name: "RES 4,(IX+$D),C",
   bytes: "dd cb a1",
-  doc: "Reset bit 4 of (ix+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (ix+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13875,12 +15224,14 @@ opcodes.set(0xddcba1, {
 });
 
 // {n:162, x:2, y:4, z:2, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba2, {
-  name: "RES 4,(IX+DD),D",
+  name: "RES 4,(IX+$D),D",
   bytes: "dd cb a2",
-  doc: "Reset bit 4 of (ix+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (ix+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13896,12 +15247,14 @@ opcodes.set(0xddcba2, {
 });
 
 // {n:163, x:2, y:4, z:3, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba3, {
-  name: "RES 4,(IX+DD),E",
+  name: "RES 4,(IX+$D),E",
   bytes: "dd cb a3",
-  doc: "Reset bit 4 of (ix+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (ix+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13917,12 +15270,14 @@ opcodes.set(0xddcba3, {
 });
 
 // {n:164, x:2, y:4, z:4, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba4, {
-  name: "RES 4,(IX+DD),H",
+  name: "RES 4,(IX+$D),H",
   bytes: "dd cb a4",
-  doc: "Reset bit 4 of (ix+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (ix+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13938,12 +15293,14 @@ opcodes.set(0xddcba4, {
 });
 
 // {n:165, x:2, y:4, z:5, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba5, {
-  name: "RES 4,(IX+DD),L",
+  name: "RES 4,(IX+$D),L",
   bytes: "dd cb a5",
-  doc: "Reset bit 4 of (ix+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (ix+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13959,12 +15316,12 @@ opcodes.set(0xddcba5, {
 });
 
 // {n:166, x:2, y:4, z:6, p:2, q:0}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcba6, {
-  name: "RES 4,(IX+DD),(IX+DD)",
+  name: "RES 4,(IX+$D),(IX+$D)",
   bytes: "dd cb a6",
+  group: "Bits",
   doc: "Reset bit 4 of (ix+dd) load into (ix+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -13979,12 +15336,14 @@ opcodes.set(0xddcba6, {
 });
 
 // {n:167, x:2, y:4, z:7, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba7, {
-  name: "RES 4,(IX+DD),A",
+  name: "RES 4,(IX+$D),A",
   bytes: "dd cb a7",
-  doc: "Reset bit 4 of (ix+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (ix+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14000,12 +15359,14 @@ opcodes.set(0xddcba7, {
 });
 
 // {n:168, x:2, y:5, z:0, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba8, {
-  name: "RES 5,(IX+DD),B",
+  name: "RES 5,(IX+$D),B",
   bytes: "dd cb a8",
-  doc: "Reset bit 5 of (ix+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (ix+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14021,12 +15382,14 @@ opcodes.set(0xddcba8, {
 });
 
 // {n:169, x:2, y:5, z:1, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcba9, {
-  name: "RES 5,(IX+DD),C",
+  name: "RES 5,(IX+$D),C",
   bytes: "dd cb a9",
-  doc: "Reset bit 5 of (ix+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (ix+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14042,12 +15405,14 @@ opcodes.set(0xddcba9, {
 });
 
 // {n:170, x:2, y:5, z:2, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbaa, {
-  name: "RES 5,(IX+DD),D",
+  name: "RES 5,(IX+$D),D",
   bytes: "dd cb aa",
-  doc: "Reset bit 5 of (ix+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (ix+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14063,12 +15428,14 @@ opcodes.set(0xddcbaa, {
 });
 
 // {n:171, x:2, y:5, z:3, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbab, {
-  name: "RES 5,(IX+DD),E",
+  name: "RES 5,(IX+$D),E",
   bytes: "dd cb ab",
-  doc: "Reset bit 5 of (ix+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (ix+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14084,12 +15451,14 @@ opcodes.set(0xddcbab, {
 });
 
 // {n:172, x:2, y:5, z:4, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbac, {
-  name: "RES 5,(IX+DD),H",
+  name: "RES 5,(IX+$D),H",
   bytes: "dd cb ac",
-  doc: "Reset bit 5 of (ix+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (ix+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14105,12 +15474,14 @@ opcodes.set(0xddcbac, {
 });
 
 // {n:173, x:2, y:5, z:5, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbad, {
-  name: "RES 5,(IX+DD),L",
+  name: "RES 5,(IX+$D),L",
   bytes: "dd cb ad",
-  doc: "Reset bit 5 of (ix+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (ix+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14126,12 +15497,12 @@ opcodes.set(0xddcbad, {
 });
 
 // {n:174, x:2, y:5, z:6, p:2, q:1}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbae, {
-  name: "RES 5,(IX+DD),(IX+DD)",
+  name: "RES 5,(IX+$D),(IX+$D)",
   bytes: "dd cb ae",
+  group: "Bits",
   doc: "Reset bit 5 of (ix+dd) load into (ix+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14146,12 +15517,14 @@ opcodes.set(0xddcbae, {
 });
 
 // {n:175, x:2, y:5, z:7, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbaf, {
-  name: "RES 5,(IX+DD),A",
+  name: "RES 5,(IX+$D),A",
   bytes: "dd cb af",
-  doc: "Reset bit 5 of (ix+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (ix+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14167,12 +15540,14 @@ opcodes.set(0xddcbaf, {
 });
 
 // {n:176, x:2, y:6, z:0, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb0, {
-  name: "RES 6,(IX+DD),B",
+  name: "RES 6,(IX+$D),B",
   bytes: "dd cb b0",
-  doc: "Reset bit 6 of (ix+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (ix+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14188,12 +15563,14 @@ opcodes.set(0xddcbb0, {
 });
 
 // {n:177, x:2, y:6, z:1, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb1, {
-  name: "RES 6,(IX+DD),C",
+  name: "RES 6,(IX+$D),C",
   bytes: "dd cb b1",
-  doc: "Reset bit 6 of (ix+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (ix+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14209,12 +15586,14 @@ opcodes.set(0xddcbb1, {
 });
 
 // {n:178, x:2, y:6, z:2, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb2, {
-  name: "RES 6,(IX+DD),D",
+  name: "RES 6,(IX+$D),D",
   bytes: "dd cb b2",
-  doc: "Reset bit 6 of (ix+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (ix+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14230,12 +15609,14 @@ opcodes.set(0xddcbb2, {
 });
 
 // {n:179, x:2, y:6, z:3, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb3, {
-  name: "RES 6,(IX+DD),E",
+  name: "RES 6,(IX+$D),E",
   bytes: "dd cb b3",
-  doc: "Reset bit 6 of (ix+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (ix+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14251,12 +15632,14 @@ opcodes.set(0xddcbb3, {
 });
 
 // {n:180, x:2, y:6, z:4, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb4, {
-  name: "RES 6,(IX+DD),H",
+  name: "RES 6,(IX+$D),H",
   bytes: "dd cb b4",
-  doc: "Reset bit 6 of (ix+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (ix+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14272,12 +15655,14 @@ opcodes.set(0xddcbb4, {
 });
 
 // {n:181, x:2, y:6, z:5, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb5, {
-  name: "RES 6,(IX+DD),L",
+  name: "RES 6,(IX+$D),L",
   bytes: "dd cb b5",
-  doc: "Reset bit 6 of (ix+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (ix+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14293,12 +15678,12 @@ opcodes.set(0xddcbb5, {
 });
 
 // {n:182, x:2, y:6, z:6, p:3, q:0}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbb6, {
-  name: "RES 6,(IX+DD),(IX+DD)",
+  name: "RES 6,(IX+$D),(IX+$D)",
   bytes: "dd cb b6",
+  group: "Bits",
   doc: "Reset bit 6 of (ix+dd) load into (ix+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14313,12 +15698,14 @@ opcodes.set(0xddcbb6, {
 });
 
 // {n:183, x:2, y:6, z:7, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb7, {
-  name: "RES 6,(IX+DD),A",
+  name: "RES 6,(IX+$D),A",
   bytes: "dd cb b7",
-  doc: "Reset bit 6 of (ix+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (ix+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14334,12 +15721,14 @@ opcodes.set(0xddcbb7, {
 });
 
 // {n:184, x:2, y:7, z:0, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb8, {
-  name: "RES 7,(IX+DD),B",
+  name: "RES 7,(IX+$D),B",
   bytes: "dd cb b8",
-  doc: "Reset bit 7 of (ix+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (ix+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14355,12 +15744,14 @@ opcodes.set(0xddcbb8, {
 });
 
 // {n:185, x:2, y:7, z:1, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbb9, {
-  name: "RES 7,(IX+DD),C",
+  name: "RES 7,(IX+$D),C",
   bytes: "dd cb b9",
-  doc: "Reset bit 7 of (ix+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (ix+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14376,12 +15767,14 @@ opcodes.set(0xddcbb9, {
 });
 
 // {n:186, x:2, y:7, z:2, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbba, {
-  name: "RES 7,(IX+DD),D",
+  name: "RES 7,(IX+$D),D",
   bytes: "dd cb ba",
-  doc: "Reset bit 7 of (ix+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (ix+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14397,12 +15790,14 @@ opcodes.set(0xddcbba, {
 });
 
 // {n:187, x:2, y:7, z:3, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbbb, {
-  name: "RES 7,(IX+DD),E",
+  name: "RES 7,(IX+$D),E",
   bytes: "dd cb bb",
-  doc: "Reset bit 7 of (ix+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (ix+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14418,12 +15813,14 @@ opcodes.set(0xddcbbb, {
 });
 
 // {n:188, x:2, y:7, z:4, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbbc, {
-  name: "RES 7,(IX+DD),H",
+  name: "RES 7,(IX+$D),H",
   bytes: "dd cb bc",
-  doc: "Reset bit 7 of (ix+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (ix+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14439,12 +15836,14 @@ opcodes.set(0xddcbbc, {
 });
 
 // {n:189, x:2, y:7, z:5, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbbd, {
-  name: "RES 7,(IX+DD),L",
+  name: "RES 7,(IX+$D),L",
   bytes: "dd cb bd",
-  doc: "Reset bit 7 of (ix+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (ix+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14460,12 +15859,12 @@ opcodes.set(0xddcbbd, {
 });
 
 // {n:190, x:2, y:7, z:6, p:3, q:1}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbbe, {
-  name: "RES 7,(IX+DD),(IX+DD)",
+  name: "RES 7,(IX+$D),(IX+$D)",
   bytes: "dd cb be",
+  group: "Bits",
   doc: "Reset bit 7 of (ix+dd) load into (ix+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14480,12 +15879,14 @@ opcodes.set(0xddcbbe, {
 });
 
 // {n:191, x:2, y:7, z:7, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbbf, {
-  name: "RES 7,(IX+DD),A",
+  name: "RES 7,(IX+$D),A",
   bytes: "dd cb bf",
-  doc: "Reset bit 7 of (ix+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (ix+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14501,12 +15902,12 @@ opcodes.set(0xddcbbf, {
 });
 
 // {n:192, x:3, y:0, z:0, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc0, {
-  name: "SET 0,(IX+DD),B",
+  name: "SET 0,(IX+$D),B",
   bytes: "dd cb c0",
+  group: "Bits",
   doc: "ld b, (set 0, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14522,12 +15923,12 @@ opcodes.set(0xddcbc0, {
 });
 
 // {n:193, x:3, y:0, z:1, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc1, {
-  name: "SET 0,(IX+DD),C",
+  name: "SET 0,(IX+$D),C",
   bytes: "dd cb c1",
+  group: "Bits",
   doc: "ld c, (set 0, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14543,12 +15944,12 @@ opcodes.set(0xddcbc1, {
 });
 
 // {n:194, x:3, y:0, z:2, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc2, {
-  name: "SET 0,(IX+DD),D",
+  name: "SET 0,(IX+$D),D",
   bytes: "dd cb c2",
+  group: "Bits",
   doc: "ld d, (set 0, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14564,12 +15965,12 @@ opcodes.set(0xddcbc2, {
 });
 
 // {n:195, x:3, y:0, z:3, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc3, {
-  name: "SET 0,(IX+DD),E",
+  name: "SET 0,(IX+$D),E",
   bytes: "dd cb c3",
+  group: "Bits",
   doc: "ld e, (set 0, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14585,12 +15986,12 @@ opcodes.set(0xddcbc3, {
 });
 
 // {n:196, x:3, y:0, z:4, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc4, {
-  name: "SET 0,(IX+DD),H",
+  name: "SET 0,(IX+$D),H",
   bytes: "dd cb c4",
+  group: "Bits",
   doc: "ld h, (set 0, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14606,12 +16007,12 @@ opcodes.set(0xddcbc4, {
 });
 
 // {n:197, x:3, y:0, z:5, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc5, {
-  name: "SET 0,(IX+DD),L",
+  name: "SET 0,(IX+$D),L",
   bytes: "dd cb c5",
+  group: "Bits",
   doc: "ld l, (set 0, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14627,12 +16028,12 @@ opcodes.set(0xddcbc5, {
 });
 
 // {n:198, x:3, y:0, z:6, p:0, q:0}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbc6, {
-  name: "SET 0,(IX+DD),(IX+DD)",
+  name: "SET 0,(IX+$D),(IX+$D)",
   bytes: "dd cb c6",
+  group: "Bits",
   doc: "ld (ix+dd), (set 0, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14647,12 +16048,12 @@ opcodes.set(0xddcbc6, {
 });
 
 // {n:199, x:3, y:0, z:7, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc7, {
-  name: "SET 0,(IX+DD),A",
+  name: "SET 0,(IX+$D),A",
   bytes: "dd cb c7",
+  group: "Bits",
   doc: "ld a, (set 0, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14668,12 +16069,12 @@ opcodes.set(0xddcbc7, {
 });
 
 // {n:200, x:3, y:1, z:0, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc8, {
-  name: "SET 1,(IX+DD),B",
+  name: "SET 1,(IX+$D),B",
   bytes: "dd cb c8",
+  group: "Bits",
   doc: "ld b, (set 1, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14689,12 +16090,12 @@ opcodes.set(0xddcbc8, {
 });
 
 // {n:201, x:3, y:1, z:1, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbc9, {
-  name: "SET 1,(IX+DD),C",
+  name: "SET 1,(IX+$D),C",
   bytes: "dd cb c9",
+  group: "Bits",
   doc: "ld c, (set 1, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14710,12 +16111,12 @@ opcodes.set(0xddcbc9, {
 });
 
 // {n:202, x:3, y:1, z:2, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbca, {
-  name: "SET 1,(IX+DD),D",
+  name: "SET 1,(IX+$D),D",
   bytes: "dd cb ca",
+  group: "Bits",
   doc: "ld d, (set 1, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14731,12 +16132,12 @@ opcodes.set(0xddcbca, {
 });
 
 // {n:203, x:3, y:1, z:3, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbcb, {
-  name: "SET 1,(IX+DD),E",
+  name: "SET 1,(IX+$D),E",
   bytes: "dd cb cb",
+  group: "Bits",
   doc: "ld e, (set 1, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14752,12 +16153,12 @@ opcodes.set(0xddcbcb, {
 });
 
 // {n:204, x:3, y:1, z:4, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbcc, {
-  name: "SET 1,(IX+DD),H",
+  name: "SET 1,(IX+$D),H",
   bytes: "dd cb cc",
+  group: "Bits",
   doc: "ld h, (set 1, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14773,12 +16174,12 @@ opcodes.set(0xddcbcc, {
 });
 
 // {n:205, x:3, y:1, z:5, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbcd, {
-  name: "SET 1,(IX+DD),L",
+  name: "SET 1,(IX+$D),L",
   bytes: "dd cb cd",
+  group: "Bits",
   doc: "ld l, (set 1, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14794,12 +16195,12 @@ opcodes.set(0xddcbcd, {
 });
 
 // {n:206, x:3, y:1, z:6, p:0, q:1}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbce, {
-  name: "SET 1,(IX+DD),(IX+DD)",
+  name: "SET 1,(IX+$D),(IX+$D)",
   bytes: "dd cb ce",
+  group: "Bits",
   doc: "ld (ix+dd), (set 1, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14814,12 +16215,12 @@ opcodes.set(0xddcbce, {
 });
 
 // {n:207, x:3, y:1, z:7, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbcf, {
-  name: "SET 1,(IX+DD),A",
+  name: "SET 1,(IX+$D),A",
   bytes: "dd cb cf",
+  group: "Bits",
   doc: "ld a, (set 1, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14835,12 +16236,12 @@ opcodes.set(0xddcbcf, {
 });
 
 // {n:208, x:3, y:2, z:0, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd0, {
-  name: "SET 2,(IX+DD),B",
+  name: "SET 2,(IX+$D),B",
   bytes: "dd cb d0",
+  group: "Bits",
   doc: "ld b, (set 2, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14856,12 +16257,12 @@ opcodes.set(0xddcbd0, {
 });
 
 // {n:209, x:3, y:2, z:1, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd1, {
-  name: "SET 2,(IX+DD),C",
+  name: "SET 2,(IX+$D),C",
   bytes: "dd cb d1",
+  group: "Bits",
   doc: "ld c, (set 2, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14877,12 +16278,12 @@ opcodes.set(0xddcbd1, {
 });
 
 // {n:210, x:3, y:2, z:2, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd2, {
-  name: "SET 2,(IX+DD),D",
+  name: "SET 2,(IX+$D),D",
   bytes: "dd cb d2",
+  group: "Bits",
   doc: "ld d, (set 2, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14898,12 +16299,12 @@ opcodes.set(0xddcbd2, {
 });
 
 // {n:211, x:3, y:2, z:3, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd3, {
-  name: "SET 2,(IX+DD),E",
+  name: "SET 2,(IX+$D),E",
   bytes: "dd cb d3",
+  group: "Bits",
   doc: "ld e, (set 2, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14919,12 +16320,12 @@ opcodes.set(0xddcbd3, {
 });
 
 // {n:212, x:3, y:2, z:4, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd4, {
-  name: "SET 2,(IX+DD),H",
+  name: "SET 2,(IX+$D),H",
   bytes: "dd cb d4",
+  group: "Bits",
   doc: "ld h, (set 2, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14940,12 +16341,12 @@ opcodes.set(0xddcbd4, {
 });
 
 // {n:213, x:3, y:2, z:5, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd5, {
-  name: "SET 2,(IX+DD),L",
+  name: "SET 2,(IX+$D),L",
   bytes: "dd cb d5",
+  group: "Bits",
   doc: "ld l, (set 2, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14961,12 +16362,12 @@ opcodes.set(0xddcbd5, {
 });
 
 // {n:214, x:3, y:2, z:6, p:1, q:0}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbd6, {
-  name: "SET 2,(IX+DD),(IX+DD)",
+  name: "SET 2,(IX+$D),(IX+$D)",
   bytes: "dd cb d6",
+  group: "Bits",
   doc: "ld (ix+dd), (set 2, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -14981,12 +16382,12 @@ opcodes.set(0xddcbd6, {
 });
 
 // {n:215, x:3, y:2, z:7, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd7, {
-  name: "SET 2,(IX+DD),A",
+  name: "SET 2,(IX+$D),A",
   bytes: "dd cb d7",
+  group: "Bits",
   doc: "ld a, (set 2, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15002,12 +16403,12 @@ opcodes.set(0xddcbd7, {
 });
 
 // {n:216, x:3, y:3, z:0, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd8, {
-  name: "SET 3,(IX+DD),B",
+  name: "SET 3,(IX+$D),B",
   bytes: "dd cb d8",
+  group: "Bits",
   doc: "ld b, (set 3, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15023,12 +16424,12 @@ opcodes.set(0xddcbd8, {
 });
 
 // {n:217, x:3, y:3, z:1, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbd9, {
-  name: "SET 3,(IX+DD),C",
+  name: "SET 3,(IX+$D),C",
   bytes: "dd cb d9",
+  group: "Bits",
   doc: "ld c, (set 3, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15044,12 +16445,12 @@ opcodes.set(0xddcbd9, {
 });
 
 // {n:218, x:3, y:3, z:2, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbda, {
-  name: "SET 3,(IX+DD),D",
+  name: "SET 3,(IX+$D),D",
   bytes: "dd cb da",
+  group: "Bits",
   doc: "ld d, (set 3, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15065,12 +16466,12 @@ opcodes.set(0xddcbda, {
 });
 
 // {n:219, x:3, y:3, z:3, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbdb, {
-  name: "SET 3,(IX+DD),E",
+  name: "SET 3,(IX+$D),E",
   bytes: "dd cb db",
+  group: "Bits",
   doc: "ld e, (set 3, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15086,12 +16487,12 @@ opcodes.set(0xddcbdb, {
 });
 
 // {n:220, x:3, y:3, z:4, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbdc, {
-  name: "SET 3,(IX+DD),H",
+  name: "SET 3,(IX+$D),H",
   bytes: "dd cb dc",
+  group: "Bits",
   doc: "ld h, (set 3, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15107,12 +16508,12 @@ opcodes.set(0xddcbdc, {
 });
 
 // {n:221, x:3, y:3, z:5, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbdd, {
-  name: "SET 3,(IX+DD),L",
+  name: "SET 3,(IX+$D),L",
   bytes: "dd cb dd",
+  group: "Bits",
   doc: "ld l, (set 3, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15128,12 +16529,12 @@ opcodes.set(0xddcbdd, {
 });
 
 // {n:222, x:3, y:3, z:6, p:1, q:1}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbde, {
-  name: "SET 3,(IX+DD),(IX+DD)",
+  name: "SET 3,(IX+$D),(IX+$D)",
   bytes: "dd cb de",
+  group: "Bits",
   doc: "ld (ix+dd), (set 3, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15148,12 +16549,12 @@ opcodes.set(0xddcbde, {
 });
 
 // {n:223, x:3, y:3, z:7, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbdf, {
-  name: "SET 3,(IX+DD),A",
+  name: "SET 3,(IX+$D),A",
   bytes: "dd cb df",
+  group: "Bits",
   doc: "ld a, (set 3, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15169,12 +16570,12 @@ opcodes.set(0xddcbdf, {
 });
 
 // {n:224, x:3, y:4, z:0, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe0, {
-  name: "SET 4,(IX+DD),B",
+  name: "SET 4,(IX+$D),B",
   bytes: "dd cb e0",
+  group: "Bits",
   doc: "ld b, (set 4, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15190,12 +16591,12 @@ opcodes.set(0xddcbe0, {
 });
 
 // {n:225, x:3, y:4, z:1, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe1, {
-  name: "SET 4,(IX+DD),C",
+  name: "SET 4,(IX+$D),C",
   bytes: "dd cb e1",
+  group: "Bits",
   doc: "ld c, (set 4, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15211,12 +16612,12 @@ opcodes.set(0xddcbe1, {
 });
 
 // {n:226, x:3, y:4, z:2, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe2, {
-  name: "SET 4,(IX+DD),D",
+  name: "SET 4,(IX+$D),D",
   bytes: "dd cb e2",
+  group: "Bits",
   doc: "ld d, (set 4, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15232,12 +16633,12 @@ opcodes.set(0xddcbe2, {
 });
 
 // {n:227, x:3, y:4, z:3, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe3, {
-  name: "SET 4,(IX+DD),E",
+  name: "SET 4,(IX+$D),E",
   bytes: "dd cb e3",
+  group: "Bits",
   doc: "ld e, (set 4, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15253,12 +16654,12 @@ opcodes.set(0xddcbe3, {
 });
 
 // {n:228, x:3, y:4, z:4, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe4, {
-  name: "SET 4,(IX+DD),H",
+  name: "SET 4,(IX+$D),H",
   bytes: "dd cb e4",
+  group: "Bits",
   doc: "ld h, (set 4, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15274,12 +16675,12 @@ opcodes.set(0xddcbe4, {
 });
 
 // {n:229, x:3, y:4, z:5, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe5, {
-  name: "SET 4,(IX+DD),L",
+  name: "SET 4,(IX+$D),L",
   bytes: "dd cb e5",
+  group: "Bits",
   doc: "ld l, (set 4, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15295,12 +16696,12 @@ opcodes.set(0xddcbe5, {
 });
 
 // {n:230, x:3, y:4, z:6, p:2, q:0}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbe6, {
-  name: "SET 4,(IX+DD),(IX+DD)",
+  name: "SET 4,(IX+$D),(IX+$D)",
   bytes: "dd cb e6",
+  group: "Bits",
   doc: "ld (ix+dd), (set 4, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15315,12 +16716,12 @@ opcodes.set(0xddcbe6, {
 });
 
 // {n:231, x:3, y:4, z:7, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe7, {
-  name: "SET 4,(IX+DD),A",
+  name: "SET 4,(IX+$D),A",
   bytes: "dd cb e7",
+  group: "Bits",
   doc: "ld a, (set 4, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15336,12 +16737,12 @@ opcodes.set(0xddcbe7, {
 });
 
 // {n:232, x:3, y:5, z:0, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe8, {
-  name: "SET 5,(IX+DD),B",
+  name: "SET 5,(IX+$D),B",
   bytes: "dd cb e8",
+  group: "Bits",
   doc: "ld b, (set 5, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15357,12 +16758,12 @@ opcodes.set(0xddcbe8, {
 });
 
 // {n:233, x:3, y:5, z:1, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbe9, {
-  name: "SET 5,(IX+DD),C",
+  name: "SET 5,(IX+$D),C",
   bytes: "dd cb e9",
+  group: "Bits",
   doc: "ld c, (set 5, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15378,12 +16779,12 @@ opcodes.set(0xddcbe9, {
 });
 
 // {n:234, x:3, y:5, z:2, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbea, {
-  name: "SET 5,(IX+DD),D",
+  name: "SET 5,(IX+$D),D",
   bytes: "dd cb ea",
+  group: "Bits",
   doc: "ld d, (set 5, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15399,12 +16800,12 @@ opcodes.set(0xddcbea, {
 });
 
 // {n:235, x:3, y:5, z:3, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbeb, {
-  name: "SET 5,(IX+DD),E",
+  name: "SET 5,(IX+$D),E",
   bytes: "dd cb eb",
+  group: "Bits",
   doc: "ld e, (set 5, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15420,12 +16821,12 @@ opcodes.set(0xddcbeb, {
 });
 
 // {n:236, x:3, y:5, z:4, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbec, {
-  name: "SET 5,(IX+DD),H",
+  name: "SET 5,(IX+$D),H",
   bytes: "dd cb ec",
+  group: "Bits",
   doc: "ld h, (set 5, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15441,12 +16842,12 @@ opcodes.set(0xddcbec, {
 });
 
 // {n:237, x:3, y:5, z:5, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbed, {
-  name: "SET 5,(IX+DD),L",
+  name: "SET 5,(IX+$D),L",
   bytes: "dd cb ed",
+  group: "Bits",
   doc: "ld l, (set 5, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15462,12 +16863,12 @@ opcodes.set(0xddcbed, {
 });
 
 // {n:238, x:3, y:5, z:6, p:2, q:1}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbee, {
-  name: "SET 5,(IX+DD),(IX+DD)",
+  name: "SET 5,(IX+$D),(IX+$D)",
   bytes: "dd cb ee",
+  group: "Bits",
   doc: "ld (ix+dd), (set 5, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15482,12 +16883,12 @@ opcodes.set(0xddcbee, {
 });
 
 // {n:239, x:3, y:5, z:7, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbef, {
-  name: "SET 5,(IX+DD),A",
+  name: "SET 5,(IX+$D),A",
   bytes: "dd cb ef",
+  group: "Bits",
   doc: "ld a, (set 5, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15503,12 +16904,12 @@ opcodes.set(0xddcbef, {
 });
 
 // {n:240, x:3, y:6, z:0, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf0, {
-  name: "SET 6,(IX+DD),B",
+  name: "SET 6,(IX+$D),B",
   bytes: "dd cb f0",
+  group: "Bits",
   doc: "ld b, (set 6, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15524,12 +16925,12 @@ opcodes.set(0xddcbf0, {
 });
 
 // {n:241, x:3, y:6, z:1, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf1, {
-  name: "SET 6,(IX+DD),C",
+  name: "SET 6,(IX+$D),C",
   bytes: "dd cb f1",
+  group: "Bits",
   doc: "ld c, (set 6, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15545,12 +16946,12 @@ opcodes.set(0xddcbf1, {
 });
 
 // {n:242, x:3, y:6, z:2, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf2, {
-  name: "SET 6,(IX+DD),D",
+  name: "SET 6,(IX+$D),D",
   bytes: "dd cb f2",
+  group: "Bits",
   doc: "ld d, (set 6, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15566,12 +16967,12 @@ opcodes.set(0xddcbf2, {
 });
 
 // {n:243, x:3, y:6, z:3, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf3, {
-  name: "SET 6,(IX+DD),E",
+  name: "SET 6,(IX+$D),E",
   bytes: "dd cb f3",
+  group: "Bits",
   doc: "ld e, (set 6, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15587,12 +16988,12 @@ opcodes.set(0xddcbf3, {
 });
 
 // {n:244, x:3, y:6, z:4, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf4, {
-  name: "SET 6,(IX+DD),H",
+  name: "SET 6,(IX+$D),H",
   bytes: "dd cb f4",
+  group: "Bits",
   doc: "ld h, (set 6, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15608,12 +17009,12 @@ opcodes.set(0xddcbf4, {
 });
 
 // {n:245, x:3, y:6, z:5, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf5, {
-  name: "SET 6,(IX+DD),L",
+  name: "SET 6,(IX+$D),L",
   bytes: "dd cb f5",
+  group: "Bits",
   doc: "ld l, (set 6, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15629,12 +17030,12 @@ opcodes.set(0xddcbf5, {
 });
 
 // {n:246, x:3, y:6, z:6, p:3, q:0}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbf6, {
-  name: "SET 6,(IX+DD),(IX+DD)",
+  name: "SET 6,(IX+$D),(IX+$D)",
   bytes: "dd cb f6",
+  group: "Bits",
   doc: "ld (ix+dd), (set 6, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15649,12 +17050,12 @@ opcodes.set(0xddcbf6, {
 });
 
 // {n:247, x:3, y:6, z:7, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf7, {
-  name: "SET 6,(IX+DD),A",
+  name: "SET 6,(IX+$D),A",
   bytes: "dd cb f7",
+  group: "Bits",
   doc: "ld a, (set 6, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15670,12 +17071,12 @@ opcodes.set(0xddcbf7, {
 });
 
 // {n:248, x:3, y:7, z:0, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf8, {
-  name: "SET 7,(IX+DD),B",
+  name: "SET 7,(IX+$D),B",
   bytes: "dd cb f8",
+  group: "Bits",
   doc: "ld b, (set 7, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15691,12 +17092,12 @@ opcodes.set(0xddcbf8, {
 });
 
 // {n:249, x:3, y:7, z:1, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbf9, {
-  name: "SET 7,(IX+DD),C",
+  name: "SET 7,(IX+$D),C",
   bytes: "dd cb f9",
+  group: "Bits",
   doc: "ld c, (set 7, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15712,12 +17113,12 @@ opcodes.set(0xddcbf9, {
 });
 
 // {n:250, x:3, y:7, z:2, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbfa, {
-  name: "SET 7,(IX+DD),D",
+  name: "SET 7,(IX+$D),D",
   bytes: "dd cb fa",
+  group: "Bits",
   doc: "ld d, (set 7, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15733,12 +17134,12 @@ opcodes.set(0xddcbfa, {
 });
 
 // {n:251, x:3, y:7, z:3, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbfb, {
-  name: "SET 7,(IX+DD),E",
+  name: "SET 7,(IX+$D),E",
   bytes: "dd cb fb",
+  group: "Bits",
   doc: "ld e, (set 7, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15754,12 +17155,12 @@ opcodes.set(0xddcbfb, {
 });
 
 // {n:252, x:3, y:7, z:4, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbfc, {
-  name: "SET 7,(IX+DD),H",
+  name: "SET 7,(IX+$D),H",
   bytes: "dd cb fc",
+  group: "Bits",
   doc: "ld h, (set 7, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15775,12 +17176,12 @@ opcodes.set(0xddcbfc, {
 });
 
 // {n:253, x:3, y:7, z:5, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbfd, {
-  name: "SET 7,(IX+DD),L",
+  name: "SET 7,(IX+$D),L",
   bytes: "dd cb fd",
+  group: "Bits",
   doc: "ld l, (set 7, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15796,12 +17197,12 @@ opcodes.set(0xddcbfd, {
 });
 
 // {n:254, x:3, y:7, z:6, p:3, q:1}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xddcbfe, {
-  name: "SET 7,(IX+DD),(IX+DD)",
+  name: "SET 7,(IX+$D),(IX+$D)",
   bytes: "dd cb fe",
+  group: "Bits",
   doc: "ld (ix+dd), (set 7, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15816,12 +17217,12 @@ opcodes.set(0xddcbfe, {
 });
 
 // {n:255, x:3, y:7, z:7, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xddcbff, {
-  name: "SET 7,(IX+DD),A",
+  name: "SET 7,(IX+$D),A",
   bytes: "dd cb ff",
+  group: "Bits",
   doc: "ld a, (set 7, (ix+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -15837,12 +17238,14 @@ opcodes.set(0xddcbff, {
 });
 
 // {n:0, x:0, y:0, z:0, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb00, {
-  name: "RLC (IY+DD),B",
+  name: "RLC (IY+$D),B",
   bytes: "fd cb 00",
-  doc: "b = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Rotate left through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -15859,12 +17262,14 @@ opcodes.set(0xfdcb00, {
 });
 
 // {n:1, x:0, y:0, z:1, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb01, {
-  name: "RLC (IY+DD),C",
+  name: "RLC (IY+$D),C",
   bytes: "fd cb 01",
-  doc: "c = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Rotate left through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -15881,12 +17286,14 @@ opcodes.set(0xfdcb01, {
 });
 
 // {n:2, x:0, y:0, z:2, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb02, {
-  name: "RLC (IY+DD),D",
+  name: "RLC (IY+$D),D",
   bytes: "fd cb 02",
-  doc: "d = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Rotate left through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -15903,12 +17310,14 @@ opcodes.set(0xfdcb02, {
 });
 
 // {n:3, x:0, y:0, z:3, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb03, {
-  name: "RLC (IY+DD),E",
+  name: "RLC (IY+$D),E",
   bytes: "fd cb 03",
-  doc: "e = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Rotate left through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -15925,12 +17334,14 @@ opcodes.set(0xfdcb03, {
 });
 
 // {n:4, x:0, y:0, z:4, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb04, {
-  name: "RLC (IY+DD),IYH",
+  name: "RLC (IY+$D),IYH",
   bytes: "fd cb 04",
-  doc: "iyh = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyh = Rotate left through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -15947,12 +17358,14 @@ opcodes.set(0xfdcb04, {
 });
 
 // {n:5, x:0, y:0, z:5, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb05, {
-  name: "RLC (IY+DD),IYL",
+  name: "RLC (IY+$D),IYL",
   bytes: "fd cb 05",
-  doc: "iyl = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyl = Rotate left through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -15969,12 +17382,14 @@ opcodes.set(0xfdcb05, {
 });
 
 // {n:7, x:0, y:0, z:7, p:0, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb07, {
-  name: "RLC (IY+DD),A",
+  name: "RLC (IY+$D),A",
   bytes: "fd cb 07",
-  doc: "a = Rotate left through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Rotate left through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -15991,12 +17406,14 @@ opcodes.set(0xfdcb07, {
 });
 
 // {n:8, x:0, y:1, z:0, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb08, {
-  name: "RRC (IY+DD),B",
+  name: "RRC (IY+$D),B",
   bytes: "fd cb 08",
-  doc: "b = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Rotate right through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16013,12 +17430,14 @@ opcodes.set(0xfdcb08, {
 });
 
 // {n:9, x:0, y:1, z:1, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb09, {
-  name: "RRC (IY+DD),C",
+  name: "RRC (IY+$D),C",
   bytes: "fd cb 09",
-  doc: "c = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Rotate right through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16035,12 +17454,14 @@ opcodes.set(0xfdcb09, {
 });
 
 // {n:10, x:0, y:1, z:2, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb0a, {
-  name: "RRC (IY+DD),D",
+  name: "RRC (IY+$D),D",
   bytes: "fd cb 0a",
-  doc: "d = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Rotate right through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16057,12 +17478,14 @@ opcodes.set(0xfdcb0a, {
 });
 
 // {n:11, x:0, y:1, z:3, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb0b, {
-  name: "RRC (IY+DD),E",
+  name: "RRC (IY+$D),E",
   bytes: "fd cb 0b",
-  doc: "e = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Rotate right through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16079,12 +17502,14 @@ opcodes.set(0xfdcb0b, {
 });
 
 // {n:12, x:0, y:1, z:4, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb0c, {
-  name: "RRC (IY+DD),IYH",
+  name: "RRC (IY+$D),IYH",
   bytes: "fd cb 0c",
-  doc: "iyh = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyh = Rotate right through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16101,12 +17526,14 @@ opcodes.set(0xfdcb0c, {
 });
 
 // {n:13, x:0, y:1, z:5, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb0d, {
-  name: "RRC (IY+DD),IYL",
+  name: "RRC (IY+$D),IYL",
   bytes: "fd cb 0d",
-  doc: "iyl = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyl = Rotate right through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16123,12 +17550,14 @@ opcodes.set(0xfdcb0d, {
 });
 
 // {n:15, x:0, y:1, z:7, p:0, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb0f, {
-  name: "RRC (IY+DD),A",
+  name: "RRC (IY+$D),A",
   bytes: "fd cb 0f",
-  doc: "a = Rotate right through carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Rotate right through carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16145,12 +17574,14 @@ opcodes.set(0xfdcb0f, {
 });
 
 // {n:16, x:0, y:2, z:0, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb10, {
-  name: "RL (IY+DD),B",
+  name: "RL (IY+$D),B",
   bytes: "fd cb 10",
-  doc: "b = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Rotate left from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16167,12 +17598,14 @@ opcodes.set(0xfdcb10, {
 });
 
 // {n:17, x:0, y:2, z:1, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb11, {
-  name: "RL (IY+DD),C",
+  name: "RL (IY+$D),C",
   bytes: "fd cb 11",
-  doc: "c = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Rotate left from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16189,12 +17622,14 @@ opcodes.set(0xfdcb11, {
 });
 
 // {n:18, x:0, y:2, z:2, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb12, {
-  name: "RL (IY+DD),D",
+  name: "RL (IY+$D),D",
   bytes: "fd cb 12",
-  doc: "d = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Rotate left from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16211,12 +17646,14 @@ opcodes.set(0xfdcb12, {
 });
 
 // {n:19, x:0, y:2, z:3, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb13, {
-  name: "RL (IY+DD),E",
+  name: "RL (IY+$D),E",
   bytes: "fd cb 13",
-  doc: "e = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Rotate left from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16233,12 +17670,14 @@ opcodes.set(0xfdcb13, {
 });
 
 // {n:20, x:0, y:2, z:4, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb14, {
-  name: "RL (IY+DD),IYH",
+  name: "RL (IY+$D),IYH",
   bytes: "fd cb 14",
-  doc: "iyh = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyh = Rotate left from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16255,12 +17694,14 @@ opcodes.set(0xfdcb14, {
 });
 
 // {n:21, x:0, y:2, z:5, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb15, {
-  name: "RL (IY+DD),IYL",
+  name: "RL (IY+$D),IYL",
   bytes: "fd cb 15",
-  doc: "iyl = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyl = Rotate left from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16277,12 +17718,14 @@ opcodes.set(0xfdcb15, {
 });
 
 // {n:23, x:0, y:2, z:7, p:1, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb17, {
-  name: "RL (IY+DD),A",
+  name: "RL (IY+$D),A",
   bytes: "fd cb 17",
-  doc: "a = Rotate left from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Rotate left from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16299,12 +17742,14 @@ opcodes.set(0xfdcb17, {
 });
 
 // {n:24, x:0, y:3, z:0, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb18, {
-  name: "RR (IY+DD),B",
+  name: "RR (IY+$D),B",
   bytes: "fd cb 18",
-  doc: "b = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Rotate right from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16321,12 +17766,14 @@ opcodes.set(0xfdcb18, {
 });
 
 // {n:25, x:0, y:3, z:1, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb19, {
-  name: "RR (IY+DD),C",
+  name: "RR (IY+$D),C",
   bytes: "fd cb 19",
-  doc: "c = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Rotate right from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16343,12 +17790,14 @@ opcodes.set(0xfdcb19, {
 });
 
 // {n:26, x:0, y:3, z:2, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb1a, {
-  name: "RR (IY+DD),D",
+  name: "RR (IY+$D),D",
   bytes: "fd cb 1a",
-  doc: "d = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Rotate right from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16365,12 +17814,14 @@ opcodes.set(0xfdcb1a, {
 });
 
 // {n:27, x:0, y:3, z:3, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb1b, {
-  name: "RR (IY+DD),E",
+  name: "RR (IY+$D),E",
   bytes: "fd cb 1b",
-  doc: "e = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Rotate right from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16387,12 +17838,14 @@ opcodes.set(0xfdcb1b, {
 });
 
 // {n:28, x:0, y:3, z:4, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb1c, {
-  name: "RR (IY+DD),IYH",
+  name: "RR (IY+$D),IYH",
   bytes: "fd cb 1c",
-  doc: "iyh = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyh = Rotate right from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16409,12 +17862,14 @@ opcodes.set(0xfdcb1c, {
 });
 
 // {n:29, x:0, y:3, z:5, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb1d, {
-  name: "RR (IY+DD),IYL",
+  name: "RR (IY+$D),IYL",
   bytes: "fd cb 1d",
-  doc: "iyl = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyl = Rotate right from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16431,12 +17886,14 @@ opcodes.set(0xfdcb1d, {
 });
 
 // {n:31, x:0, y:3, z:7, p:1, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb1f, {
-  name: "RR (IY+DD),A",
+  name: "RR (IY+$D),A",
   bytes: "fd cb 1f",
-  doc: "a = Rotate right from carry (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Rotate right from carry (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16453,12 +17910,14 @@ opcodes.set(0xfdcb1f, {
 });
 
 // {n:32, x:0, y:4, z:0, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb20, {
-  name: "SLA (IY+DD),B",
+  name: "SLA (IY+$D),B",
   bytes: "fd cb 20",
-  doc: "b = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Shift left arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16475,12 +17934,14 @@ opcodes.set(0xfdcb20, {
 });
 
 // {n:33, x:0, y:4, z:1, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb21, {
-  name: "SLA (IY+DD),C",
+  name: "SLA (IY+$D),C",
   bytes: "fd cb 21",
-  doc: "c = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Shift left arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16497,12 +17958,14 @@ opcodes.set(0xfdcb21, {
 });
 
 // {n:34, x:0, y:4, z:2, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb22, {
-  name: "SLA (IY+DD),D",
+  name: "SLA (IY+$D),D",
   bytes: "fd cb 22",
-  doc: "d = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Shift left arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16519,12 +17982,14 @@ opcodes.set(0xfdcb22, {
 });
 
 // {n:35, x:0, y:4, z:3, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb23, {
-  name: "SLA (IY+DD),E",
+  name: "SLA (IY+$D),E",
   bytes: "fd cb 23",
-  doc: "e = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Shift left arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16541,12 +18006,14 @@ opcodes.set(0xfdcb23, {
 });
 
 // {n:36, x:0, y:4, z:4, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb24, {
-  name: "SLA (IY+DD),IYH",
+  name: "SLA (IY+$D),IYH",
   bytes: "fd cb 24",
-  doc: "iyh = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyh = Shift left arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16563,12 +18030,14 @@ opcodes.set(0xfdcb24, {
 });
 
 // {n:37, x:0, y:4, z:5, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb25, {
-  name: "SLA (IY+DD),IYL",
+  name: "SLA (IY+$D),IYL",
   bytes: "fd cb 25",
-  doc: "iyl = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyl = Shift left arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16585,12 +18054,14 @@ opcodes.set(0xfdcb25, {
 });
 
 // {n:39, x:0, y:4, z:7, p:2, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb27, {
-  name: "SLA (IY+DD),A",
+  name: "SLA (IY+$D),A",
   bytes: "fd cb 27",
-  doc: "a = Shift left arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Shift left arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16607,12 +18078,14 @@ opcodes.set(0xfdcb27, {
 });
 
 // {n:40, x:0, y:5, z:0, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb28, {
-  name: "SRA (IY+DD),B",
+  name: "SRA (IY+$D),B",
   bytes: "fd cb 28",
-  doc: "b = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Shift right arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16629,12 +18102,14 @@ opcodes.set(0xfdcb28, {
 });
 
 // {n:41, x:0, y:5, z:1, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb29, {
-  name: "SRA (IY+DD),C",
+  name: "SRA (IY+$D),C",
   bytes: "fd cb 29",
-  doc: "c = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Shift right arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16651,12 +18126,14 @@ opcodes.set(0xfdcb29, {
 });
 
 // {n:42, x:0, y:5, z:2, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb2a, {
-  name: "SRA (IY+DD),D",
+  name: "SRA (IY+$D),D",
   bytes: "fd cb 2a",
-  doc: "d = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Shift right arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16673,12 +18150,14 @@ opcodes.set(0xfdcb2a, {
 });
 
 // {n:43, x:0, y:5, z:3, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb2b, {
-  name: "SRA (IY+DD),E",
+  name: "SRA (IY+$D),E",
   bytes: "fd cb 2b",
-  doc: "e = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Shift right arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16695,12 +18174,14 @@ opcodes.set(0xfdcb2b, {
 });
 
 // {n:44, x:0, y:5, z:4, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb2c, {
-  name: "SRA (IY+DD),IYH",
+  name: "SRA (IY+$D),IYH",
   bytes: "fd cb 2c",
-  doc: "iyh = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyh = Shift right arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16717,12 +18198,14 @@ opcodes.set(0xfdcb2c, {
 });
 
 // {n:45, x:0, y:5, z:5, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb2d, {
-  name: "SRA (IY+DD),IYL",
+  name: "SRA (IY+$D),IYL",
   bytes: "fd cb 2d",
-  doc: "iyl = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyl = Shift right arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16739,12 +18222,14 @@ opcodes.set(0xfdcb2d, {
 });
 
 // {n:47, x:0, y:5, z:7, p:2, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb2f, {
-  name: "SRA (IY+DD),A",
+  name: "SRA (IY+$D),A",
   bytes: "fd cb 2f",
-  doc: "a = Shift right arithmetic (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Shift right arithmetic (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16761,12 +18246,14 @@ opcodes.set(0xfdcb2f, {
 });
 
 // {n:48, x:0, y:6, z:0, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb30, {
-  name: "SLL (IY+DD),B",
+  name: "SLL (IY+$D),B",
   bytes: "fd cb 30",
-  doc: "b = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Shift left logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16783,12 +18270,14 @@ opcodes.set(0xfdcb30, {
 });
 
 // {n:49, x:0, y:6, z:1, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb31, {
-  name: "SLL (IY+DD),C",
+  name: "SLL (IY+$D),C",
   bytes: "fd cb 31",
-  doc: "c = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Shift left logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16805,12 +18294,14 @@ opcodes.set(0xfdcb31, {
 });
 
 // {n:50, x:0, y:6, z:2, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb32, {
-  name: "SLL (IY+DD),D",
+  name: "SLL (IY+$D),D",
   bytes: "fd cb 32",
-  doc: "d = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Shift left logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16827,12 +18318,14 @@ opcodes.set(0xfdcb32, {
 });
 
 // {n:51, x:0, y:6, z:3, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb33, {
-  name: "SLL (IY+DD),E",
+  name: "SLL (IY+$D),E",
   bytes: "fd cb 33",
-  doc: "e = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Shift left logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16849,12 +18342,14 @@ opcodes.set(0xfdcb33, {
 });
 
 // {n:52, x:0, y:6, z:4, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb34, {
-  name: "SLL (IY+DD),IYH",
+  name: "SLL (IY+$D),IYH",
   bytes: "fd cb 34",
-  doc: "iyh = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyh = Shift left logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16871,12 +18366,14 @@ opcodes.set(0xfdcb34, {
 });
 
 // {n:53, x:0, y:6, z:5, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb35, {
-  name: "SLL (IY+DD),IYL",
+  name: "SLL (IY+$D),IYL",
   bytes: "fd cb 35",
-  doc: "iyl = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyl = Shift left logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16893,12 +18390,14 @@ opcodes.set(0xfdcb35, {
 });
 
 // {n:55, x:0, y:6, z:7, p:3, q:0}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb37, {
-  name: "SLL (IY+DD),A",
+  name: "SLL (IY+$D),A",
   bytes: "fd cb 37",
-  doc: "a = Shift left logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Shift left logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16915,12 +18414,14 @@ opcodes.set(0xfdcb37, {
 });
 
 // {n:56, x:0, y:7, z:0, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb38, {
-  name: "SRL (IY+DD),B",
+  name: "SRL (IY+$D),B",
   bytes: "fd cb 38",
-  doc: "b = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "b = Shift right logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16937,12 +18438,14 @@ opcodes.set(0xfdcb38, {
 });
 
 // {n:57, x:0, y:7, z:1, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb39, {
-  name: "SRL (IY+DD),C",
+  name: "SRL (IY+$D),C",
   bytes: "fd cb 39",
-  doc: "c = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "c = Shift right logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16959,12 +18462,14 @@ opcodes.set(0xfdcb39, {
 });
 
 // {n:58, x:0, y:7, z:2, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb3a, {
-  name: "SRL (IY+DD),D",
+  name: "SRL (IY+$D),D",
   bytes: "fd cb 3a",
-  doc: "d = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "d = Shift right logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -16981,12 +18486,14 @@ opcodes.set(0xfdcb3a, {
 });
 
 // {n:59, x:0, y:7, z:3, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb3b, {
-  name: "SRL (IY+DD),E",
+  name: "SRL (IY+$D),E",
   bytes: "fd cb 3b",
-  doc: "e = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "e = Shift right logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -17003,12 +18510,14 @@ opcodes.set(0xfdcb3b, {
 });
 
 // {n:60, x:0, y:7, z:4, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb3c, {
-  name: "SRL (IY+DD),IYH",
+  name: "SRL (IY+$D),IYH",
   bytes: "fd cb 3c",
-  doc: "iyh = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyh = Shift right logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -17025,12 +18534,14 @@ opcodes.set(0xfdcb3c, {
 });
 
 // {n:61, x:0, y:7, z:5, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb3d, {
-  name: "SRL (IY+DD),IYL",
+  name: "SRL (IY+$D),IYL",
   bytes: "fd cb 3d",
-  doc: "iyl = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "iyl = Shift right logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -17047,12 +18558,14 @@ opcodes.set(0xfdcb3d, {
 });
 
 // {n:63, x:0, y:7, z:7, p:3, q:1}
-// $ROT ($RI+dd),$RZ
+// $ROT ($RI+$d),$RZ
 opcodes.set(0xfdcb3f, {
-  name: "SRL (IY+DD),A",
+  name: "SRL (IY+$D),A",
   bytes: "fd cb 3f",
-  doc: "a = Shift right logical (iy+dd)",
   group: "RT/SH 8bit",
+  doc: "a = Shift right logical (iy+d)",
+  flags: "**0P0*",
+  states: [23],
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $RRZ}
     z80.abus = z80.regs.wz;
@@ -17069,12 +18582,14 @@ opcodes.set(0xfdcb3f, {
 });
 
 // {n:70, x:1, y:0, z:6, p:0, q:0}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xfdcb46, {
-  name: "BIT 0,(IY+DD)",
+  name: "BIT 0,(IY+$D)",
   bytes: "fd cb 46",
-  doc: "f.Z = bit 0 of (iy+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 0 of (iy+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17086,12 +18601,14 @@ opcodes.set(0xfdcb46, {
 });
 
 // {n:78, x:1, y:1, z:6, p:0, q:1}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xfdcb4e, {
-  name: "BIT 1,(IY+DD)",
+  name: "BIT 1,(IY+$D)",
   bytes: "fd cb 4e",
-  doc: "f.Z = bit 1 of (iy+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 1 of (iy+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17103,12 +18620,14 @@ opcodes.set(0xfdcb4e, {
 });
 
 // {n:86, x:1, y:2, z:6, p:1, q:0}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xfdcb56, {
-  name: "BIT 2,(IY+DD)",
+  name: "BIT 2,(IY+$D)",
   bytes: "fd cb 56",
-  doc: "f.Z = bit 2 of (iy+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 2 of (iy+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17120,12 +18639,14 @@ opcodes.set(0xfdcb56, {
 });
 
 // {n:94, x:1, y:3, z:6, p:1, q:1}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xfdcb5e, {
-  name: "BIT 3,(IY+DD)",
+  name: "BIT 3,(IY+$D)",
   bytes: "fd cb 5e",
-  doc: "f.Z = bit 3 of (iy+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 3 of (iy+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17137,12 +18658,14 @@ opcodes.set(0xfdcb5e, {
 });
 
 // {n:102, x:1, y:4, z:6, p:2, q:0}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xfdcb66, {
-  name: "BIT 4,(IY+DD)",
+  name: "BIT 4,(IY+$D)",
   bytes: "fd cb 66",
-  doc: "f.Z = bit 4 of (iy+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 4 of (iy+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17154,12 +18677,14 @@ opcodes.set(0xfdcb66, {
 });
 
 // {n:110, x:1, y:5, z:6, p:2, q:1}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xfdcb6e, {
-  name: "BIT 5,(IY+DD)",
+  name: "BIT 5,(IY+$D)",
   bytes: "fd cb 6e",
-  doc: "f.Z = bit 5 of (iy+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 5 of (iy+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17171,12 +18696,14 @@ opcodes.set(0xfdcb6e, {
 });
 
 // {n:118, x:1, y:6, z:6, p:3, q:0}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xfdcb76, {
-  name: "BIT 6,(IY+DD)",
+  name: "BIT 6,(IY+$D)",
   bytes: "fd cb 76",
-  doc: "f.Z = bit 6 of (iy+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 6 of (iy+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17188,12 +18715,14 @@ opcodes.set(0xfdcb76, {
 });
 
 // {n:126, x:1, y:7, z:6, p:3, q:1}
-// BIT $NY, ($RI+dd)
+// BIT $NY, ($RI+$d)
 opcodes.set(0xfdcb7e, {
-  name: "BIT 7,(IY+DD)",
+  name: "BIT 7,(IY+$D)",
   bytes: "fd cb 7e",
-  doc: "f.Z = bit 7 of (iy+dd)",
-  group: "Set",
+  group: "Bits",
+  doc: "f.Z = bit 7 of (iy+d)",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17205,12 +18734,14 @@ opcodes.set(0xfdcb7e, {
 });
 
 // {n:128, x:2, y:0, z:0, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb80, {
-  name: "RES 0,(IY+DD),B",
+  name: "RES 0,(IY+$D),B",
   bytes: "fd cb 80",
-  doc: "Reset bit 0 of (iy+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (iy+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17226,12 +18757,14 @@ opcodes.set(0xfdcb80, {
 });
 
 // {n:129, x:2, y:0, z:1, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb81, {
-  name: "RES 0,(IY+DD),C",
+  name: "RES 0,(IY+$D),C",
   bytes: "fd cb 81",
-  doc: "Reset bit 0 of (iy+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (iy+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17247,12 +18780,14 @@ opcodes.set(0xfdcb81, {
 });
 
 // {n:130, x:2, y:0, z:2, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb82, {
-  name: "RES 0,(IY+DD),D",
+  name: "RES 0,(IY+$D),D",
   bytes: "fd cb 82",
-  doc: "Reset bit 0 of (iy+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (iy+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17268,12 +18803,14 @@ opcodes.set(0xfdcb82, {
 });
 
 // {n:131, x:2, y:0, z:3, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb83, {
-  name: "RES 0,(IY+DD),E",
+  name: "RES 0,(IY+$D),E",
   bytes: "fd cb 83",
-  doc: "Reset bit 0 of (iy+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (iy+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17289,12 +18826,14 @@ opcodes.set(0xfdcb83, {
 });
 
 // {n:132, x:2, y:0, z:4, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb84, {
-  name: "RES 0,(IY+DD),H",
+  name: "RES 0,(IY+$D),H",
   bytes: "fd cb 84",
-  doc: "Reset bit 0 of (iy+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (iy+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17310,12 +18849,14 @@ opcodes.set(0xfdcb84, {
 });
 
 // {n:133, x:2, y:0, z:5, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb85, {
-  name: "RES 0,(IY+DD),L",
+  name: "RES 0,(IY+$D),L",
   bytes: "fd cb 85",
-  doc: "Reset bit 0 of (iy+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (iy+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17331,12 +18872,12 @@ opcodes.set(0xfdcb85, {
 });
 
 // {n:134, x:2, y:0, z:6, p:0, q:0}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcb86, {
-  name: "RES 0,(IY+DD),(IY+DD)",
+  name: "RES 0,(IY+$D),(IY+$D)",
   bytes: "fd cb 86",
+  group: "Bits",
   doc: "Reset bit 0 of (iy+dd) load into (iy+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17351,12 +18892,14 @@ opcodes.set(0xfdcb86, {
 });
 
 // {n:135, x:2, y:0, z:7, p:0, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb87, {
-  name: "RES 0,(IY+DD),A",
+  name: "RES 0,(IY+$D),A",
   bytes: "fd cb 87",
-  doc: "Reset bit 0 of (iy+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 0 of (iy+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17372,12 +18915,14 @@ opcodes.set(0xfdcb87, {
 });
 
 // {n:136, x:2, y:1, z:0, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb88, {
-  name: "RES 1,(IY+DD),B",
+  name: "RES 1,(IY+$D),B",
   bytes: "fd cb 88",
-  doc: "Reset bit 1 of (iy+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (iy+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17393,12 +18938,14 @@ opcodes.set(0xfdcb88, {
 });
 
 // {n:137, x:2, y:1, z:1, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb89, {
-  name: "RES 1,(IY+DD),C",
+  name: "RES 1,(IY+$D),C",
   bytes: "fd cb 89",
-  doc: "Reset bit 1 of (iy+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (iy+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17414,12 +18961,14 @@ opcodes.set(0xfdcb89, {
 });
 
 // {n:138, x:2, y:1, z:2, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb8a, {
-  name: "RES 1,(IY+DD),D",
+  name: "RES 1,(IY+$D),D",
   bytes: "fd cb 8a",
-  doc: "Reset bit 1 of (iy+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (iy+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17435,12 +18984,14 @@ opcodes.set(0xfdcb8a, {
 });
 
 // {n:139, x:2, y:1, z:3, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb8b, {
-  name: "RES 1,(IY+DD),E",
+  name: "RES 1,(IY+$D),E",
   bytes: "fd cb 8b",
-  doc: "Reset bit 1 of (iy+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (iy+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17456,12 +19007,14 @@ opcodes.set(0xfdcb8b, {
 });
 
 // {n:140, x:2, y:1, z:4, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb8c, {
-  name: "RES 1,(IY+DD),H",
+  name: "RES 1,(IY+$D),H",
   bytes: "fd cb 8c",
-  doc: "Reset bit 1 of (iy+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (iy+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17477,12 +19030,14 @@ opcodes.set(0xfdcb8c, {
 });
 
 // {n:141, x:2, y:1, z:5, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb8d, {
-  name: "RES 1,(IY+DD),L",
+  name: "RES 1,(IY+$D),L",
   bytes: "fd cb 8d",
-  doc: "Reset bit 1 of (iy+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (iy+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17498,12 +19053,12 @@ opcodes.set(0xfdcb8d, {
 });
 
 // {n:142, x:2, y:1, z:6, p:0, q:1}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcb8e, {
-  name: "RES 1,(IY+DD),(IY+DD)",
+  name: "RES 1,(IY+$D),(IY+$D)",
   bytes: "fd cb 8e",
+  group: "Bits",
   doc: "Reset bit 1 of (iy+dd) load into (iy+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17518,12 +19073,14 @@ opcodes.set(0xfdcb8e, {
 });
 
 // {n:143, x:2, y:1, z:7, p:0, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb8f, {
-  name: "RES 1,(IY+DD),A",
+  name: "RES 1,(IY+$D),A",
   bytes: "fd cb 8f",
-  doc: "Reset bit 1 of (iy+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 1 of (iy+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17539,12 +19096,14 @@ opcodes.set(0xfdcb8f, {
 });
 
 // {n:144, x:2, y:2, z:0, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb90, {
-  name: "RES 2,(IY+DD),B",
+  name: "RES 2,(IY+$D),B",
   bytes: "fd cb 90",
-  doc: "Reset bit 2 of (iy+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (iy+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17560,12 +19119,14 @@ opcodes.set(0xfdcb90, {
 });
 
 // {n:145, x:2, y:2, z:1, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb91, {
-  name: "RES 2,(IY+DD),C",
+  name: "RES 2,(IY+$D),C",
   bytes: "fd cb 91",
-  doc: "Reset bit 2 of (iy+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (iy+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17581,12 +19142,14 @@ opcodes.set(0xfdcb91, {
 });
 
 // {n:146, x:2, y:2, z:2, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb92, {
-  name: "RES 2,(IY+DD),D",
+  name: "RES 2,(IY+$D),D",
   bytes: "fd cb 92",
-  doc: "Reset bit 2 of (iy+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (iy+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17602,12 +19165,14 @@ opcodes.set(0xfdcb92, {
 });
 
 // {n:147, x:2, y:2, z:3, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb93, {
-  name: "RES 2,(IY+DD),E",
+  name: "RES 2,(IY+$D),E",
   bytes: "fd cb 93",
-  doc: "Reset bit 2 of (iy+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (iy+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17623,12 +19188,14 @@ opcodes.set(0xfdcb93, {
 });
 
 // {n:148, x:2, y:2, z:4, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb94, {
-  name: "RES 2,(IY+DD),H",
+  name: "RES 2,(IY+$D),H",
   bytes: "fd cb 94",
-  doc: "Reset bit 2 of (iy+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (iy+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17644,12 +19211,14 @@ opcodes.set(0xfdcb94, {
 });
 
 // {n:149, x:2, y:2, z:5, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb95, {
-  name: "RES 2,(IY+DD),L",
+  name: "RES 2,(IY+$D),L",
   bytes: "fd cb 95",
-  doc: "Reset bit 2 of (iy+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (iy+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17665,12 +19234,12 @@ opcodes.set(0xfdcb95, {
 });
 
 // {n:150, x:2, y:2, z:6, p:1, q:0}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcb96, {
-  name: "RES 2,(IY+DD),(IY+DD)",
+  name: "RES 2,(IY+$D),(IY+$D)",
   bytes: "fd cb 96",
+  group: "Bits",
   doc: "Reset bit 2 of (iy+dd) load into (iy+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17685,12 +19254,14 @@ opcodes.set(0xfdcb96, {
 });
 
 // {n:151, x:2, y:2, z:7, p:1, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb97, {
-  name: "RES 2,(IY+DD),A",
+  name: "RES 2,(IY+$D),A",
   bytes: "fd cb 97",
-  doc: "Reset bit 2 of (iy+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 2 of (iy+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17706,12 +19277,14 @@ opcodes.set(0xfdcb97, {
 });
 
 // {n:152, x:2, y:3, z:0, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb98, {
-  name: "RES 3,(IY+DD),B",
+  name: "RES 3,(IY+$D),B",
   bytes: "fd cb 98",
-  doc: "Reset bit 3 of (iy+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (iy+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17727,12 +19300,14 @@ opcodes.set(0xfdcb98, {
 });
 
 // {n:153, x:2, y:3, z:1, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb99, {
-  name: "RES 3,(IY+DD),C",
+  name: "RES 3,(IY+$D),C",
   bytes: "fd cb 99",
-  doc: "Reset bit 3 of (iy+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (iy+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17748,12 +19323,14 @@ opcodes.set(0xfdcb99, {
 });
 
 // {n:154, x:2, y:3, z:2, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb9a, {
-  name: "RES 3,(IY+DD),D",
+  name: "RES 3,(IY+$D),D",
   bytes: "fd cb 9a",
-  doc: "Reset bit 3 of (iy+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (iy+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17769,12 +19346,14 @@ opcodes.set(0xfdcb9a, {
 });
 
 // {n:155, x:2, y:3, z:3, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb9b, {
-  name: "RES 3,(IY+DD),E",
+  name: "RES 3,(IY+$D),E",
   bytes: "fd cb 9b",
-  doc: "Reset bit 3 of (iy+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (iy+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17790,12 +19369,14 @@ opcodes.set(0xfdcb9b, {
 });
 
 // {n:156, x:2, y:3, z:4, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb9c, {
-  name: "RES 3,(IY+DD),H",
+  name: "RES 3,(IY+$D),H",
   bytes: "fd cb 9c",
-  doc: "Reset bit 3 of (iy+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (iy+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17811,12 +19392,14 @@ opcodes.set(0xfdcb9c, {
 });
 
 // {n:157, x:2, y:3, z:5, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb9d, {
-  name: "RES 3,(IY+DD),L",
+  name: "RES 3,(IY+$D),L",
   bytes: "fd cb 9d",
-  doc: "Reset bit 3 of (iy+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (iy+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17832,12 +19415,12 @@ opcodes.set(0xfdcb9d, {
 });
 
 // {n:158, x:2, y:3, z:6, p:1, q:1}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcb9e, {
-  name: "RES 3,(IY+DD),(IY+DD)",
+  name: "RES 3,(IY+$D),(IY+$D)",
   bytes: "fd cb 9e",
+  group: "Bits",
   doc: "Reset bit 3 of (iy+dd) load into (iy+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17852,12 +19435,14 @@ opcodes.set(0xfdcb9e, {
 });
 
 // {n:159, x:2, y:3, z:7, p:1, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcb9f, {
-  name: "RES 3,(IY+DD),A",
+  name: "RES 3,(IY+$D),A",
   bytes: "fd cb 9f",
-  doc: "Reset bit 3 of (iy+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 3 of (iy+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17873,12 +19458,14 @@ opcodes.set(0xfdcb9f, {
 });
 
 // {n:160, x:2, y:4, z:0, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba0, {
-  name: "RES 4,(IY+DD),B",
+  name: "RES 4,(IY+$D),B",
   bytes: "fd cb a0",
-  doc: "Reset bit 4 of (iy+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (iy+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17894,12 +19481,14 @@ opcodes.set(0xfdcba0, {
 });
 
 // {n:161, x:2, y:4, z:1, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba1, {
-  name: "RES 4,(IY+DD),C",
+  name: "RES 4,(IY+$D),C",
   bytes: "fd cb a1",
-  doc: "Reset bit 4 of (iy+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (iy+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17915,12 +19504,14 @@ opcodes.set(0xfdcba1, {
 });
 
 // {n:162, x:2, y:4, z:2, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba2, {
-  name: "RES 4,(IY+DD),D",
+  name: "RES 4,(IY+$D),D",
   bytes: "fd cb a2",
-  doc: "Reset bit 4 of (iy+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (iy+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17936,12 +19527,14 @@ opcodes.set(0xfdcba2, {
 });
 
 // {n:163, x:2, y:4, z:3, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba3, {
-  name: "RES 4,(IY+DD),E",
+  name: "RES 4,(IY+$D),E",
   bytes: "fd cb a3",
-  doc: "Reset bit 4 of (iy+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (iy+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17957,12 +19550,14 @@ opcodes.set(0xfdcba3, {
 });
 
 // {n:164, x:2, y:4, z:4, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba4, {
-  name: "RES 4,(IY+DD),H",
+  name: "RES 4,(IY+$D),H",
   bytes: "fd cb a4",
-  doc: "Reset bit 4 of (iy+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (iy+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17978,12 +19573,14 @@ opcodes.set(0xfdcba4, {
 });
 
 // {n:165, x:2, y:4, z:5, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba5, {
-  name: "RES 4,(IY+DD),L",
+  name: "RES 4,(IY+$D),L",
   bytes: "fd cb a5",
-  doc: "Reset bit 4 of (iy+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (iy+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -17999,12 +19596,12 @@ opcodes.set(0xfdcba5, {
 });
 
 // {n:166, x:2, y:4, z:6, p:2, q:0}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcba6, {
-  name: "RES 4,(IY+DD),(IY+DD)",
+  name: "RES 4,(IY+$D),(IY+$D)",
   bytes: "fd cb a6",
+  group: "Bits",
   doc: "Reset bit 4 of (iy+dd) load into (iy+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18019,12 +19616,14 @@ opcodes.set(0xfdcba6, {
 });
 
 // {n:167, x:2, y:4, z:7, p:2, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba7, {
-  name: "RES 4,(IY+DD),A",
+  name: "RES 4,(IY+$D),A",
   bytes: "fd cb a7",
-  doc: "Reset bit 4 of (iy+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 4 of (iy+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18040,12 +19639,14 @@ opcodes.set(0xfdcba7, {
 });
 
 // {n:168, x:2, y:5, z:0, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba8, {
-  name: "RES 5,(IY+DD),B",
+  name: "RES 5,(IY+$D),B",
   bytes: "fd cb a8",
-  doc: "Reset bit 5 of (iy+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (iy+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18061,12 +19662,14 @@ opcodes.set(0xfdcba8, {
 });
 
 // {n:169, x:2, y:5, z:1, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcba9, {
-  name: "RES 5,(IY+DD),C",
+  name: "RES 5,(IY+$D),C",
   bytes: "fd cb a9",
-  doc: "Reset bit 5 of (iy+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (iy+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18082,12 +19685,14 @@ opcodes.set(0xfdcba9, {
 });
 
 // {n:170, x:2, y:5, z:2, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbaa, {
-  name: "RES 5,(IY+DD),D",
+  name: "RES 5,(IY+$D),D",
   bytes: "fd cb aa",
-  doc: "Reset bit 5 of (iy+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (iy+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18103,12 +19708,14 @@ opcodes.set(0xfdcbaa, {
 });
 
 // {n:171, x:2, y:5, z:3, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbab, {
-  name: "RES 5,(IY+DD),E",
+  name: "RES 5,(IY+$D),E",
   bytes: "fd cb ab",
-  doc: "Reset bit 5 of (iy+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (iy+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18124,12 +19731,14 @@ opcodes.set(0xfdcbab, {
 });
 
 // {n:172, x:2, y:5, z:4, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbac, {
-  name: "RES 5,(IY+DD),H",
+  name: "RES 5,(IY+$D),H",
   bytes: "fd cb ac",
-  doc: "Reset bit 5 of (iy+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (iy+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18145,12 +19754,14 @@ opcodes.set(0xfdcbac, {
 });
 
 // {n:173, x:2, y:5, z:5, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbad, {
-  name: "RES 5,(IY+DD),L",
+  name: "RES 5,(IY+$D),L",
   bytes: "fd cb ad",
-  doc: "Reset bit 5 of (iy+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (iy+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18166,12 +19777,12 @@ opcodes.set(0xfdcbad, {
 });
 
 // {n:174, x:2, y:5, z:6, p:2, q:1}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbae, {
-  name: "RES 5,(IY+DD),(IY+DD)",
+  name: "RES 5,(IY+$D),(IY+$D)",
   bytes: "fd cb ae",
+  group: "Bits",
   doc: "Reset bit 5 of (iy+dd) load into (iy+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18186,12 +19797,14 @@ opcodes.set(0xfdcbae, {
 });
 
 // {n:175, x:2, y:5, z:7, p:2, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbaf, {
-  name: "RES 5,(IY+DD),A",
+  name: "RES 5,(IY+$D),A",
   bytes: "fd cb af",
-  doc: "Reset bit 5 of (iy+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 5 of (iy+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18207,12 +19820,14 @@ opcodes.set(0xfdcbaf, {
 });
 
 // {n:176, x:2, y:6, z:0, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb0, {
-  name: "RES 6,(IY+DD),B",
+  name: "RES 6,(IY+$D),B",
   bytes: "fd cb b0",
-  doc: "Reset bit 6 of (iy+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (iy+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18228,12 +19843,14 @@ opcodes.set(0xfdcbb0, {
 });
 
 // {n:177, x:2, y:6, z:1, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb1, {
-  name: "RES 6,(IY+DD),C",
+  name: "RES 6,(IY+$D),C",
   bytes: "fd cb b1",
-  doc: "Reset bit 6 of (iy+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (iy+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18249,12 +19866,14 @@ opcodes.set(0xfdcbb1, {
 });
 
 // {n:178, x:2, y:6, z:2, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb2, {
-  name: "RES 6,(IY+DD),D",
+  name: "RES 6,(IY+$D),D",
   bytes: "fd cb b2",
-  doc: "Reset bit 6 of (iy+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (iy+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18270,12 +19889,14 @@ opcodes.set(0xfdcbb2, {
 });
 
 // {n:179, x:2, y:6, z:3, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb3, {
-  name: "RES 6,(IY+DD),E",
+  name: "RES 6,(IY+$D),E",
   bytes: "fd cb b3",
-  doc: "Reset bit 6 of (iy+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (iy+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18291,12 +19912,14 @@ opcodes.set(0xfdcbb3, {
 });
 
 // {n:180, x:2, y:6, z:4, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb4, {
-  name: "RES 6,(IY+DD),H",
+  name: "RES 6,(IY+$D),H",
   bytes: "fd cb b4",
-  doc: "Reset bit 6 of (iy+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (iy+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18312,12 +19935,14 @@ opcodes.set(0xfdcbb4, {
 });
 
 // {n:181, x:2, y:6, z:5, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb5, {
-  name: "RES 6,(IY+DD),L",
+  name: "RES 6,(IY+$D),L",
   bytes: "fd cb b5",
-  doc: "Reset bit 6 of (iy+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (iy+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18333,12 +19958,12 @@ opcodes.set(0xfdcbb5, {
 });
 
 // {n:182, x:2, y:6, z:6, p:3, q:0}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbb6, {
-  name: "RES 6,(IY+DD),(IY+DD)",
+  name: "RES 6,(IY+$D),(IY+$D)",
   bytes: "fd cb b6",
+  group: "Bits",
   doc: "Reset bit 6 of (iy+dd) load into (iy+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18353,12 +19978,14 @@ opcodes.set(0xfdcbb6, {
 });
 
 // {n:183, x:2, y:6, z:7, p:3, q:0}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb7, {
-  name: "RES 6,(IY+DD),A",
+  name: "RES 6,(IY+$D),A",
   bytes: "fd cb b7",
-  doc: "Reset bit 6 of (iy+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 6 of (iy+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18374,12 +20001,14 @@ opcodes.set(0xfdcbb7, {
 });
 
 // {n:184, x:2, y:7, z:0, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb8, {
-  name: "RES 7,(IY+DD),B",
+  name: "RES 7,(IY+$D),B",
   bytes: "fd cb b8",
-  doc: "Reset bit 7 of (iy+dd) load into b",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (iy+d) load into b",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18395,12 +20024,14 @@ opcodes.set(0xfdcbb8, {
 });
 
 // {n:185, x:2, y:7, z:1, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbb9, {
-  name: "RES 7,(IY+DD),C",
+  name: "RES 7,(IY+$D),C",
   bytes: "fd cb b9",
-  doc: "Reset bit 7 of (iy+dd) load into c",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (iy+d) load into c",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18416,12 +20047,14 @@ opcodes.set(0xfdcbb9, {
 });
 
 // {n:186, x:2, y:7, z:2, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbba, {
-  name: "RES 7,(IY+DD),D",
+  name: "RES 7,(IY+$D),D",
   bytes: "fd cb ba",
-  doc: "Reset bit 7 of (iy+dd) load into d",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (iy+d) load into d",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18437,12 +20070,14 @@ opcodes.set(0xfdcbba, {
 });
 
 // {n:187, x:2, y:7, z:3, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbbb, {
-  name: "RES 7,(IY+DD),E",
+  name: "RES 7,(IY+$D),E",
   bytes: "fd cb bb",
-  doc: "Reset bit 7 of (iy+dd) load into e",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (iy+d) load into e",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18458,12 +20093,14 @@ opcodes.set(0xfdcbbb, {
 });
 
 // {n:188, x:2, y:7, z:4, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbbc, {
-  name: "RES 7,(IY+DD),H",
+  name: "RES 7,(IY+$D),H",
   bytes: "fd cb bc",
-  doc: "Reset bit 7 of (iy+dd) load into h",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (iy+d) load into h",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18479,12 +20116,14 @@ opcodes.set(0xfdcbbc, {
 });
 
 // {n:189, x:2, y:7, z:5, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbbd, {
-  name: "RES 7,(IY+DD),L",
+  name: "RES 7,(IY+$D),L",
   bytes: "fd cb bd",
-  doc: "Reset bit 7 of (iy+dd) load into l",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (iy+d) load into l",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18500,12 +20139,12 @@ opcodes.set(0xfdcbbd, {
 });
 
 // {n:190, x:2, y:7, z:6, p:3, q:1}
-// RES $NY, ($RI+dd), ($RI+dd)
+// RES $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbbe, {
-  name: "RES 7,(IY+DD),(IY+DD)",
+  name: "RES 7,(IY+$D),(IY+$D)",
   bytes: "fd cb be",
+  group: "Bits",
   doc: "Reset bit 7 of (iy+dd) load into (iy+dd)",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18520,12 +20159,14 @@ opcodes.set(0xfdcbbe, {
 });
 
 // {n:191, x:2, y:7, z:7, p:3, q:1}
-// RES $NY, ($RI+dd), $RRZ
+// RES $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbbf, {
-  name: "RES 7,(IY+DD),A",
+  name: "RES 7,(IY+$D),A",
   bytes: "fd cb bf",
-  doc: "Reset bit 7 of (iy+dd) load into a",
-  group: "Set",
+  group: "Bits",
+  doc: "Reset bit 7 of (iy+d) load into a",
+  flags: "**1*0-",
+  states: [20],
   fn: (z80) => {
     // mread: {tcycles:4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18541,12 +20182,12 @@ opcodes.set(0xfdcbbf, {
 });
 
 // {n:192, x:3, y:0, z:0, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc0, {
-  name: "SET 0,(IY+DD),B",
+  name: "SET 0,(IY+$D),B",
   bytes: "fd cb c0",
+  group: "Bits",
   doc: "ld b, (set 0, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18562,12 +20203,12 @@ opcodes.set(0xfdcbc0, {
 });
 
 // {n:193, x:3, y:0, z:1, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc1, {
-  name: "SET 0,(IY+DD),C",
+  name: "SET 0,(IY+$D),C",
   bytes: "fd cb c1",
+  group: "Bits",
   doc: "ld c, (set 0, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18583,12 +20224,12 @@ opcodes.set(0xfdcbc1, {
 });
 
 // {n:194, x:3, y:0, z:2, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc2, {
-  name: "SET 0,(IY+DD),D",
+  name: "SET 0,(IY+$D),D",
   bytes: "fd cb c2",
+  group: "Bits",
   doc: "ld d, (set 0, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18604,12 +20245,12 @@ opcodes.set(0xfdcbc2, {
 });
 
 // {n:195, x:3, y:0, z:3, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc3, {
-  name: "SET 0,(IY+DD),E",
+  name: "SET 0,(IY+$D),E",
   bytes: "fd cb c3",
+  group: "Bits",
   doc: "ld e, (set 0, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18625,12 +20266,12 @@ opcodes.set(0xfdcbc3, {
 });
 
 // {n:196, x:3, y:0, z:4, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc4, {
-  name: "SET 0,(IY+DD),H",
+  name: "SET 0,(IY+$D),H",
   bytes: "fd cb c4",
+  group: "Bits",
   doc: "ld h, (set 0, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18646,12 +20287,12 @@ opcodes.set(0xfdcbc4, {
 });
 
 // {n:197, x:3, y:0, z:5, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc5, {
-  name: "SET 0,(IY+DD),L",
+  name: "SET 0,(IY+$D),L",
   bytes: "fd cb c5",
+  group: "Bits",
   doc: "ld l, (set 0, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18667,12 +20308,12 @@ opcodes.set(0xfdcbc5, {
 });
 
 // {n:198, x:3, y:0, z:6, p:0, q:0}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbc6, {
-  name: "SET 0,(IY+DD),(IY+DD)",
+  name: "SET 0,(IY+$D),(IY+$D)",
   bytes: "fd cb c6",
+  group: "Bits",
   doc: "ld (iy+dd), (set 0, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18687,12 +20328,12 @@ opcodes.set(0xfdcbc6, {
 });
 
 // {n:199, x:3, y:0, z:7, p:0, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc7, {
-  name: "SET 0,(IY+DD),A",
+  name: "SET 0,(IY+$D),A",
   bytes: "fd cb c7",
+  group: "Bits",
   doc: "ld a, (set 0, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18708,12 +20349,12 @@ opcodes.set(0xfdcbc7, {
 });
 
 // {n:200, x:3, y:1, z:0, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc8, {
-  name: "SET 1,(IY+DD),B",
+  name: "SET 1,(IY+$D),B",
   bytes: "fd cb c8",
+  group: "Bits",
   doc: "ld b, (set 1, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18729,12 +20370,12 @@ opcodes.set(0xfdcbc8, {
 });
 
 // {n:201, x:3, y:1, z:1, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbc9, {
-  name: "SET 1,(IY+DD),C",
+  name: "SET 1,(IY+$D),C",
   bytes: "fd cb c9",
+  group: "Bits",
   doc: "ld c, (set 1, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18750,12 +20391,12 @@ opcodes.set(0xfdcbc9, {
 });
 
 // {n:202, x:3, y:1, z:2, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbca, {
-  name: "SET 1,(IY+DD),D",
+  name: "SET 1,(IY+$D),D",
   bytes: "fd cb ca",
+  group: "Bits",
   doc: "ld d, (set 1, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18771,12 +20412,12 @@ opcodes.set(0xfdcbca, {
 });
 
 // {n:203, x:3, y:1, z:3, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbcb, {
-  name: "SET 1,(IY+DD),E",
+  name: "SET 1,(IY+$D),E",
   bytes: "fd cb cb",
+  group: "Bits",
   doc: "ld e, (set 1, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18792,12 +20433,12 @@ opcodes.set(0xfdcbcb, {
 });
 
 // {n:204, x:3, y:1, z:4, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbcc, {
-  name: "SET 1,(IY+DD),H",
+  name: "SET 1,(IY+$D),H",
   bytes: "fd cb cc",
+  group: "Bits",
   doc: "ld h, (set 1, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18813,12 +20454,12 @@ opcodes.set(0xfdcbcc, {
 });
 
 // {n:205, x:3, y:1, z:5, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbcd, {
-  name: "SET 1,(IY+DD),L",
+  name: "SET 1,(IY+$D),L",
   bytes: "fd cb cd",
+  group: "Bits",
   doc: "ld l, (set 1, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18834,12 +20475,12 @@ opcodes.set(0xfdcbcd, {
 });
 
 // {n:206, x:3, y:1, z:6, p:0, q:1}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbce, {
-  name: "SET 1,(IY+DD),(IY+DD)",
+  name: "SET 1,(IY+$D),(IY+$D)",
   bytes: "fd cb ce",
+  group: "Bits",
   doc: "ld (iy+dd), (set 1, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18854,12 +20495,12 @@ opcodes.set(0xfdcbce, {
 });
 
 // {n:207, x:3, y:1, z:7, p:0, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbcf, {
-  name: "SET 1,(IY+DD),A",
+  name: "SET 1,(IY+$D),A",
   bytes: "fd cb cf",
+  group: "Bits",
   doc: "ld a, (set 1, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18875,12 +20516,12 @@ opcodes.set(0xfdcbcf, {
 });
 
 // {n:208, x:3, y:2, z:0, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd0, {
-  name: "SET 2,(IY+DD),B",
+  name: "SET 2,(IY+$D),B",
   bytes: "fd cb d0",
+  group: "Bits",
   doc: "ld b, (set 2, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18896,12 +20537,12 @@ opcodes.set(0xfdcbd0, {
 });
 
 // {n:209, x:3, y:2, z:1, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd1, {
-  name: "SET 2,(IY+DD),C",
+  name: "SET 2,(IY+$D),C",
   bytes: "fd cb d1",
+  group: "Bits",
   doc: "ld c, (set 2, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18917,12 +20558,12 @@ opcodes.set(0xfdcbd1, {
 });
 
 // {n:210, x:3, y:2, z:2, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd2, {
-  name: "SET 2,(IY+DD),D",
+  name: "SET 2,(IY+$D),D",
   bytes: "fd cb d2",
+  group: "Bits",
   doc: "ld d, (set 2, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18938,12 +20579,12 @@ opcodes.set(0xfdcbd2, {
 });
 
 // {n:211, x:3, y:2, z:3, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd3, {
-  name: "SET 2,(IY+DD),E",
+  name: "SET 2,(IY+$D),E",
   bytes: "fd cb d3",
+  group: "Bits",
   doc: "ld e, (set 2, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18959,12 +20600,12 @@ opcodes.set(0xfdcbd3, {
 });
 
 // {n:212, x:3, y:2, z:4, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd4, {
-  name: "SET 2,(IY+DD),H",
+  name: "SET 2,(IY+$D),H",
   bytes: "fd cb d4",
+  group: "Bits",
   doc: "ld h, (set 2, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -18980,12 +20621,12 @@ opcodes.set(0xfdcbd4, {
 });
 
 // {n:213, x:3, y:2, z:5, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd5, {
-  name: "SET 2,(IY+DD),L",
+  name: "SET 2,(IY+$D),L",
   bytes: "fd cb d5",
+  group: "Bits",
   doc: "ld l, (set 2, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19001,12 +20642,12 @@ opcodes.set(0xfdcbd5, {
 });
 
 // {n:214, x:3, y:2, z:6, p:1, q:0}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbd6, {
-  name: "SET 2,(IY+DD),(IY+DD)",
+  name: "SET 2,(IY+$D),(IY+$D)",
   bytes: "fd cb d6",
+  group: "Bits",
   doc: "ld (iy+dd), (set 2, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19021,12 +20662,12 @@ opcodes.set(0xfdcbd6, {
 });
 
 // {n:215, x:3, y:2, z:7, p:1, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd7, {
-  name: "SET 2,(IY+DD),A",
+  name: "SET 2,(IY+$D),A",
   bytes: "fd cb d7",
+  group: "Bits",
   doc: "ld a, (set 2, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19042,12 +20683,12 @@ opcodes.set(0xfdcbd7, {
 });
 
 // {n:216, x:3, y:3, z:0, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd8, {
-  name: "SET 3,(IY+DD),B",
+  name: "SET 3,(IY+$D),B",
   bytes: "fd cb d8",
+  group: "Bits",
   doc: "ld b, (set 3, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19063,12 +20704,12 @@ opcodes.set(0xfdcbd8, {
 });
 
 // {n:217, x:3, y:3, z:1, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbd9, {
-  name: "SET 3,(IY+DD),C",
+  name: "SET 3,(IY+$D),C",
   bytes: "fd cb d9",
+  group: "Bits",
   doc: "ld c, (set 3, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19084,12 +20725,12 @@ opcodes.set(0xfdcbd9, {
 });
 
 // {n:218, x:3, y:3, z:2, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbda, {
-  name: "SET 3,(IY+DD),D",
+  name: "SET 3,(IY+$D),D",
   bytes: "fd cb da",
+  group: "Bits",
   doc: "ld d, (set 3, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19105,12 +20746,12 @@ opcodes.set(0xfdcbda, {
 });
 
 // {n:219, x:3, y:3, z:3, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbdb, {
-  name: "SET 3,(IY+DD),E",
+  name: "SET 3,(IY+$D),E",
   bytes: "fd cb db",
+  group: "Bits",
   doc: "ld e, (set 3, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19126,12 +20767,12 @@ opcodes.set(0xfdcbdb, {
 });
 
 // {n:220, x:3, y:3, z:4, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbdc, {
-  name: "SET 3,(IY+DD),H",
+  name: "SET 3,(IY+$D),H",
   bytes: "fd cb dc",
+  group: "Bits",
   doc: "ld h, (set 3, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19147,12 +20788,12 @@ opcodes.set(0xfdcbdc, {
 });
 
 // {n:221, x:3, y:3, z:5, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbdd, {
-  name: "SET 3,(IY+DD),L",
+  name: "SET 3,(IY+$D),L",
   bytes: "fd cb dd",
+  group: "Bits",
   doc: "ld l, (set 3, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19168,12 +20809,12 @@ opcodes.set(0xfdcbdd, {
 });
 
 // {n:222, x:3, y:3, z:6, p:1, q:1}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbde, {
-  name: "SET 3,(IY+DD),(IY+DD)",
+  name: "SET 3,(IY+$D),(IY+$D)",
   bytes: "fd cb de",
+  group: "Bits",
   doc: "ld (iy+dd), (set 3, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19188,12 +20829,12 @@ opcodes.set(0xfdcbde, {
 });
 
 // {n:223, x:3, y:3, z:7, p:1, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbdf, {
-  name: "SET 3,(IY+DD),A",
+  name: "SET 3,(IY+$D),A",
   bytes: "fd cb df",
+  group: "Bits",
   doc: "ld a, (set 3, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19209,12 +20850,12 @@ opcodes.set(0xfdcbdf, {
 });
 
 // {n:224, x:3, y:4, z:0, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe0, {
-  name: "SET 4,(IY+DD),B",
+  name: "SET 4,(IY+$D),B",
   bytes: "fd cb e0",
+  group: "Bits",
   doc: "ld b, (set 4, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19230,12 +20871,12 @@ opcodes.set(0xfdcbe0, {
 });
 
 // {n:225, x:3, y:4, z:1, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe1, {
-  name: "SET 4,(IY+DD),C",
+  name: "SET 4,(IY+$D),C",
   bytes: "fd cb e1",
+  group: "Bits",
   doc: "ld c, (set 4, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19251,12 +20892,12 @@ opcodes.set(0xfdcbe1, {
 });
 
 // {n:226, x:3, y:4, z:2, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe2, {
-  name: "SET 4,(IY+DD),D",
+  name: "SET 4,(IY+$D),D",
   bytes: "fd cb e2",
+  group: "Bits",
   doc: "ld d, (set 4, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19272,12 +20913,12 @@ opcodes.set(0xfdcbe2, {
 });
 
 // {n:227, x:3, y:4, z:3, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe3, {
-  name: "SET 4,(IY+DD),E",
+  name: "SET 4,(IY+$D),E",
   bytes: "fd cb e3",
+  group: "Bits",
   doc: "ld e, (set 4, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19293,12 +20934,12 @@ opcodes.set(0xfdcbe3, {
 });
 
 // {n:228, x:3, y:4, z:4, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe4, {
-  name: "SET 4,(IY+DD),H",
+  name: "SET 4,(IY+$D),H",
   bytes: "fd cb e4",
+  group: "Bits",
   doc: "ld h, (set 4, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19314,12 +20955,12 @@ opcodes.set(0xfdcbe4, {
 });
 
 // {n:229, x:3, y:4, z:5, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe5, {
-  name: "SET 4,(IY+DD),L",
+  name: "SET 4,(IY+$D),L",
   bytes: "fd cb e5",
+  group: "Bits",
   doc: "ld l, (set 4, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19335,12 +20976,12 @@ opcodes.set(0xfdcbe5, {
 });
 
 // {n:230, x:3, y:4, z:6, p:2, q:0}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbe6, {
-  name: "SET 4,(IY+DD),(IY+DD)",
+  name: "SET 4,(IY+$D),(IY+$D)",
   bytes: "fd cb e6",
+  group: "Bits",
   doc: "ld (iy+dd), (set 4, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19355,12 +20996,12 @@ opcodes.set(0xfdcbe6, {
 });
 
 // {n:231, x:3, y:4, z:7, p:2, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe7, {
-  name: "SET 4,(IY+DD),A",
+  name: "SET 4,(IY+$D),A",
   bytes: "fd cb e7",
+  group: "Bits",
   doc: "ld a, (set 4, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19376,12 +21017,12 @@ opcodes.set(0xfdcbe7, {
 });
 
 // {n:232, x:3, y:5, z:0, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe8, {
-  name: "SET 5,(IY+DD),B",
+  name: "SET 5,(IY+$D),B",
   bytes: "fd cb e8",
+  group: "Bits",
   doc: "ld b, (set 5, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19397,12 +21038,12 @@ opcodes.set(0xfdcbe8, {
 });
 
 // {n:233, x:3, y:5, z:1, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbe9, {
-  name: "SET 5,(IY+DD),C",
+  name: "SET 5,(IY+$D),C",
   bytes: "fd cb e9",
+  group: "Bits",
   doc: "ld c, (set 5, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19418,12 +21059,12 @@ opcodes.set(0xfdcbe9, {
 });
 
 // {n:234, x:3, y:5, z:2, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbea, {
-  name: "SET 5,(IY+DD),D",
+  name: "SET 5,(IY+$D),D",
   bytes: "fd cb ea",
+  group: "Bits",
   doc: "ld d, (set 5, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19439,12 +21080,12 @@ opcodes.set(0xfdcbea, {
 });
 
 // {n:235, x:3, y:5, z:3, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbeb, {
-  name: "SET 5,(IY+DD),E",
+  name: "SET 5,(IY+$D),E",
   bytes: "fd cb eb",
+  group: "Bits",
   doc: "ld e, (set 5, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19460,12 +21101,12 @@ opcodes.set(0xfdcbeb, {
 });
 
 // {n:236, x:3, y:5, z:4, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbec, {
-  name: "SET 5,(IY+DD),H",
+  name: "SET 5,(IY+$D),H",
   bytes: "fd cb ec",
+  group: "Bits",
   doc: "ld h, (set 5, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19481,12 +21122,12 @@ opcodes.set(0xfdcbec, {
 });
 
 // {n:237, x:3, y:5, z:5, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbed, {
-  name: "SET 5,(IY+DD),L",
+  name: "SET 5,(IY+$D),L",
   bytes: "fd cb ed",
+  group: "Bits",
   doc: "ld l, (set 5, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19502,12 +21143,12 @@ opcodes.set(0xfdcbed, {
 });
 
 // {n:238, x:3, y:5, z:6, p:2, q:1}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbee, {
-  name: "SET 5,(IY+DD),(IY+DD)",
+  name: "SET 5,(IY+$D),(IY+$D)",
   bytes: "fd cb ee",
+  group: "Bits",
   doc: "ld (iy+dd), (set 5, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19522,12 +21163,12 @@ opcodes.set(0xfdcbee, {
 });
 
 // {n:239, x:3, y:5, z:7, p:2, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbef, {
-  name: "SET 5,(IY+DD),A",
+  name: "SET 5,(IY+$D),A",
   bytes: "fd cb ef",
+  group: "Bits",
   doc: "ld a, (set 5, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19543,12 +21184,12 @@ opcodes.set(0xfdcbef, {
 });
 
 // {n:240, x:3, y:6, z:0, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf0, {
-  name: "SET 6,(IY+DD),B",
+  name: "SET 6,(IY+$D),B",
   bytes: "fd cb f0",
+  group: "Bits",
   doc: "ld b, (set 6, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19564,12 +21205,12 @@ opcodes.set(0xfdcbf0, {
 });
 
 // {n:241, x:3, y:6, z:1, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf1, {
-  name: "SET 6,(IY+DD),C",
+  name: "SET 6,(IY+$D),C",
   bytes: "fd cb f1",
+  group: "Bits",
   doc: "ld c, (set 6, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19585,12 +21226,12 @@ opcodes.set(0xfdcbf1, {
 });
 
 // {n:242, x:3, y:6, z:2, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf2, {
-  name: "SET 6,(IY+DD),D",
+  name: "SET 6,(IY+$D),D",
   bytes: "fd cb f2",
+  group: "Bits",
   doc: "ld d, (set 6, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19606,12 +21247,12 @@ opcodes.set(0xfdcbf2, {
 });
 
 // {n:243, x:3, y:6, z:3, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf3, {
-  name: "SET 6,(IY+DD),E",
+  name: "SET 6,(IY+$D),E",
   bytes: "fd cb f3",
+  group: "Bits",
   doc: "ld e, (set 6, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19627,12 +21268,12 @@ opcodes.set(0xfdcbf3, {
 });
 
 // {n:244, x:3, y:6, z:4, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf4, {
-  name: "SET 6,(IY+DD),H",
+  name: "SET 6,(IY+$D),H",
   bytes: "fd cb f4",
+  group: "Bits",
   doc: "ld h, (set 6, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19648,12 +21289,12 @@ opcodes.set(0xfdcbf4, {
 });
 
 // {n:245, x:3, y:6, z:5, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf5, {
-  name: "SET 6,(IY+DD),L",
+  name: "SET 6,(IY+$D),L",
   bytes: "fd cb f5",
+  group: "Bits",
   doc: "ld l, (set 6, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19669,12 +21310,12 @@ opcodes.set(0xfdcbf5, {
 });
 
 // {n:246, x:3, y:6, z:6, p:3, q:0}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbf6, {
-  name: "SET 6,(IY+DD),(IY+DD)",
+  name: "SET 6,(IY+$D),(IY+$D)",
   bytes: "fd cb f6",
+  group: "Bits",
   doc: "ld (iy+dd), (set 6, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19689,12 +21330,12 @@ opcodes.set(0xfdcbf6, {
 });
 
 // {n:247, x:3, y:6, z:7, p:3, q:0}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf7, {
-  name: "SET 6,(IY+DD),A",
+  name: "SET 6,(IY+$D),A",
   bytes: "fd cb f7",
+  group: "Bits",
   doc: "ld a, (set 6, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19710,12 +21351,12 @@ opcodes.set(0xfdcbf7, {
 });
 
 // {n:248, x:3, y:7, z:0, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf8, {
-  name: "SET 7,(IY+DD),B",
+  name: "SET 7,(IY+$D),B",
   bytes: "fd cb f8",
+  group: "Bits",
   doc: "ld b, (set 7, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19731,12 +21372,12 @@ opcodes.set(0xfdcbf8, {
 });
 
 // {n:249, x:3, y:7, z:1, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbf9, {
-  name: "SET 7,(IY+DD),C",
+  name: "SET 7,(IY+$D),C",
   bytes: "fd cb f9",
+  group: "Bits",
   doc: "ld c, (set 7, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19752,12 +21393,12 @@ opcodes.set(0xfdcbf9, {
 });
 
 // {n:250, x:3, y:7, z:2, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbfa, {
-  name: "SET 7,(IY+DD),D",
+  name: "SET 7,(IY+$D),D",
   bytes: "fd cb fa",
+  group: "Bits",
   doc: "ld d, (set 7, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19773,12 +21414,12 @@ opcodes.set(0xfdcbfa, {
 });
 
 // {n:251, x:3, y:7, z:3, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbfb, {
-  name: "SET 7,(IY+DD),E",
+  name: "SET 7,(IY+$D),E",
   bytes: "fd cb fb",
+  group: "Bits",
   doc: "ld e, (set 7, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19794,12 +21435,12 @@ opcodes.set(0xfdcbfb, {
 });
 
 // {n:252, x:3, y:7, z:4, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbfc, {
-  name: "SET 7,(IY+DD),H",
+  name: "SET 7,(IY+$D),H",
   bytes: "fd cb fc",
+  group: "Bits",
   doc: "ld h, (set 7, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19815,12 +21456,12 @@ opcodes.set(0xfdcbfc, {
 });
 
 // {n:253, x:3, y:7, z:5, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbfd, {
-  name: "SET 7,(IY+DD),L",
+  name: "SET 7,(IY+$D),L",
   bytes: "fd cb fd",
+  group: "Bits",
   doc: "ld l, (set 7, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19836,12 +21477,12 @@ opcodes.set(0xfdcbfd, {
 });
 
 // {n:254, x:3, y:7, z:6, p:3, q:1}
-// SET $NY, ($RI+dd), ($RI+dd)
+// SET $NY, ($RI+$d), ($RI+$d)
 opcodes.set(0xfdcbfe, {
-  name: "SET 7,(IY+DD),(IY+DD)",
+  name: "SET 7,(IY+$D),(IY+$D)",
   bytes: "fd cb fe",
+  group: "Bits",
   doc: "ld (iy+dd), (set 7, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;
@@ -19856,12 +21497,12 @@ opcodes.set(0xfdcbfe, {
 });
 
 // {n:255, x:3, y:7, z:7, p:3, q:1}
-// SET $NY, ($RI+dd), $RRZ
+// SET $NY, ($RI+$d), $RRZ
 opcodes.set(0xfdcbff, {
-  name: "SET 7,(IY+DD),A",
+  name: "SET 7,(IY+$D),A",
   bytes: "fd cb ff",
+  group: "Bits",
   doc: "ld a, (set 7, (iy+dd))",
-  group: "Set",
   fn: (z80) => {
     // mread: {tcycles: 4, ab: $WZ, dst: $DLATCH}
     z80.abus = z80.regs.wz;

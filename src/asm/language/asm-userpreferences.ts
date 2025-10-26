@@ -6,5 +6,6 @@ export const userPreferences = {
   },
   syntax: {
     maxLabelSize: 8,
+    case: "lower",
   },
 };

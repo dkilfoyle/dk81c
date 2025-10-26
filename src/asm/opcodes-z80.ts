@@ -1,4 +1,5 @@
 import { opcodes } from "@/z80/decode";
+import { ParameterInformation, SignatureInformation } from "vscode-languageserver";
 
 // interface IOpcodesLookupEntry {
 //   args: string[];
@@ -42,27 +43,53 @@ import { opcodes } from "@/z80/decode";
 export interface IOpcodesNode {
   codes: number[];
   args: Map<string, IOpcodesNode>;
+  help?: string;
+  signatures: SignatureInformation[];
 }
 type IOpcodesTree = Map<string, IOpcodesNode>;
 
-export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [code, def]) => {
-  const instrSplit = def.name.toUpperCase().split(" ");
-  const instrName = instrSplit[0];
-  const args = instrSplit[1] ? instrSplit[1].split(",") : [];
-  let curNode = rootNode.get(instrName) || rootNode.set(instrName, { args: new Map(), codes: [] }).get(instrName)!;
+const newOpcodesNode = () => ({ args: new Map(), codes: [], signatures: [] });
 
-  if (args.length == 0) {
-    // this should only be possible once
-    curNode.codes.push(code);
-  } else {
-    for (let i = 0; i < args.length; i++) {
-      const argi = instrName == "RST" ? "$N" : args[i];
-      curNode = curNode.args.get(argi) || curNode.args.set(argi, { args: new Map(), codes: [] }).get(argi)!;
-      if (i == args.length - 1) {
-        curNode.codes.push(code);
+export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [code, def]) => {
+  const processDef = (defcase: "upper" | "lower") => {
+    const instrSplit = (defcase == "upper" ? def.name.toUpperCase() : def.name.toLowerCase()).split(" ");
+    const instrName = instrSplit[0];
+    const args = instrSplit[1] ? instrSplit[1].split(",") : [];
+    let curNode = rootNode.get(instrName) || rootNode.set(instrName, newOpcodesNode()).get(instrName)!;
+
+    curNode.help = def.doc;
+    let title = instrName + " ";
+    const params = args.map((arg, i) => {
+      const start = title.length;
+      title += arg;
+      const end = title.length;
+      if (i < args.length - 1) title += ", ";
+      return ParameterInformation.create([start, end]);
+    });
+    curNode.signatures.push(SignatureInformation.create(title, def.doc, ...params));
+
+    let parentNode = curNode;
+    if (args.length == 0) {
+      // this should only be possible once
+      curNode.codes.push(code);
+      if (parentNode != curNode) parentNode.codes.push(code);
+      if (rootNode.get(instrName) != curNode) rootNode.get(instrName)?.codes.push(code);
+    } else {
+      for (let i = 0; i < args.length; i++) {
+        const argi = instrName == "RST" ? "$N" : args[i];
+        parentNode = curNode;
+        curNode = curNode.args.get(argi) || curNode.args.set(argi, newOpcodesNode()).get(argi)!;
+        curNode.signatures.push(SignatureInformation.create(title, def.doc, ...params));
+        if (i == args.length - 1) {
+          curNode.codes.push(code);
+          if (parentNode != curNode) parentNode.codes.push(code);
+          rootNode.get(instrName)?.codes.push(code);
+        }
       }
     }
-  }
+  };
+  processDef("upper");
+  processDef("lower");
 
   return rootNode;
 }, new Map());

@@ -55,7 +55,9 @@ export class AsmValidator {
       } else {
         const expr = instruction.expressionList!.expressions[i];
         const nextNode: IOpcodesNode | undefined =
-          args[i] == "$IMM" ? curNode.args.get("$N") || curNode.args.get("$NN") : curNode.args.get(args[i]);
+          args[i] == "$IMM"
+            ? curNode.args.get("$N") || curNode.args.get("$NN") || curNode.args.get("$E") || curNode.args.get("$D")
+            : curNode.args.get(args[i]);
         if (!nextNode) {
           // either too many args
           if (curNode.args.size == 0)
@@ -75,6 +77,8 @@ export class AsmValidator {
               if (expr.immediate! < 0 || expr.immediate! > 255) accept("error", "Immediate value out of range 0-255", { node: expr });
             if (curNode.args.get("$NN"))
               if (expr.immediate! < 0 || expr.immediate! > 65535) accept("error", "Immediate value out of range 0-65535", { node: expr });
+            if (curNode.args.get("$E"))
+              if (expr.immediate! < -126 || expr.immediate! > 129) accept("error", "Immediate value out of range -126-129", { node: expr });
           }
           if (args[i] == "(IX+DD" || args[i] == "(IY+DD)")
             if (isBinaryExpression(expr.paren) && expr.paren.right.immediate != undefined) {

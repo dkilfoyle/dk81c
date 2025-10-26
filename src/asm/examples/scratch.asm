@@ -1,2 +1,2 @@
-rst $0008
-call $0f46
+bla:
+call b

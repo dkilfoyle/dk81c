@@ -9,7 +9,7 @@ import {
 } from "langium/lsp";
 import { AsmGeneratedModule, AsmGeneratedSharedModule } from "./generated/module.js";
 import { AsmValidator, registerValidationChecks } from "./asm-validator.js";
-// import { AsmSignatureHelpProvider } from "./asm-signature.js";
+import { AsmSignatureHelpProvider } from "./asm-signature.js";
 // import { AsmDocumentationProvider } from "./asm-documentation.js";
 // import { AsmHoverProvider } from "./asm-hover.js";
 import { AsmValueConverter } from "./asm-valueconverter.js";
@@ -50,7 +50,7 @@ export const AsmModule: Module<AsmServices, PartialLangiumServices & AsmAddedSer
   },
   lsp: {
     CompletionProvider: (services) => new AsmCompletionProvider(services),
-    // SignatureHelp: (services) => new AsmSignatureHelpProvider(services),
+    SignatureHelp: (services) => new AsmSignatureHelpProvider(services),
     // CodeActionProvider: (services) => new JackCodeActionProvider(),
     // HoverProvider: (services) => new AsmHoverProvider(services),
     // FoldingRangeProvider: () => new AsmFoldProvider(),

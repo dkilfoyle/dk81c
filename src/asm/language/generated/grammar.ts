@@ -28,16 +28,36 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "cardinality": "*"
           },
           {
-            "$type": "Assignment",
-            "feature": "lines",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@1"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "lines",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@1"
+                  },
+                  "arguments": []
+                }
               },
-              "arguments": []
-            },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@14"
+                    },
+                    "arguments": []
+                  },
+                  {
+                    "$type": "EndOfFile"
+                  }
+                ]
+              }
+            ],
             "cardinality": "*"
           }
         ]
@@ -108,22 +128,6 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                   "arguments": []
                 },
                 "cardinality": "?"
-              },
-              {
-                "$type": "Alternatives",
-                "elements": [
-                  {
-                    "$type": "RuleCall",
-                    "rule": {
-                      "$ref": "#/rules@14"
-                    },
-                    "arguments": [],
-                    "cardinality": "+"
-                  },
-                  {
-                    "$type": "EndOfFile"
-                  }
-                ]
               }
             ]
           },
@@ -154,57 +158,20 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                   "arguments": []
                 },
                 "cardinality": "?"
-              },
-              {
-                "$type": "Alternatives",
-                "elements": [
-                  {
-                    "$type": "RuleCall",
-                    "rule": {
-                      "$ref": "#/rules@14"
-                    },
-                    "arguments": [],
-                    "cardinality": "+"
-                  },
-                  {
-                    "$type": "EndOfFile"
-                  }
-                ]
               }
             ]
           },
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Assignment",
-                "feature": "comment",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@15"
-                  },
-                  "arguments": []
-                }
+            "$type": "Assignment",
+            "feature": "comment",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@15"
               },
-              {
-                "$type": "Alternatives",
-                "elements": [
-                  {
-                    "$type": "RuleCall",
-                    "rule": {
-                      "$ref": "#/rules@14"
-                    },
-                    "arguments": [],
-                    "cardinality": "+"
-                  },
-                  {
-                    "$type": "EndOfFile"
-                  }
-                ]
-              }
-            ]
+              "arguments": []
+            }
           }
         ]
       },

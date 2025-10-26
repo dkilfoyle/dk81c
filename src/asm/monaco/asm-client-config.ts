@@ -6,6 +6,7 @@ import asmWorkerUrl from "../language/asm-server?worker&url";
 // cannot be imported with assert as json contains comments
 import vscodeConfig from "./asm-vscode-config.json?raw";
 import tmGrammar from "./asm-tm-grammar.json?raw";
+import scratchCode from "../examples/scratch.asm?raw";
 
 const extensionFilesOrContents = new Map<string, string | URL>();
 extensionFilesOrContents.set(`/asm-vscode-config.json`, vscodeConfig);
@@ -61,7 +62,7 @@ const languageClientConfig: LanguageClientConfig = {
 const editorAppConfig: EditorAppConfig = {
   codeResources: {
     modified: {
-      text: "call ",
+      text: scratchCode,
       uri: "source.asm",
     },
   },
