@@ -2075,7 +2075,7 @@ opcodes.set(0x7f, {
 // {n:128, x:2, y:0, z:0, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x80, {
-  name: "ADD B",
+  name: "ADD A,B",
   bytes: "80",
   group: "ALU 8bit",
   doc: "A:=A $ALU b",
@@ -2090,7 +2090,7 @@ opcodes.set(0x80, {
 // {n:129, x:2, y:0, z:1, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x81, {
-  name: "ADD C",
+  name: "ADD A,C",
   bytes: "81",
   group: "ALU 8bit",
   doc: "A:=A $ALU c",
@@ -2105,7 +2105,7 @@ opcodes.set(0x81, {
 // {n:130, x:2, y:0, z:2, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x82, {
-  name: "ADD D",
+  name: "ADD A,D",
   bytes: "82",
   group: "ALU 8bit",
   doc: "A:=A $ALU d",
@@ -2120,7 +2120,7 @@ opcodes.set(0x82, {
 // {n:131, x:2, y:0, z:3, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x83, {
-  name: "ADD E",
+  name: "ADD A,E",
   bytes: "83",
   group: "ALU 8bit",
   doc: "A:=A $ALU e",
@@ -2135,7 +2135,7 @@ opcodes.set(0x83, {
 // {n:132, x:2, y:0, z:4, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x84, {
-  name: "ADD H",
+  name: "ADD A,H",
   bytes: "84",
   group: "ALU 8bit",
   doc: "A:=A $ALU h",
@@ -2150,7 +2150,7 @@ opcodes.set(0x84, {
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x85, {
-  name: "ADD L",
+  name: "ADD A,L",
   bytes: "85",
   group: "ALU 8bit",
   doc: "A:=A $ALU l",
@@ -2165,7 +2165,7 @@ opcodes.set(0x85, {
 // {n:134, x:2, y:0, z:6, p:0, q:0}
 // $ALU (HL)
 opcodes.set(0x86, {
-  name: "ADD (HL)",
+  name: "ADD A,(HL)",
   bytes: "86",
   group: "ALU 8bit",
   doc: "A:=A $ALU (HL)",
@@ -2183,7 +2183,7 @@ opcodes.set(0x86, {
 // {n:135, x:2, y:0, z:7, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0x87, {
-  name: "ADD A",
+  name: "ADD A,A",
   bytes: "87",
   group: "ALU 8bit",
   doc: "A:=A $ALU a",
@@ -2198,7 +2198,7 @@ opcodes.set(0x87, {
 // {n:136, x:2, y:1, z:0, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x88, {
-  name: "ADC B",
+  name: "ADC A,B",
   bytes: "88",
   group: "ALU 8bit",
   doc: "A:=A $ALU b",
@@ -2213,7 +2213,7 @@ opcodes.set(0x88, {
 // {n:137, x:2, y:1, z:1, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x89, {
-  name: "ADC C",
+  name: "ADC A,C",
   bytes: "89",
   group: "ALU 8bit",
   doc: "A:=A $ALU c",
@@ -2228,7 +2228,7 @@ opcodes.set(0x89, {
 // {n:138, x:2, y:1, z:2, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8a, {
-  name: "ADC D",
+  name: "ADC A,D",
   bytes: "8a",
   group: "ALU 8bit",
   doc: "A:=A $ALU d",
@@ -2243,7 +2243,7 @@ opcodes.set(0x8a, {
 // {n:139, x:2, y:1, z:3, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8b, {
-  name: "ADC E",
+  name: "ADC A,E",
   bytes: "8b",
   group: "ALU 8bit",
   doc: "A:=A $ALU e",
@@ -2258,7 +2258,7 @@ opcodes.set(0x8b, {
 // {n:140, x:2, y:1, z:4, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8c, {
-  name: "ADC H",
+  name: "ADC A,H",
   bytes: "8c",
   group: "ALU 8bit",
   doc: "A:=A $ALU h",
@@ -2273,7 +2273,7 @@ opcodes.set(0x8c, {
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8d, {
-  name: "ADC L",
+  name: "ADC A,L",
   bytes: "8d",
   group: "ALU 8bit",
   doc: "A:=A $ALU l",
@@ -2288,7 +2288,7 @@ opcodes.set(0x8d, {
 // {n:142, x:2, y:1, z:6, p:0, q:1}
 // $ALU (HL)
 opcodes.set(0x8e, {
-  name: "ADC (HL)",
+  name: "ADC A,(HL)",
   bytes: "8e",
   group: "ALU 8bit",
   doc: "A:=A $ALU (HL)",
@@ -2306,7 +2306,7 @@ opcodes.set(0x8e, {
 // {n:143, x:2, y:1, z:7, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0x8f, {
-  name: "ADC A",
+  name: "ADC A,A",
   bytes: "8f",
   group: "ALU 8bit",
   doc: "A:=A $ALU a",
@@ -2444,7 +2444,7 @@ opcodes.set(0x97, {
 // {n:152, x:2, y:3, z:0, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x98, {
-  name: "SBC B",
+  name: "SBC A,B",
   bytes: "98",
   group: "ALU 8bit",
   doc: "A:=A $ALU b",
@@ -2459,7 +2459,7 @@ opcodes.set(0x98, {
 // {n:153, x:2, y:3, z:1, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x99, {
-  name: "SBC C",
+  name: "SBC A,C",
   bytes: "99",
   group: "ALU 8bit",
   doc: "A:=A $ALU c",
@@ -2474,7 +2474,7 @@ opcodes.set(0x99, {
 // {n:154, x:2, y:3, z:2, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9a, {
-  name: "SBC D",
+  name: "SBC A,D",
   bytes: "9a",
   group: "ALU 8bit",
   doc: "A:=A $ALU d",
@@ -2489,7 +2489,7 @@ opcodes.set(0x9a, {
 // {n:155, x:2, y:3, z:3, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9b, {
-  name: "SBC E",
+  name: "SBC A,E",
   bytes: "9b",
   group: "ALU 8bit",
   doc: "A:=A $ALU e",
@@ -2504,7 +2504,7 @@ opcodes.set(0x9b, {
 // {n:156, x:2, y:3, z:4, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9c, {
-  name: "SBC H",
+  name: "SBC A,H",
   bytes: "9c",
   group: "ALU 8bit",
   doc: "A:=A $ALU h",
@@ -2519,7 +2519,7 @@ opcodes.set(0x9c, {
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9d, {
-  name: "SBC L",
+  name: "SBC A,L",
   bytes: "9d",
   group: "ALU 8bit",
   doc: "A:=A $ALU l",
@@ -2534,7 +2534,7 @@ opcodes.set(0x9d, {
 // {n:158, x:2, y:3, z:6, p:1, q:1}
 // $ALU (HL)
 opcodes.set(0x9e, {
-  name: "SBC (HL)",
+  name: "SBC A,(HL)",
   bytes: "9e",
   group: "ALU 8bit",
   doc: "A:=A $ALU (HL)",
@@ -2552,7 +2552,7 @@ opcodes.set(0x9e, {
 // {n:159, x:2, y:3, z:7, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0x9f, {
-  name: "SBC A",
+  name: "SBC A,A",
   bytes: "9f",
   group: "ALU 8bit",
   doc: "A:=A $ALU a",
@@ -3215,7 +3215,7 @@ opcodes.set(0xc5, {
 // {n:198, x:3, y:0, z:6, p:0, q:0}
 // $ALU $n
 opcodes.set(0xc6, {
-  name: "ADD $N",
+  name: "ADD A,$N",
   bytes: "c6 XX",
   group: "ALU 8bit",
   doc: "A:=A $ALU n",
@@ -3416,7 +3416,7 @@ opcodes.set(0xcd, {
 // {n:206, x:3, y:1, z:6, p:0, q:1}
 // $ALU $n
 opcodes.set(0xce, {
-  name: "ADC $N",
+  name: "ADC A,$N",
   bytes: "ce XX",
   group: "ALU 8bit",
   doc: "A:=A $ALU n",
@@ -3621,7 +3621,7 @@ opcodes.set(0xd6, {
   bytes: "d6 XX",
   group: "ALU 8bit",
   doc: "A:=A $ALU n",
-  flags: "***V0*",
+  flags: "***V1*",
   states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
@@ -3798,11 +3798,11 @@ opcodes.set(0xdd, {
 // {n:222, x:3, y:3, z:6, p:1, q:1}
 // $ALU $n
 opcodes.set(0xde, {
-  name: "SBC $N",
+  name: "SBC A,$N",
   bytes: "de XX",
   group: "ALU 8bit",
   doc: "A:=A $ALU n",
-  flags: "***V0*",
+  flags: "***V1*",
   states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
@@ -4376,7 +4376,7 @@ opcodes.set(0xf6, {
   bytes: "f6 XX",
   group: "ALU 8bit",
   doc: "A:=A $ALU n",
-  flags: "***V1*",
+  flags: "***P00",
   states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
@@ -4550,7 +4550,7 @@ opcodes.set(0xfe, {
   bytes: "fe XX",
   group: "ALU 8bit",
   doc: "A:=A $ALU n",
-  flags: "***P00",
+  flags: "***V1*",
   states: [7],
   fn: (z80) => {
     // mread: {ab: $PC++, dst: $DLATCH}
@@ -8506,6 +8506,9 @@ opcodes.set(0xdd09, {
   name: "ADD IX,BC",
   bytes: "dd 09",
   group: "ALU 16bit",
+  doc: "ix+=bc",
+  flags: "--*-0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$RI=z80.alu.add16($RI, $RP)"}
     z80.incTStateCount(7);
@@ -8519,6 +8522,9 @@ opcodes.set(0xdd19, {
   name: "ADD IX,DE",
   bytes: "dd 19",
   group: "ALU 16bit",
+  doc: "ix+=de",
+  flags: "--*-0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$RI=z80.alu.add16($RI, $RP)"}
     z80.incTStateCount(7);
@@ -8639,6 +8645,9 @@ opcodes.set(0xdd29, {
   name: "ADD IX,IX",
   bytes: "dd 29",
   group: "ALU 16bit",
+  doc: "ix+=ix",
+  flags: "--*-0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$RI=z80.alu.add16($RI, $RP)"}
     z80.incTStateCount(7);
@@ -8817,6 +8826,9 @@ opcodes.set(0xdd39, {
   name: "ADD IX,SP",
   bytes: "dd 39",
   group: "ALU 16bit",
+  doc: "ix+=sp",
+  flags: "--*-0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$RI=z80.alu.add16($RI, $RP)"}
     z80.incTStateCount(7);
@@ -9420,24 +9432,15 @@ opcodes.set(0xdd7e, {
   },
 });
 
-// {n:132, x:2, y:0, z:4, p:0, q:0}
-// $ALU $RZ
-opcodes.set(0xdd84, {
-  name: "ADD IXH",
-  bytes: "dd 84",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add(z80.regs.ixh);
-  },
-});
-
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0xdd85, {
-  name: "ADD IXL",
+  name: "ADD A,IXL",
   bytes: "dd 85",
   group: "ALU 8bit",
+  doc: "A := A $ALU ixl",
+  flags: "***V0*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.ixl);
@@ -9447,7 +9450,7 @@ opcodes.set(0xdd85, {
 // {n:134, x:2, y:0, z:6, p:0, q:0}
 // $ALU ($RI+$d)
 opcodes.set(0xdd86, {
-  name: "ADD (IX+$D)",
+  name: "ADD A,(IX+$D)",
   bytes: "dd 86",
   group: "ALU 8bit",
   doc: "A=A $ALU (ix+dd)",
@@ -9468,24 +9471,15 @@ opcodes.set(0xdd86, {
   },
 });
 
-// {n:140, x:2, y:1, z:4, p:0, q:1}
-// $ALU $RZ
-opcodes.set(0xdd8c, {
-  name: "ADC IXH",
-  bytes: "dd 8c",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc(z80.regs.ixh);
-  },
-});
-
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0xdd8d, {
-  name: "ADC IXL",
+  name: "ADC A,IXL",
   bytes: "dd 8d",
   group: "ALU 8bit",
+  doc: "A := A $ALU ixl",
+  flags: "***V0*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.ixl);
@@ -9495,7 +9489,7 @@ opcodes.set(0xdd8d, {
 // {n:142, x:2, y:1, z:6, p:0, q:1}
 // $ALU ($RI+$d)
 opcodes.set(0xdd8e, {
-  name: "ADC (IX+$D)",
+  name: "ADC A,(IX+$D)",
   bytes: "dd 8e",
   group: "ALU 8bit",
   doc: "A=A $ALU (ix+dd)",
@@ -9516,24 +9510,15 @@ opcodes.set(0xdd8e, {
   },
 });
 
-// {n:148, x:2, y:2, z:4, p:1, q:0}
-// $ALU $RZ
-opcodes.set(0xdd94, {
-  name: "SUB IXH",
-  bytes: "dd 94",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub(z80.regs.ixh);
-  },
-});
-
 // {n:149, x:2, y:2, z:5, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0xdd95, {
   name: "SUB IXL",
   bytes: "dd 95",
   group: "ALU 8bit",
+  doc: "A := A $ALU ixl",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.ixl);
@@ -9564,24 +9549,15 @@ opcodes.set(0xdd96, {
   },
 });
 
-// {n:156, x:2, y:3, z:4, p:1, q:1}
-// $ALU $RZ
-opcodes.set(0xdd9c, {
-  name: "SBC IXH",
-  bytes: "dd 9c",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc(z80.regs.ixh);
-  },
-});
-
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0xdd9d, {
-  name: "SBC IXL",
+  name: "SBC A,IXL",
   bytes: "dd 9d",
   group: "ALU 8bit",
+  doc: "A := A $ALU ixl",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.ixl);
@@ -9591,7 +9567,7 @@ opcodes.set(0xdd9d, {
 // {n:158, x:2, y:3, z:6, p:1, q:1}
 // $ALU ($RI+$d)
 opcodes.set(0xdd9e, {
-  name: "SBC (IX+$D)",
+  name: "SBC A,(IX+$D)",
   bytes: "dd 9e",
   group: "ALU 8bit",
   doc: "A=A $ALU (ix+dd)",
@@ -9612,24 +9588,15 @@ opcodes.set(0xdd9e, {
   },
 });
 
-// {n:164, x:2, y:4, z:4, p:2, q:0}
-// $ALU $RZ
-opcodes.set(0xdda4, {
-  name: "AND IXH",
-  bytes: "dd a4",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and(z80.regs.ixh);
-  },
-});
-
 // {n:165, x:2, y:4, z:5, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xdda5, {
   name: "AND IXL",
   bytes: "dd a5",
   group: "ALU 8bit",
+  doc: "A := A $ALU ixl",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.ixl);
@@ -9660,24 +9627,15 @@ opcodes.set(0xdda6, {
   },
 });
 
-// {n:172, x:2, y:5, z:4, p:2, q:1}
-// $ALU $RZ
-opcodes.set(0xddac, {
-  name: "XOR IXH",
-  bytes: "dd ac",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor(z80.regs.ixh);
-  },
-});
-
 // {n:173, x:2, y:5, z:5, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xddad, {
   name: "XOR IXL",
   bytes: "dd ad",
   group: "ALU 8bit",
+  doc: "A := A $ALU ixl",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.ixl);
@@ -9708,24 +9666,15 @@ opcodes.set(0xddae, {
   },
 });
 
-// {n:180, x:2, y:6, z:4, p:3, q:0}
-// $ALU $RZ
-opcodes.set(0xddb4, {
-  name: "OR IXH",
-  bytes: "dd b4",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or(z80.regs.ixh);
-  },
-});
-
 // {n:181, x:2, y:6, z:5, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xddb5, {
   name: "OR IXL",
   bytes: "dd b5",
   group: "ALU 8bit",
+  doc: "A := A $ALU ixl",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.ixl);
@@ -9756,24 +9705,15 @@ opcodes.set(0xddb6, {
   },
 });
 
-// {n:188, x:2, y:7, z:4, p:3, q:1}
-// $ALU $RZ
-opcodes.set(0xddbc, {
-  name: "CP IXH",
-  bytes: "dd bc",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp(z80.regs.ixh);
-  },
-});
-
 // {n:189, x:2, y:7, z:5, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xddbd, {
   name: "CP IXL",
   bytes: "dd bd",
   group: "ALU 8bit",
+  doc: "A := A $ALU ixl",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.ixl);
@@ -11550,6 +11490,9 @@ opcodes.set(0xfd09, {
   name: "ADD IY,BC",
   bytes: "fd 09",
   group: "ALU 16bit",
+  doc: "iy+=bc",
+  flags: "--*-0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$RI=z80.alu.add16($RI, $RP)"}
     z80.incTStateCount(7);
@@ -11563,6 +11506,9 @@ opcodes.set(0xfd19, {
   name: "ADD IY,DE",
   bytes: "fd 19",
   group: "ALU 16bit",
+  doc: "iy+=de",
+  flags: "--*-0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$RI=z80.alu.add16($RI, $RP)"}
     z80.incTStateCount(7);
@@ -11683,6 +11629,9 @@ opcodes.set(0xfd29, {
   name: "ADD IY,IY",
   bytes: "fd 29",
   group: "ALU 16bit",
+  doc: "iy+=iy",
+  flags: "--*-0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$RI=z80.alu.add16($RI, $RP)"}
     z80.incTStateCount(7);
@@ -11861,6 +11810,9 @@ opcodes.set(0xfd39, {
   name: "ADD IY,SP",
   bytes: "fd 39",
   group: "ALU 16bit",
+  doc: "iy+=sp",
+  flags: "--*-0*",
+  states: [15],
   fn: (z80) => {
     // generic: {tcycles: 7, action: "$RI=z80.alu.add16($RI, $RP)"}
     z80.incTStateCount(7);
@@ -12464,24 +12416,15 @@ opcodes.set(0xfd7e, {
   },
 });
 
-// {n:132, x:2, y:0, z:4, p:0, q:0}
-// $ALU $RZ
-opcodes.set(0xfd84, {
-  name: "ADD IYH",
-  bytes: "fd 84",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.add(z80.regs.iyh);
-  },
-});
-
 // {n:133, x:2, y:0, z:5, p:0, q:0}
 // $ALU $RZ
 opcodes.set(0xfd85, {
-  name: "ADD IYL",
+  name: "ADD A,IYL",
   bytes: "fd 85",
   group: "ALU 8bit",
+  doc: "A := A $ALU iyl",
+  flags: "***V0*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.add(z80.regs.iyl);
@@ -12491,7 +12434,7 @@ opcodes.set(0xfd85, {
 // {n:134, x:2, y:0, z:6, p:0, q:0}
 // $ALU ($RI+$d)
 opcodes.set(0xfd86, {
-  name: "ADD (IY+$D)",
+  name: "ADD A,(IY+$D)",
   bytes: "fd 86",
   group: "ALU 8bit",
   doc: "A=A $ALU (iy+dd)",
@@ -12512,24 +12455,15 @@ opcodes.set(0xfd86, {
   },
 });
 
-// {n:140, x:2, y:1, z:4, p:0, q:1}
-// $ALU $RZ
-opcodes.set(0xfd8c, {
-  name: "ADC IYH",
-  bytes: "fd 8c",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.adc(z80.regs.iyh);
-  },
-});
-
 // {n:141, x:2, y:1, z:5, p:0, q:1}
 // $ALU $RZ
 opcodes.set(0xfd8d, {
-  name: "ADC IYL",
+  name: "ADC A,IYL",
   bytes: "fd 8d",
   group: "ALU 8bit",
+  doc: "A := A $ALU iyl",
+  flags: "***V0*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.adc(z80.regs.iyl);
@@ -12539,7 +12473,7 @@ opcodes.set(0xfd8d, {
 // {n:142, x:2, y:1, z:6, p:0, q:1}
 // $ALU ($RI+$d)
 opcodes.set(0xfd8e, {
-  name: "ADC (IY+$D)",
+  name: "ADC A,(IY+$D)",
   bytes: "fd 8e",
   group: "ALU 8bit",
   doc: "A=A $ALU (iy+dd)",
@@ -12560,24 +12494,15 @@ opcodes.set(0xfd8e, {
   },
 });
 
-// {n:148, x:2, y:2, z:4, p:1, q:0}
-// $ALU $RZ
-opcodes.set(0xfd94, {
-  name: "SUB IYH",
-  bytes: "fd 94",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sub(z80.regs.iyh);
-  },
-});
-
 // {n:149, x:2, y:2, z:5, p:1, q:0}
 // $ALU $RZ
 opcodes.set(0xfd95, {
   name: "SUB IYL",
   bytes: "fd 95",
   group: "ALU 8bit",
+  doc: "A := A $ALU iyl",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sub(z80.regs.iyl);
@@ -12608,24 +12533,15 @@ opcodes.set(0xfd96, {
   },
 });
 
-// {n:156, x:2, y:3, z:4, p:1, q:1}
-// $ALU $RZ
-opcodes.set(0xfd9c, {
-  name: "SBC IYH",
-  bytes: "fd 9c",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.sbc(z80.regs.iyh);
-  },
-});
-
 // {n:157, x:2, y:3, z:5, p:1, q:1}
 // $ALU $RZ
 opcodes.set(0xfd9d, {
-  name: "SBC IYL",
+  name: "SBC A,IYL",
   bytes: "fd 9d",
   group: "ALU 8bit",
+  doc: "A := A $ALU iyl",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.sbc(z80.regs.iyl);
@@ -12635,7 +12551,7 @@ opcodes.set(0xfd9d, {
 // {n:158, x:2, y:3, z:6, p:1, q:1}
 // $ALU ($RI+$d)
 opcodes.set(0xfd9e, {
-  name: "SBC (IY+$D)",
+  name: "SBC A,(IY+$D)",
   bytes: "fd 9e",
   group: "ALU 8bit",
   doc: "A=A $ALU (iy+dd)",
@@ -12656,24 +12572,15 @@ opcodes.set(0xfd9e, {
   },
 });
 
-// {n:164, x:2, y:4, z:4, p:2, q:0}
-// $ALU $RZ
-opcodes.set(0xfda4, {
-  name: "AND IYH",
-  bytes: "fd a4",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.and(z80.regs.iyh);
-  },
-});
-
 // {n:165, x:2, y:4, z:5, p:2, q:0}
 // $ALU $RZ
 opcodes.set(0xfda5, {
   name: "AND IYL",
   bytes: "fd a5",
   group: "ALU 8bit",
+  doc: "A := A $ALU iyl",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.and(z80.regs.iyl);
@@ -12704,24 +12611,15 @@ opcodes.set(0xfda6, {
   },
 });
 
-// {n:172, x:2, y:5, z:4, p:2, q:1}
-// $ALU $RZ
-opcodes.set(0xfdac, {
-  name: "XOR IYH",
-  bytes: "fd ac",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.xor(z80.regs.iyh);
-  },
-});
-
 // {n:173, x:2, y:5, z:5, p:2, q:1}
 // $ALU $RZ
 opcodes.set(0xfdad, {
   name: "XOR IYL",
   bytes: "fd ad",
   group: "ALU 8bit",
+  doc: "A := A $ALU iyl",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.xor(z80.regs.iyl);
@@ -12752,24 +12650,15 @@ opcodes.set(0xfdae, {
   },
 });
 
-// {n:180, x:2, y:6, z:4, p:3, q:0}
-// $ALU $RZ
-opcodes.set(0xfdb4, {
-  name: "OR IYH",
-  bytes: "fd b4",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.or(z80.regs.iyh);
-  },
-});
-
 // {n:181, x:2, y:6, z:5, p:3, q:0}
 // $ALU $RZ
 opcodes.set(0xfdb5, {
   name: "OR IYL",
   bytes: "fd b5",
   group: "ALU 8bit",
+  doc: "A := A $ALU iyl",
+  flags: "***P00",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.or(z80.regs.iyl);
@@ -12800,24 +12689,15 @@ opcodes.set(0xfdb6, {
   },
 });
 
-// {n:188, x:2, y:7, z:4, p:3, q:1}
-// $ALU $RZ
-opcodes.set(0xfdbc, {
-  name: "CP IYH",
-  bytes: "fd bc",
-  group: "ALU 8bit",
-  fn: (z80) => {
-    // overlapped: {action: "$ALU($RZ)"}
-    z80.alu.cp(z80.regs.iyh);
-  },
-});
-
 // {n:189, x:2, y:7, z:5, p:3, q:1}
 // $ALU $RZ
 opcodes.set(0xfdbd, {
   name: "CP IYL",
   bytes: "fd bd",
   group: "ALU 8bit",
+  doc: "A := A $ALU iyl",
+  flags: "***V1*",
+  states: [19],
   fn: (z80) => {
     // overlapped: {action: "$ALU($RZ)"}
     z80.alu.cp(z80.regs.iyl);

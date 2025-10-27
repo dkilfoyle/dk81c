@@ -37,7 +37,7 @@ export class AsmValidator {
           return "$NN";
         }
         if (expr.immediate != undefined) return "$IMM";
-        if (expr.label) return ["JR", "DJNZ"].includes(instrName) ? "$N" : "$NN";
+        if (expr.label) return ["JR", "DJNZ"].includes(instrName) ? "$E" : "$NN";
         if (expr.paren) return "(" + toArgTemplate(expr.paren) + ")";
         return expr.$cstNode!.text.toUpperCase();
       };
