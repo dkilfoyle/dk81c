@@ -199,7 +199,8 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": ":"
+            "value": ":",
+            "cardinality": "?"
           }
         ]
       },
@@ -251,16 +252,26 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
         "$type": "Group",
         "elements": [
           {
-            "$type": "Assignment",
-            "feature": "name",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@9"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "name",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@9"
+                  },
+                  "arguments": []
+                }
               },
-              "arguments": []
-            },
+              {
+                "$type": "Keyword",
+                "value": ":",
+                "cardinality": "?"
+              }
+            ],
             "cardinality": "?"
           },
           {
@@ -450,6 +461,26 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
               "$type": "CrossReference",
               "type": {
                 "$ref": "#/rules@2"
+              },
+              "terminal": {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@9"
+                },
+                "arguments": []
+              },
+              "deprecatedSyntax": false,
+              "isMulti": false
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "constant",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$ref": "#/rules@4"
               },
               "terminal": {
                 "$type": "RuleCall",

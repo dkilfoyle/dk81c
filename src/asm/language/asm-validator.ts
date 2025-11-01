@@ -1,5 +1,5 @@
 import type { ValidationAcceptor, ValidationChecks } from "langium";
-import { type AsmAstType, Expression, Instruction, isBinaryExpression, Label } from "./generated/ast.js";
+import { type AsmAstType, Directive, Expression, Instruction, isBinaryExpression, Label } from "./generated/ast.js";
 import type { AsmServices } from "./asm-module.js";
 import { userPreferences } from "./asm-userpreferences.js";
 import { IOpcodesNode, opcodesLookup } from "../opcodes-z80.js";
@@ -15,6 +15,7 @@ export function registerValidationChecks(services: AsmServices) {
   const checks: ValidationChecks<AsmAstType> = {
     Label: validator.checkLabelSize,
     Instruction: validator.checkInstructionArgs,
+    Directive: validator.checkDirectiveArgs,
   };
   registry.register(checks, validator);
 }
@@ -26,6 +27,54 @@ export class AsmValidator {
   checkLabelSize(label: Label, accept: ValidationAcceptor): void {
     if (label.name.length > userPreferences.syntax.maxLabelSize)
       accept("warning", `Label longer than recommended length (${userPreferences.syntax.maxLabelSize})`, { node: label, property: "name" });
+  }
+  checkDirectiveArgs(directive: Directive, accept: ValidationAcceptor) {
+    const is8BitNumber = (expr: Expression) => {
+      if (expr.immediate != undefined) {
+        if (expr.immediate > 0xff) return "Out of range";
+      } else if (expr.constant != undefined) return;
+      else return "Not a byte";
+    };
+    const is16BitNumber = (expr: Expression) => {
+      if (expr.immediate != undefined) {
+        if (expr.immediate > 0xffff) return "Out of range";
+      } else if (expr.constant != undefined || expr.label != undefined) return;
+      else return "Not a word";
+    };
+
+    const dirOp = directive.directive.toUpperCase();
+
+    if (dirOp == "DB" || dirOp == "DEFB") {
+      directive.expressionList.expressions.forEach((expr) => {
+        if (isBinaryExpression(expr)) {
+          const errl = is8BitNumber(expr.left);
+          if (errl) accept("error", errl, { node: expr.left });
+          const errr = is8BitNumber(expr.right);
+          if (errr) accept("error", errr, { node: expr.right });
+        } else {
+          const err = is8BitNumber(expr);
+          if (err) accept("error", err, { node: expr });
+        }
+      });
+    }
+    if (dirOp == "DW" || dirOp == "DEFW") {
+      directive.expressionList.expressions.forEach((expr) => {
+        if (isBinaryExpression(expr)) {
+          const errl = is16BitNumber(expr.left);
+          if (errl) accept("error", errl, { node: expr.left });
+          const errr = is16BitNumber(expr.right);
+          if (errr) accept("error", errr, { node: expr.right });
+        } else {
+          const err = is16BitNumber(expr);
+          if (err) accept("error", err, { node: expr });
+        }
+      });
+    }
+    if (dirOp == "ORG") {
+      const expr = directive.expressionList.expressions[0];
+      const err = is16BitNumber(expr);
+      if (err) accept("error", err, { node: expr });
+    }
   }
   checkInstructionArgs(instruction: Instruction, accept: ValidationAcceptor) {
     const instrName = instruction.opcode.toUpperCase();

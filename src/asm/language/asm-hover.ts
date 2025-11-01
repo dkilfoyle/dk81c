@@ -1,8 +1,9 @@
-import { AstNode, CommentProvider, DocumentationProvider, LangiumDocument } from "langium";
-import { Hover, HoverParams } from "vscode-languageclient";
+import { AstNode, CommentProvider, DocumentationProvider, LangiumDocument, MaybePromise } from "langium";
+import type { Hover, HoverParams } from "vscode-languageserver";
 import { AstNodeHoverProvider, LangiumServices } from "langium/lsp";
-import { isExpression } from "./generated/ast.js";
+import { isExpression, isInstruction } from "./generated/ast.js";
 import { CstUtils } from "langium";
+import { getInfoNodeForAstNode } from "../opcodes-z80.js";
 
 export class AsmHoverProvider extends AstNodeHoverProvider {
   documentationProvider: DocumentationProvider;
@@ -14,11 +15,12 @@ export class AsmHoverProvider extends AstNodeHoverProvider {
     this.commentProvider = services.documentation.CommentProvider;
   }
 
-  override getHoverContent(document: LangiumDocument, params: HoverParams): Promise<Hover | undefined> {
+  override async getHoverContent(document: LangiumDocument, params: HoverParams): Promise<Hover | undefined> {
     const rootNode = document.parseResult?.value?.$cstNode;
     if (rootNode) {
       const offset = document.textDocument.offsetAt(params.position);
       const cstNode = CstUtils.findLeafNodeBeforeOffset(rootNode, offset);
+      console.log("Getting hover for ", cstNode);
 
       // if (isOperation(cstNode?.astNode)) return this.getAstNodeHoverContent(cstNode.astNode);
       if (isExpression(cstNode?.astNode) && cstNode?.astNode.label) {
@@ -29,33 +31,38 @@ export class AsmHoverProvider extends AstNodeHoverProvider {
             return {
               contents: {
                 kind: "markdown",
-                value: comment,
+                language: "asm",
+                value: `${comment}`,
               },
             };
         }
       }
-      if (cstNode && cstNode.offset + cstNode.length > offset) {
-        const targetNode = this.references.findDeclarations(cstNode);
-        if (targetNode) {
-          return this.getAstNodeHoverContent(targetNode[0]);
-        }
+
+      if (isInstruction(cstNode?.astNode)) {
+        return { contents: { kind: "markdown", value: (await this.getAstNodeHoverContent(cstNode?.astNode)) || "?" } };
       }
+
+      // if (cstNode && cstNode.offset + cstNode.length > offset) {
+      //   const targetNode = this.references.findDeclarations(cstNode);
+      //   if (targetNode) {
+      //     return { contents: { kind: "markdown", value: (await this.getAstNodeHoverContent(targetNode[0])) || "?" } };
+      //   }
+      // }
     }
     return undefined;
   }
+  protected getAstNodeHoverContent(node: AstNode): MaybePromise<string | undefined> {
+    if (isInstruction(node)) {
+      // const docInfo = this.documentationProvider.getDocumentation(node);
+      const infoNode = getInfoNodeForAstNode(node);
 
-  protected getAstNodeHoverContent(node: AstNode): Hover | undefined {
-    // if (isOperation(node)) {
-    //   const docInfo = this.documentationProvider.getDocumentation(node);
-    //   if (docInfo) {
-    //     return {
-    //       contents: {
-    //         kind: "markdown",
-    //         value: docInfo,
-    //       },
-    //     };
-    //   }
-    // }
+      if (infoNode) {
+        const sig = infoNode.signatures[0];
+        if (infoNode.leaf) {
+          return [`**${sig.label}**`, "---", sig.documentation, "---", `Bytes: ${infoNode.leaf.bytesTemplate}`].join("  \n");
+        } else return [`**${sig.label}**`, "---", sig.documentation].join("  \n");
+      }
+    }
     return undefined;
   }
 }

@@ -2,10 +2,10 @@ import { AstNode, DefaultWorkspaceManager, LangiumDocument, LangiumDocumentFacto
 import { LangiumSharedServices } from "langium/lsp";
 import { WorkspaceFolder } from "vscode-languageserver";
 import { URI } from "vscode-uri";
-import { assembler } from "../assembler/asm-assembler";
+import { assembler } from "../assembler/asm-assembler8080";
 
 import { runtime8080 } from "../assembler/runtime8080";
-import { os8080 } from "../assembler/os8080";
+import { os8080 } from "../assembler/zx81pre.asm";
 import { stdlib8080 } from "../assembler/stdlib8080";
 
 export class AsmWorkspaceManager extends DefaultWorkspaceManager {
@@ -25,7 +25,7 @@ export class AsmWorkspaceManager extends DefaultWorkspaceManager {
     const runtime = this.documentFactory.fromString(runtime8080, URI.parse("builtin:///runtime8080.asm"));
     assembler.runtime = runtime;
     collector(runtime);
-    // load os 
+    // load os
     const os = this.documentFactory.fromString(os8080, URI.parse("builtin:///os8080.asm"));
     assembler.os = os;
     collector(os);

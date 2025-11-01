@@ -10,6 +10,7 @@ https://weggetjes.nl/jszeddy/jszeddy.html - screen syncing code
 https://github.com/maziac/zx81-bastop - convert basic to p file
 https://www.ticalc.org/archives/files/fileinfo/17/1702.html - zcc 0.96
 https://github.com/tomwhite/zx81-not-only-30-programs - not only 30 programs source
+https://perfectlynormalsite.com/zx81qstart.html - template for assembling z80 asm to p file
 https://langium.org/
 https://github.com/TypeFox/typir
 

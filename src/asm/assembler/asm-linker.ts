@@ -1,5 +1,5 @@
 import { Line, Program } from "../language/generated/ast";
-import { ILabelInfo } from "./asm-assembler";
+import { ILabelInfo } from "./asm-assembler8080";
 
 const usedLines: Set<number> = new Set();
 const alreadyImported: Set<string> = new Set();

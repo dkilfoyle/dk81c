@@ -9,13 +9,13 @@ Line:
     (comment=COMMENT);
 
 Label:
-    name=ID ":";
+    name=ID ":"?;
 
 Instruction:
     opcode=OPCODE expressionList=ExpressionList?;
 
 Directive:
-    name=ID? directive=ASSEMBLER_DIRECTIVE expressionList=ExpressionList;
+    (name=ID ":"?)? directive=ASSEMBLER_DIRECTIVE expressionList=ExpressionList;
 
 ExpressionList:
     expressions+=Expression ("," expressions+=Expression)*;
@@ -32,6 +32,7 @@ Argument infers Expression:
     immediate=NUMBER |
     register=REGISTER |
     label=[Label:ID] |
+    constant=[Directive:ID] |
     dollar="$" |
     string=STRING |
     "(" paren=Expression ")";

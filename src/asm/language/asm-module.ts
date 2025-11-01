@@ -1,4 +1,4 @@
-import { type DeepPartial, type Module, inject } from "langium";
+import { type Module, inject } from "langium";
 import {
   createDefaultModule,
   createDefaultSharedModule,
@@ -10,14 +10,15 @@ import {
 import { AsmGeneratedModule, AsmGeneratedSharedModule } from "./generated/module.js";
 import { AsmValidator, registerValidationChecks } from "./asm-validator.js";
 import { AsmSignatureHelpProvider } from "./asm-signature.js";
-// import { AsmDocumentationProvider } from "./asm-documentation.js";
-// import { AsmHoverProvider } from "./asm-hover.js";
+import { AsmHoverProvider } from "./asm-hover.js";
 import { AsmValueConverter } from "./asm-valueconverter.js";
 // import { AsmFormatter } from "./asm-formatter.js";
 // import { AsmFoldProvider } from "./asm-fold.js";
 import { AsmScopeComputation, AsmScopeProvider } from "./asm-scope.js";
-import { AsmWorkspaceManager } from "./asm-workspace.js";
+// import { AsmWorkspaceManager } from "./asm-workspace.js";
 import { AsmCompletionProvider } from "./asm-completion.js";
+import { AsmDocumentationProvider } from "./asm-documentation.js";
+import { AsmCommentProvider } from "./asm-comment.js";
 // import { AsmCommentProvider } from "./asm-comment.js";
 
 /**
@@ -42,8 +43,8 @@ export type AsmServices = LangiumServices & AsmAddedServices;
  */
 export const AsmModule: Module<AsmServices, PartialLangiumServices & AsmAddedServices> = {
   documentation: {
-    // DocumentationProvider: (services) => new AsmDocumentationProvider(services),
-    // CommentProvider: (services) => new AsmCommentProvider(services),
+    DocumentationProvider: (services) => new AsmDocumentationProvider(services),
+    CommentProvider: (services) => new AsmCommentProvider(services),
   },
   validation: {
     AsmValidator: () => new AsmValidator(),
@@ -52,7 +53,7 @@ export const AsmModule: Module<AsmServices, PartialLangiumServices & AsmAddedSer
     CompletionProvider: (services) => new AsmCompletionProvider(services),
     SignatureHelp: (services) => new AsmSignatureHelpProvider(services),
     // CodeActionProvider: (services) => new JackCodeActionProvider(),
-    // HoverProvider: (services) => new AsmHoverProvider(services),
+    HoverProvider: (services) => new AsmHoverProvider(services),
     // FoldingRangeProvider: () => new AsmFoldProvider(),
     // Formatter: () => new AsmFormatter(),
   },

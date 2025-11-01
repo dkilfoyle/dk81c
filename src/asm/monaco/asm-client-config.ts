@@ -52,6 +52,7 @@ const languageClientConfig: LanguageClientConfig = {
   },
   clientOptions: {
     documentSelector: ["asm"],
+    markdown: { isTrusted: true, supportHtml: true },
     // documentSelector: [
     //   { scheme: "file", language: "asm" },
     //   { scheme: "builtin", language: "asm" },

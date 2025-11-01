@@ -154,6 +154,7 @@ export interface BinaryExpression extends Expression {
 export const BinaryExpression = {
     $type: 'BinaryExpression',
     condition: 'condition',
+    constant: 'constant',
     dollar: 'dollar',
     immediate: 'immediate',
     label: 'label',
@@ -191,6 +192,7 @@ export function isDirective(item: unknown): item is Directive {
 export interface Expression extends langium.AstNode {
     readonly $type: 'BinaryExpression' | 'Expression';
     condition?: JUMPCONDITION;
+    constant?: langium.Reference<Directive>;
     dollar?: '$';
     immediate?: number;
     label?: langium.Reference<Label>;
@@ -202,6 +204,7 @@ export interface Expression extends langium.AstNode {
 export const Expression = {
     $type: 'Expression',
     condition: 'condition',
+    constant: 'constant',
     dollar: 'dollar',
     immediate: 'immediate',
     label: 'label',
@@ -333,6 +336,10 @@ export class AsmAstReflection extends langium.AbstractAstReflection {
                 condition: {
                     name: BinaryExpression.condition
                 },
+                constant: {
+                    name: BinaryExpression.constant,
+                    referenceType: Directive.$type
+                },
                 dollar: {
                     name: BinaryExpression.dollar
                 },
@@ -384,6 +391,10 @@ export class AsmAstReflection extends langium.AbstractAstReflection {
             properties: {
                 condition: {
                     name: Expression.condition
+                },
+                constant: {
+                    name: Expression.constant,
+                    referenceType: Directive.$type
                 },
                 dollar: {
                     name: Expression.dollar

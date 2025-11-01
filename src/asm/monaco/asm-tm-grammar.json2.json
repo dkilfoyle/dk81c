@@ -1,0 +1,208 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "asm",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#mnemonics"
+    },
+    {
+      "include": "#labels"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#includes"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.i8080asm",
+          "begin": ";",
+          "end": "\\n"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.i8080asm",
+          "match": "(?i:(?<=\\s)(?:set|equ|extern|label|forward|port|eval|enum|enumconf|nextenum|r?org|align|(?:de)?phase|shift|binclude|read|end|maxnest|function|(?:end)?struct|(?:end)?section)\\b)"
+        },
+        {
+          "name": "keyword.control.i8080asm",
+          "match": "(?i:(?<=\\s)(?:cpu|segment|save|restore|pushv|popv|macro|endm|exitm|public|global|shared|irpc?|rept|while|switch|(?:else|end)case|d[bdqstw])\\b)"
+        },
+        {
+          "name": "keyword.control.i8080asm",
+          "match": "(?i:(?<=\\s)(?:assert|fatal|error|warning|message|display|title|prtit|prtexit|fail)\\b)"
+        },
+        {
+          "name": "keyword.control.i8080asm",
+          "match": "(?i:(?<=\\s)(?:page|newpage|radix|outradix|encoding|charset|codepage|macexp_(?:dft|ovr)|listing)\\b)"
+        },
+        {
+          "name": "keyword.control.i8080asm",
+          "match": "(?i:(?<=\\s)(?:if|ifn?def|ifn?used|ifn?exist|ifn?b|else|elseif|endif)\\b)"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.single.i8080asm",
+          "begin": "'",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.i8080asm"
+            }
+          },
+          "end": "(\\')|((?:[^\\\\\\n])$)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.string.end.i8080asm"
+            },
+            "2": {
+              "name": "invalid.illegal.newline.i8080asm"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#string-character-escape"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.double.i8080asm",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.i8080asm"
+            }
+          },
+          "end": "(\")|((?:[^\\\\\\n])$)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.string.end.i8080asm"
+            },
+            "2": {
+              "name": "invalid.illegal.newline.i8080asm"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#string-character-escape"
+            }
+          ]
+        }
+      ]
+    },
+    "string-character-escape": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.i8080asm",
+          "match": "\\\\(x[0-9A-Fa-f]{2}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.|$)"
+        }
+      ]
+    },
+    "mnemonics": {
+      "patterns": [
+        {
+          "name": "support.type.flag.z80asm",
+          "match": "\\b(?i:cpu)(?:\\s+(?i:(8080|8085UNDOC)))\\b",
+          "captures": {
+            "1": {
+              "name": "keyword.mnemonic.z80asm"
+            },
+            "2": {
+              "name": "support.type.flag.z80asm"
+            }
+          }
+        },
+        {
+          "name": "support.type.flag.z80asm",
+          "match": "\\b(?i:(?:(?:no)?(?:expand|expif|expmacro|export|intlabel|globalsymbols)))\\b"
+        },
+        {
+          "name": "keyword.mnemonic.i8080asm",
+          "match": "\\b(?i:adc|add|and|bit|call|ccf|cp|cpl|cpd|cpdr|cpi|cpir|daa|dec|di|djnz|ei|ex|exx|halt|im|in|inc|ind|indr|inf|ini|inir|jp|jr|ld|ldd|lddr|ldi|ldir|neg|nop|exx|or|otdr|otir|out|outd|outi|pop|push|res|ret|reti|retn|rl|rla|rlc|rlca|rld|rr|rra|rrc|rrca|rrd|rst|sbc|scf|set|sla|sli|sll|sra|srl|sub|xor)\\b"
+        },
+        {
+          "name": "support.type.register.z80asm",
+          "match": "\\b(?i:[abcdehlm]|sp|psw)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "invalid",
+          "match": "^\\{5}"
+        },
+        {
+          "name": "constant.numeric.integer.hexadecimal.i8080asm",
+          "match": "\\$[0-9a-fA-F]+(?!:)\\b"
+        },
+        {
+          "name": "constant.numeric.integer.hexadecimal.i8080asm",
+          "match": "(\\-?[0-9a-fA-F]+[hH])\\b"
+        },
+        {
+          "name": "constant.numeric.integer.binary.i8080asm",
+          "match": "%[01]+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.binary.i8080asm",
+          "match": "\\b[01]+[bB]\\b"
+        },
+        {
+          "name": "constant.numeric.integer.decimal.i8080asm",
+          "match": "\\-?\\d+"
+        }
+      ]
+    },
+    "includes": {
+      "patterns": [
+        {
+          "match": "(?i:(?<=\\s)(include)\\s+(([\"'])(?:[^\\3]+)\\3))",
+          "captures": {
+            "1": {
+              "name": "keyword.control.i8080asm"
+            },
+            "2": {
+              "name": "string.modifier.import.i8080asm"
+            }
+          }
+        }
+      ]
+    },
+    "labels": {
+      "patterns": [
+        {
+          "match": "^\\@?((\\$(?!\\.))?[\\w\\.]+)::?(?=\\s)",
+          "captures": {
+            "1": {
+              "name": "entity.name.function.i8080asm"
+            }
+          }
+        },
+        {
+          "match": "\\b([a-zA-Z][\\w\\.]+)\\b",
+          "name": "variable.parameter.label.i8080asm"
+        }
+      ]
+    }
+  },
+  "scopeName": "source.asm"
+}

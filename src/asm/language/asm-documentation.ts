@@ -1,6 +1,6 @@
 import { AstNode, CommentProvider, DocumentationProvider, IndexManager, LangiumCoreServices } from "langium";
 import { isInstruction } from "./generated/ast.js";
-import { operationInfo } from "../opcodes.js";
+import { getInfoNodeForAstNode } from "../opcodes-z80.js";
 
 export class AsmDocumentationProvider implements DocumentationProvider {
   protected readonly indexManager: IndexManager;
@@ -13,29 +13,9 @@ export class AsmDocumentationProvider implements DocumentationProvider {
 
   getDocumentation(node: AstNode) {
     if (isInstruction(node)) {
-      const info = operationInfo[node.opcode.toUpperCase()];
-      if (!info) return "";
-
-      let help = node.opcode.toUpperCase();
-      if (info.arg1) help += " " + info.arg1;
-      if (info.arg2) help += ", " + info.arg2;
-      help += "\n\n";
-      help += info.help;
-      if (info.code) help += `\n\n${info.code}`;
-      return help;
+      const infoNode = getInfoNodeForAstNode(node);
+      if (!infoNode) return `Unable to find documentation for node "${node.$cstNode!.text}"`;
+      return (infoNode.signatures[0].documentation as string) || `No signature for "${node.$cstNode!.text}"`;
     }
-    // } else if (isOperation(node)) {
-    //   const info = operationInfo[node.opname.toUpperCase()];
-    //   if (!info) return "";
-
-    //   let help = node.opname.toUpperCase();
-    //   if (info.arg1) help += " " + info.arg1;
-    //   if (info.arg2) help += ", " + info.arg2;
-    //   help += "\n\n";
-    //   help += info.help;
-    //   if (info.code) help += `\n\n${info.code}`;
-    //   return help;
-    // }
-    return "";
   }
 }

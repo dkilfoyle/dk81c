@@ -74,7 +74,7 @@ _Y				EQU $3E
 _Z				EQU $3F
 
                 ORG 16393
-
+                
 ; System variables live here
 VERSN:          DEFB 0
 E_PPC:          DEFW 2
@@ -116,13 +116,6 @@ Line1:          DEFB $00,$00
 Line1Text:      DEFB $ea     										; REM
 
 ; YOUR CODE HERE
-                LD A,1      ; start with 1
-loop:                       ; label used for jump
-                RST $10     ; PRINT
-                INC A       ; increment A
-                CP 36       ; stop at 36
-                JP NZ,loop  ; if not 36, then goto/jump to LOOP
-                RET         ; Return to BASIC
 
 ; Line 2 RAND USR 16514			
 								DEFB $76                        ; Newline at end of Line 1 REM 	
