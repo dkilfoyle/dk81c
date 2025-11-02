@@ -47,7 +47,8 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
       };
     } else {
       for (let i = 0; i < args.length; i++) {
-        const argi = instrName == "RST" ? "$N" : args[i];
+        // const argi = instrName.toUpperCase() == "RST" ? "$N" : args[i];
+        const argi = args[i];
         curNode = curNode.args.get(argi) || curNode.args.set(argi, newOpcodesNode(instrName + " " + args.slice(i).join(","))).get(argi)!;
         curNode.signatures.push(SignatureInformation.create(title, def.doc, ...params));
         curNode.codes.push(code);
@@ -72,8 +73,10 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
 export const getInfoNodeForAstNode = (instrAstNode: Instruction) => {
   const emptyNode: IOpcodesNode = { args: new Map().set("Error", {}), codes: [], signatures: [] };
   const getInfoArgNode = (parentNode: IOpcodesNode, expr: Expression) => {
-    if (expr.immediate)
+    if (expr.immediate) {
+      if (instrAstNode.opcode == "RST") return parentNode.args.get(`$${expr.immediate.toString(16)}`);
       return parentNode.args.get("$N") || parentNode.args.get("$NN") || parentNode.args.get("$E") || parentNode.args.get("$D");
+    }
     if (expr.paren && (expr.paren.immediate || expr.paren.label)) return parentNode.args.get("($NN)");
     if (expr.label) return parentNode.args.get("$NN");
     return parentNode.args.get(expr.$cstNode!.text);

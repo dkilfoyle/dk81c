@@ -1,5 +1,5 @@
 import type { ValidationAcceptor, ValidationChecks } from "langium";
-import { type AsmAstType, Directive, Expression, Instruction, isBinaryExpression, Label } from "./generated/ast.js";
+import { type AsmAstType, Directive, Expression, Instruction, isBinaryExpression, Label, Line } from "./generated/ast.js";
 import type { AsmServices } from "./asm-module.js";
 import { userPreferences } from "./asm-userpreferences.js";
 import { IOpcodesNode, opcodesLookup } from "../opcodes-z80.js";
@@ -13,6 +13,7 @@ export function registerValidationChecks(services: AsmServices) {
   const registry = services.validation.ValidationRegistry;
   const validator = services.validation.AsmValidator;
   const checks: ValidationChecks<AsmAstType> = {
+    Line: validator.checkValidEqu,
     Label: validator.checkLabelSize,
     Instruction: validator.checkInstructionArgs,
     Directive: validator.checkDirectiveArgs,
@@ -24,6 +25,10 @@ export function registerValidationChecks(services: AsmServices) {
  * Implementation of custom validations.
  */
 export class AsmValidator {
+  checkValidEqu(line: Line, accept: ValidationAcceptor): void {
+    if (line.directive?.directive.toUpperCase() == "EQU" && line.label == undefined)
+      accept("warning", `EQU has no lhs label`, { node: line.directive });
+  }
   checkLabelSize(label: Label, accept: ValidationAcceptor): void {
     if (label.name.length > userPreferences.syntax.maxLabelSize)
       accept("warning", `Label longer than recommended length (${userPreferences.syntax.maxLabelSize})`, { node: label, property: "name" });
@@ -32,13 +37,13 @@ export class AsmValidator {
     const is8BitNumber = (expr: Expression) => {
       if (expr.immediate != undefined) {
         if (expr.immediate > 0xff) return "Out of range";
-      } else if (expr.constant != undefined) return;
+      } else if (expr.label != undefined) return;
       else return "Not a byte";
     };
     const is16BitNumber = (expr: Expression) => {
       if (expr.immediate != undefined) {
         if (expr.immediate > 0xffff) return "Out of range";
-      } else if (expr.constant != undefined || expr.label != undefined) return;
+      } else if (expr.label != undefined) return;
       else return "Not a word";
     };
 
@@ -78,6 +83,25 @@ export class AsmValidator {
   }
   checkInstructionArgs(instruction: Instruction, accept: ValidationAcceptor) {
     const instrName = instruction.opcode.toUpperCase();
+
+    if (instrName == "RST") {
+      if (!instruction.expressionList) return accept("error", "RST expects $00, $08, $10, $18, $20, $28, $30, $38", { node: instruction });
+      const rstValue = instruction.expressionList.expressions[0].immediate?.toString(16).padStart(2, "0");
+      if (rstValue == undefined)
+        return accept("error", "RST expects $00, $08, $10, $18, $20, $28, $30, $38", {
+          node: instruction.expressionList,
+          property: "expressions",
+          index: 0,
+        });
+      if (["00", "08", "10", "18", "20", "28", "30", "$8"].includes(rstValue) == false)
+        return accept("error", "RST expects $00, $08, $10, $18, $20, $28, $30, $38", {
+          node: instruction.expressionList,
+          property: "expressions",
+          index: 0,
+        });
+      return;
+    }
+
     const args = (instruction.expressionList?.expressions || []).map((expr) => {
       const toArgTemplate = (expr: Expression): string => {
         if (isBinaryExpression(expr)) {

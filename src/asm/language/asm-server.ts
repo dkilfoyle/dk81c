@@ -2,6 +2,8 @@ import { DocumentState, EmptyFileSystem } from "langium";
 import { startLanguageServer } from "langium/lsp";
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from "vscode-languageserver/browser.js";
 import { createAsmServices } from "./asm-module.js";
+import { assembler } from "../assembler/asm-assembler.js";
+// import { assembler } from "../assembler/asm-assembler.js";
 // import { assembler } from "../../assembler/asm-assembler.js";
 // import type { ILinkerInfo } from "../../assembler/asm-linker.js";
 // import { userPreferences } from "../asm-userpreferences.js";
@@ -86,9 +88,10 @@ startLanguageServer(shared);
 
 shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, (documents) => {
   for (const document of documents) {
-    // console.log("On build phase", document);
-    // if (document.diagnostics?.length != 0) console.log("HAS ERRORS");
+    console.log("On build phase", document);
+    if (document.diagnostics?.length != 0) console.log("HAS ERRORS");
     if (document.diagnostics?.length == 0) {
+      assembler.compileAsmToPFile(document);
       // debouncedSendAsmDocumentChange(document);
       // sendAsmDocumentChange(document);
     }
