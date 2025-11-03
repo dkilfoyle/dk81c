@@ -8,6 +8,7 @@ import { LanguageClientsManager, LanguageClientWrapper } from "monaco-languagecl
 import { EditorApp } from "monaco-languageclient/editorApp";
 import { vscodeApiConfig } from "./vscodeApiConfig";
 import { asmClientConfig } from "@/asm/monaco/asm-client-config";
+import { getSelectBoxStyles } from "@codingame/monaco-vscode-api/vscode/vs/platform/theme/browser/defaultStyles";
 
 const sourceCodes = import.meta.glob("../../asm/examples/**/*.asm", { as: "raw" });
 
@@ -15,12 +16,17 @@ export const AsmEditing = ({ zxworker }: { zxworker: React.RefObject<Worker | nu
   const asmWrapperRef = useRef<LanguageClientWrapper | null>(null);
   const editorAppRef = useRef<EditorApp | null>(null);
   const [source, setSource] = useState("scratch.asm");
+  const [bytes, setBytes] = useState<Uint8Array>(new Uint8Array());
 
   const clickLoad = useCallback(() => {
-    if (asmWrapperRef.current) {
-      asmWrapperRef.current.getLanguageClient()?.sendNotification("client/pfile_req", { filename: "workspace/source.asm" });
+    // if (asmWrapperRef.current) {
+    //   asmWrapperRef.current.getLanguageClient()?.sendNotification("client/pfile_req", { filename: "workspace/source.asm" });
+    // }
+    console.log(bytes.length);
+    if (bytes.length > 0) {
+      zxworker.current?.postMessage({ msg: "load_pfile", msgData: bytes });
     }
-  }, [asmWrapperRef]);
+  }, [bytes, zxworker]);
 
   const onLanguageClientsLoad = useCallback(
     (lcsManager?: LanguageClientsManager) => {
@@ -29,8 +35,9 @@ export const AsmEditing = ({ zxworker }: { zxworker: React.RefObject<Worker | nu
       asmWrapperRef.current = wrapper;
       const lc = wrapper.getLanguageClient();
       if (!lc) throw Error("asm !lc");
-      lc.onNotification("server/documentChange", ({ ast }) => {
+      lc.onNotification("server/AsmDocumentChange", ({ ast, bytes }) => {
         console.log("app received notification server/documentChange", JSON.parse(ast));
+        setBytes(bytes);
       });
       lc.onNotification("server/pfile_resp", (pfile: PFile) => {
         console.log("app received notification server/pfile_resp", pfile, zxworker);

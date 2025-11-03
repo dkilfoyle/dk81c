@@ -49,6 +49,14 @@ class Assembler {
           .join(" ")
       );
     }
+
+    return {
+      labels: Object.entries(this.labels).reduce<Record<string, number>>((accum, cur) => {
+        accum[cur[0]] = cur[1].value!;
+        return accum;
+      }, {}),
+      bytes: new Uint8Array(this.machineCode),
+    };
   }
 
   firstPass(root: Program) {

@@ -1,7 +1,7 @@
-import { DocumentState, EmptyFileSystem } from "langium";
+import { AstNode, DocumentState, EmptyFileSystem, LangiumDocument } from "langium";
 import { startLanguageServer } from "langium/lsp";
-import { BrowserMessageReader, BrowserMessageWriter, createConnection } from "vscode-languageserver/browser.js";
-import { createAsmServices } from "./asm-module.js";
+import { BrowserMessageReader, BrowserMessageWriter, createConnection, NotificationType } from "vscode-languageserver/browser.js";
+import { createAsmServices, labelMap } from "./asm-module.js";
 import { assembler } from "../assembler/asm-assembler.js";
 // import { assembler } from "../assembler/asm-assembler.js";
 // import { assembler } from "../../assembler/asm-assembler.js";
@@ -39,12 +39,12 @@ startLanguageServer(shared);
 //   shared.workspace.LangiumDocumentFactory.fromString(params.text, URI.file(params.uri));
 // });
 
-// export type AsmDocumentChange = {
-//   uri: string;
-//   ast: string;
-//   machineCode: Uint8Array;
-//   linkerInfo: ILinkerInfo;
-// };
+export type AsmDocumentChange = {
+  uri: string;
+  ast: string;
+  bytes: Uint8Array;
+  labels: Record<string, number>;
+};
 
 // // const debounce = (fn: Function, ms = 300) => {
 // //   let timeoutId: ReturnType<typeof setTimeout>;
@@ -54,45 +54,46 @@ startLanguageServer(shared);
 // //   };
 // // };
 
-// // const debounce = <T extends unknown[]>(callback: (...args: T) => void, delay: number) => {
-// //   let timeoutTimer: ReturnType<typeof setTimeout>;
+const debounce = <T extends unknown[]>(callback: (...args: T) => void, delay: number) => {
+  let timeoutTimer: ReturnType<typeof setTimeout>;
 
-// //   return (...args: T) => {
-// //     clearTimeout(timeoutTimer);
+  return (...args: T) => {
+    clearTimeout(timeoutTimer);
 
-// //     timeoutTimer = setTimeout(() => {
-// //       callback(...args);
-// //     }, delay);
-// //   };
-// // };
+    timeoutTimer = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+};
 
-// const sendAsmDocumentChange = (document: LangiumDocument<AstNode>) => {
-//   if (status.isDebugging) return;
-//   const { bytes, linkerInfo } = assembler.assembleAndLink([document], document.textDocument.getText().startsWith("; SmallC") == false);
+const sendAsmDocumentChange = (document: LangiumDocument<AstNode>) => {
+  const { labels, bytes } = assembler.compileAsmToPFile(document);
+  labelMap.clear();
+  Object.entries(labels).forEach((l) => labelMap.set(l[0], l[1]));
 
-//   const json = Asm.serializer.JsonSerializer.serialize(document.parseResult.value, {
-//     sourceText: false,
-//     textRegions: true,
-//     refText: true,
-//   });
-//   const documentChangeNotification = new NotificationType<AsmDocumentChange>("browser/AsmDocumentChange");
-//   connection.sendNotification(documentChangeNotification, {
-//     uri: document.uri.toString(),
-//     ast: json,
-//     machineCode: bytes,
-//     linkerInfo: linkerInfo,
-//   });
-// };
+  const json = Asm.serializer.JsonSerializer.serialize(document.parseResult.value, {
+    sourceText: false,
+    textRegions: true,
+    refText: true,
+  });
+  const documentChangeNotification = new NotificationType<AsmDocumentChange>("server/AsmDocumentChange");
+  connection.sendNotification(documentChangeNotification, {
+    uri: document.uri.toString(),
+    ast: json,
+    bytes,
+    labels,
+  });
+};
 
-// // const debouncedSendAsmDocumentChange = debounce(sendAsmDocumentChange, 1000);
+const debouncedSendAsmDocumentChange = debounce(sendAsmDocumentChange, 1000);
 
 shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, (documents) => {
   for (const document of documents) {
     console.log("On build phase", document);
     if (document.diagnostics?.length != 0) console.log("HAS ERRORS");
     if (document.diagnostics?.length == 0) {
-      assembler.compileAsmToPFile(document);
-      // debouncedSendAsmDocumentChange(document);
+      // assembler.compileAsmToPFile(document);
+      debouncedSendAsmDocumentChange(document);
       // sendAsmDocumentChange(document);
     }
   }

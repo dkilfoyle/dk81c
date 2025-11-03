@@ -74,7 +74,7 @@ export const getInfoNodeForAstNode = (instrAstNode: Instruction) => {
   const emptyNode: IOpcodesNode = { args: new Map().set("Error", {}), codes: [], signatures: [] };
   const getInfoArgNode = (parentNode: IOpcodesNode, expr: Expression) => {
     if (expr.immediate) {
-      if (instrAstNode.opcode == "RST") return parentNode.args.get(`$${expr.immediate.toString(16)}`);
+      if (instrAstNode.opcode == "RST") return parentNode.args.get(`0X${expr.immediate.toString(16).padStart(2, "0")}`);
       return parentNode.args.get("$N") || parentNode.args.get("$NN") || parentNode.args.get("$E") || parentNode.args.get("$D");
     }
     if (expr.paren && (expr.paren.immediate || expr.paren.label)) return parentNode.args.get("($NN)");

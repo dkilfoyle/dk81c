@@ -21,6 +21,8 @@ import { AsmDocumentationProvider } from "./asm-documentation.js";
 import { AsmCommentProvider } from "./asm-comment.js";
 // import { AsmCommentProvider } from "./asm-comment.js";
 
+export const labelMap = new Map<string, number>();
+
 /**
  * Declaration of custom services - add your own service classes here.
  */

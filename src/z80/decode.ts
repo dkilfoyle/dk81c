@@ -3434,7 +3434,7 @@ opcodes.set(0xc6, {
 // {n:199, x:3, y:0, z:7, p:0, q:0}
 // RST $Y*8
 opcodes.set(0xc7, {
-  name: "RST $00",
+  name: "RST 0X00",
   template: "RST $Y*8",
   bytes: "c7",
   group: "Control Flow",
@@ -3453,7 +3453,7 @@ opcodes.set(0xc7, {
     z80.regs.sp = dec16(z80.regs.sp);
     z80.abus = z80.regs.sp;
     z80.writeByte(z80.abus, z80.dbus);
-    z80.regs.wz = $00;
+    z80.regs.wz = 0x00;
     z80.regs.pc = z80.regs.wz;
   },
 });
@@ -3643,7 +3643,7 @@ opcodes.set(0xce, {
 // {n:207, x:3, y:1, z:7, p:0, q:1}
 // RST $Y*8
 opcodes.set(0xcf, {
-  name: "RST $08",
+  name: "RST 0X08",
   template: "RST $Y*8",
   bytes: "cf",
   group: "Control Flow",
@@ -3662,7 +3662,7 @@ opcodes.set(0xcf, {
     z80.regs.sp = dec16(z80.regs.sp);
     z80.abus = z80.regs.sp;
     z80.writeByte(z80.abus, z80.dbus);
-    z80.regs.wz = $08;
+    z80.regs.wz = 0x08;
     z80.regs.pc = z80.regs.wz;
   },
 });
@@ -3852,7 +3852,7 @@ opcodes.set(0xd6, {
 // {n:215, x:3, y:2, z:7, p:1, q:0}
 // RST $Y*8
 opcodes.set(0xd7, {
-  name: "RST $10",
+  name: "RST 0X10",
   template: "RST $Y*8",
   bytes: "d7",
   group: "Control Flow",
@@ -3871,7 +3871,7 @@ opcodes.set(0xd7, {
     z80.regs.sp = dec16(z80.regs.sp);
     z80.abus = z80.regs.sp;
     z80.writeByte(z80.abus, z80.dbus);
-    z80.regs.wz = $10;
+    z80.regs.wz = 0x10;
     z80.regs.pc = z80.regs.wz;
   },
 });
@@ -4041,7 +4041,7 @@ opcodes.set(0xde, {
 // {n:223, x:3, y:3, z:7, p:1, q:1}
 // RST $Y*8
 opcodes.set(0xdf, {
-  name: "RST $18",
+  name: "RST 0X18",
   template: "RST $Y*8",
   bytes: "df",
   group: "Control Flow",
@@ -4060,7 +4060,7 @@ opcodes.set(0xdf, {
     z80.regs.sp = dec16(z80.regs.sp);
     z80.abus = z80.regs.sp;
     z80.writeByte(z80.abus, z80.dbus);
-    z80.regs.wz = $18;
+    z80.regs.wz = 0x18;
     z80.regs.pc = z80.regs.wz;
   },
 });
@@ -4258,7 +4258,7 @@ opcodes.set(0xe6, {
 // {n:231, x:3, y:4, z:7, p:2, q:0}
 // RST $Y*8
 opcodes.set(0xe7, {
-  name: "RST $20",
+  name: "RST 0X20",
   template: "RST $Y*8",
   bytes: "e7",
   group: "Control Flow",
@@ -4277,7 +4277,7 @@ opcodes.set(0xe7, {
     z80.regs.sp = dec16(z80.regs.sp);
     z80.abus = z80.regs.sp;
     z80.writeByte(z80.abus, z80.dbus);
-    z80.regs.wz = $20;
+    z80.regs.wz = 0x20;
     z80.regs.pc = z80.regs.wz;
   },
 });
@@ -4438,7 +4438,7 @@ opcodes.set(0xee, {
 // {n:239, x:3, y:5, z:7, p:2, q:1}
 // RST $Y*8
 opcodes.set(0xef, {
-  name: "RST $28",
+  name: "RST 0X28",
   template: "RST $Y*8",
   bytes: "ef",
   group: "Control Flow",
@@ -4457,7 +4457,7 @@ opcodes.set(0xef, {
     z80.regs.sp = dec16(z80.regs.sp);
     z80.abus = z80.regs.sp;
     z80.writeByte(z80.abus, z80.dbus);
-    z80.regs.wz = $28;
+    z80.regs.wz = 0x28;
     z80.regs.pc = z80.regs.wz;
   },
 });
@@ -4639,7 +4639,7 @@ opcodes.set(0xf6, {
 // {n:247, x:3, y:6, z:7, p:3, q:0}
 // RST $Y*8
 opcodes.set(0xf7, {
-  name: "RST $30",
+  name: "RST 0X30",
   template: "RST $Y*8",
   bytes: "f7",
   group: "Control Flow",
@@ -4658,7 +4658,7 @@ opcodes.set(0xf7, {
     z80.regs.sp = dec16(z80.regs.sp);
     z80.abus = z80.regs.sp;
     z80.writeByte(z80.abus, z80.dbus);
-    z80.regs.wz = $30;
+    z80.regs.wz = 0x30;
     z80.regs.pc = z80.regs.wz;
   },
 });
@@ -4821,7 +4821,7 @@ opcodes.set(0xfe, {
 // {n:255, x:3, y:7, z:7, p:3, q:1}
 // RST $Y*8
 opcodes.set(0xff, {
-  name: "RST $38",
+  name: "RST 0X38",
   template: "RST $Y*8",
   bytes: "ff",
   group: "Control Flow",
@@ -4840,7 +4840,7 @@ opcodes.set(0xff, {
     z80.regs.sp = dec16(z80.regs.sp);
     z80.abus = z80.regs.sp;
     z80.writeByte(z80.abus, z80.dbus);
-    z80.regs.wz = $38;
+    z80.regs.wz = 0x38;
     z80.regs.pc = z80.regs.wz;
   },
 });

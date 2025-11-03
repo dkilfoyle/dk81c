@@ -1,9 +1,10 @@
 import { AstNode, CommentProvider, DocumentationProvider, LangiumDocument, MaybePromise } from "langium";
 import type { Hover, HoverParams } from "vscode-languageserver";
 import { AstNodeHoverProvider, LangiumServices } from "langium/lsp";
-import { isExpression, isInstruction } from "./generated/ast.js";
+import { isExpression, isInstruction, isLabel } from "./generated/ast.js";
 import { CstUtils } from "langium";
 import { getInfoNodeForAstNode } from "../opcodes-z80.js";
+import { labelMap } from "./asm-module.js";
 
 export class AsmHoverProvider extends AstNodeHoverProvider {
   documentationProvider: DocumentationProvider;
@@ -20,7 +21,7 @@ export class AsmHoverProvider extends AstNodeHoverProvider {
     if (rootNode) {
       const offset = document.textDocument.offsetAt(params.position);
       const cstNode = CstUtils.findLeafNodeBeforeOffset(rootNode, offset);
-      console.log("Getting hover for ", cstNode);
+      // console.log("Getting hover for ", cstNode);
 
       // if (isOperation(cstNode?.astNode)) return this.getAstNodeHoverContent(cstNode.astNode);
       if (isExpression(cstNode?.astNode) && cstNode?.astNode.label) {
@@ -38,7 +39,7 @@ export class AsmHoverProvider extends AstNodeHoverProvider {
         }
       }
 
-      if (isInstruction(cstNode?.astNode)) {
+      if (isInstruction(cstNode?.astNode) || isLabel(cstNode?.astNode)) {
         return { contents: { kind: "markdown", value: (await this.getAstNodeHoverContent(cstNode?.astNode)) || "?" } };
       }
 
@@ -62,6 +63,12 @@ export class AsmHoverProvider extends AstNodeHoverProvider {
           return [`**${sig.label}**`, "---", sig.documentation, "---", `Bytes: ${infoNode.leaf.bytesTemplate}`].join("  \n");
         } else return [`**${sig.label}**`, "---", sig.documentation].join("  \n");
       }
+    }
+
+    if (isLabel(node)) {
+      const val = labelMap.get(node.name);
+      return [`**${node.name}**`, "---", `Dec: ${val}`, "", `Hex: ${val?.toString(16)}`].join(" \n");
+      // return [`**${node.name}**`].join(" \n");
     }
     return undefined;
   }

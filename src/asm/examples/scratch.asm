@@ -126,7 +126,7 @@ loop:                       ; label used for jump
 
 ; Line 2 RAND USR 16514			
 								DEFB $76                        ; Newline at end of Line 1 REM 	
-Line2:					DEFB $00,$0a,$0e								; Line 10, 14 bytes long
+Line2:					DEFB $00,$0a,$0e,$00						; Line 10, 14 bytes long
 					    	DEFB $F9,$D4                    ; RAND USR
 								DEFB $1D,$22,$21,$1D,$20        ; 16514                
                 DEFB $7E                        ; Number
