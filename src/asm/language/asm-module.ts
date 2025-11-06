@@ -1,4 +1,4 @@
-import { type Module, inject } from "langium";
+import { DeepPartial, type Module, inject } from "langium";
 import {
   createDefaultModule,
   createDefaultSharedModule,
@@ -12,13 +12,13 @@ import { AsmValidator, registerValidationChecks } from "./asm-validator.js";
 import { AsmSignatureHelpProvider } from "./asm-signature.js";
 import { AsmHoverProvider } from "./asm-hover.js";
 import { AsmValueConverter } from "./asm-valueconverter.js";
-// import { AsmFormatter } from "./asm-formatter.js";
-// import { AsmFoldProvider } from "./asm-fold.js";
 import { AsmScopeComputation, AsmScopeProvider } from "./asm-scope.js";
-// import { AsmWorkspaceManager } from "./asm-workspace.js";
 import { AsmCompletionProvider } from "./asm-completion.js";
 import { AsmDocumentationProvider } from "./asm-documentation.js";
 import { AsmCommentProvider } from "./asm-comment.js";
+import { AsmWorkspaceManager } from "./asm-workspace.js";
+// import { AsmFormatter } from "./asm-formatter.js";
+// import { AsmFoldProvider } from "./asm-fold.js";
 // import { AsmCommentProvider } from "./asm-comment.js";
 
 export const labelMap = new Map<string, number>();
@@ -70,11 +70,11 @@ export const AsmModule: Module<AsmServices, PartialLangiumServices & AsmAddedSer
 
 export type AsmSharedServices = LangiumSharedServices;
 
-// export const AsmSharedModule: Module<AsmSharedServices, DeepPartial<AsmSharedServices>> = {
-//   workspace: {
-//     WorkspaceManager: (services) => new AsmWorkspaceManager(services),
-//   },
-// };
+export const AsmSharedModule: Module<AsmSharedServices, DeepPartial<AsmSharedServices>> = {
+  workspace: {
+    WorkspaceManager: (services) => new AsmWorkspaceManager(services),
+  },
+};
 
 /**
  * Create the full set of services required by Langium.
@@ -95,7 +95,7 @@ export function createAsmServices(context: DefaultSharedModuleContext): {
   shared: LangiumSharedServices;
   Asm: AsmServices;
 } {
-  const shared = inject(createDefaultSharedModule(context), AsmGeneratedSharedModule); //, AsmSharedModule);
+  const shared = inject(createDefaultSharedModule(context), AsmGeneratedSharedModule, AsmSharedModule);
   const Asm = inject(createDefaultModule({ shared }), AsmGeneratedModule, AsmModule);
   shared.ServiceRegistry.register(Asm);
   registerValidationChecks(Asm);

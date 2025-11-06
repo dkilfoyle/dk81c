@@ -29,11 +29,20 @@ export class AsmCompletionProvider extends DefaultCompletionProvider {
 
   getContext(document: LangiumDocument, position: Position) {
     const textDocument = document.textDocument;
-    const offset = textDocument.offsetAt(position);
+    let offset = textDocument.offsetAt(position);
     const cst = document.parseResult.value.$cstNode;
     if (!cst) {
       return;
     }
+
+    const charBefore = textDocument.getText({ start: { character: position.character - 1, line: position.line }, end: position });
+
+    // const leafBeforeOffset = CstUtils.findLeafNodeBeforeOffset(cst, offset)?.astNode;
+    // const leafAtOffset = CstUtils.findLeafNodeAtOffset(cst, offset)?.astNode;
+    // const declAtOffset = CstUtils.findDeclarationNodeAtOffset(cst, offset)?.astNode;
+    // console.log({ leafAtOffset, leafBeforeOffset, declAtOffset, charBefore });
+    if (charBefore == " ") offset -= 1; // eg call ^
+
     return CstUtils.findLeafNodeBeforeOffset(cst, offset)?.astNode;
   }
 

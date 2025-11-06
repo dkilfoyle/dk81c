@@ -8,7 +8,6 @@ import { LanguageClientsManager, LanguageClientWrapper } from "monaco-languagecl
 import { EditorApp } from "monaco-languageclient/editorApp";
 import { vscodeApiConfig } from "./vscodeApiConfig";
 import { asmClientConfig } from "@/asm/monaco/asm-client-config";
-import { getSelectBoxStyles } from "@codingame/monaco-vscode-api/vscode/vs/platform/theme/browser/defaultStyles";
 
 const sourceCodes = import.meta.glob("../../asm/examples/**/*.asm", { as: "raw" });
 

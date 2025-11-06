@@ -19,6 +19,8 @@ class Assembler {
   startOffset: number = 0;
   lineAddressMap: Record<number, { start: number; size: number }> = {};
   curAddr = 0;
+  startasm: LangiumDocument<AstNode> | null = null;
+  endasm: LangiumDocument<AstNode> | null = null;
 
   constructor() {}
   reset() {
@@ -29,9 +31,14 @@ class Assembler {
   }
 
   compileAsmToPFile(doc: LangiumDocument<AstNode>) {
+    if (doc.diagnostics?.length != 0) throw Error();
     const root = doc.parseResult.value;
     this.reset();
+    if (!isProgram(this.startasm?.parseResult.value)) throw Error("invalid start asm");
+    if (!isProgram(this.endasm?.parseResult.value)) throw Error("invalid end asm");
     if (isProgram(root)) {
+      root.lines.unshift(...this.startasm.parseResult.value.lines);
+      root.lines.push(...this.endasm.parseResult.value.lines);
       this.firstPass(root);
       this.secondPass(root);
     } else throw Error();
@@ -41,14 +48,14 @@ class Assembler {
         .map((x) => `${x[0]}: ${x[1].value}`)
     );
 
-    for (let rowStart = 0; rowStart < this.machineCode.length; rowStart += 16) {
-      console.log(
-        this.machineCode
-          .slice(rowStart, rowStart + 16)
-          .map((x) => x.toString(16).padStart(2, "0"))
-          .join(" ")
-      );
-    }
+    // for (let rowStart = 0; rowStart < this.machineCode.length; rowStart += 16) {
+    //   console.log(
+    //     this.machineCode
+    //       .slice(rowStart, rowStart + 16)
+    //       .map((x) => x.toString(16).padStart(2, "0"))
+    //       .join(" ")
+    //   );
+    // }
 
     return {
       labels: Object.entries(this.labels).reduce<Record<string, number>>((accum, cur) => {

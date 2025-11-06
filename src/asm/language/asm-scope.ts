@@ -1,6 +1,8 @@
 import type { AstNode, AstNodeDescription, LangiumDocument, Scope } from "langium";
 import { DefaultScopeComputation, DefaultScopeProvider, MultiMap } from "langium";
 import { AsmServices } from "./asm-module.js";
+import { CancellationToken } from "vscode-jsonrpc";
+import { Program } from "./generated/ast.js";
 
 export class AsmScopeProvider extends DefaultScopeProvider {
   override createScope(elements: Iterable<AstNodeDescription>, outerScope?: Scope): Scope {
@@ -21,6 +23,15 @@ export class AsmScopeComputation extends DefaultScopeComputation {
         symbols.add(container, this.descriptions.createDescription(node, name, document));
       }
     }
+  }
+
+  override async collectExportedSymbols(document: LangiumDocument, cancelToken?: CancellationToken): Promise<AstNodeDescription[]> {
+    const model = document.parseResult.value as Program;
+    const exports: AstNodeDescription[] = [];
+    // export all global labels ("::") to file scope
+    model.lines.filter((l) => l.label).forEach((ll) => exports.push(this.descriptions.createDescription(ll.label!, ll.label!.name)));
+    // export all EQU names to file scope
+    return exports;
   }
 
   /**

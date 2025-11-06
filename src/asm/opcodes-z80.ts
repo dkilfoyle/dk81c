@@ -22,7 +22,8 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
   const processDef = (defcase: "upper" | "lower") => {
     const instrSplit = (defcase == "upper" ? def.name.toUpperCase() : def.name.toLowerCase()).split(" ");
     const instrName = instrSplit[0];
-    const args = instrSplit[1] ? instrSplit[1].split(",") : [];
+    const args = (instrSplit[1] ? instrSplit[1].split(",") : []).map((arg) => (arg.startsWith("$") ? arg.toUpperCase() : arg));
+
     let curNode = rootNode.get(instrName) || rootNode.set(instrName, newOpcodesNode(instrName)).get(instrName)!;
     curNode.codes.push(code);
 
@@ -39,7 +40,7 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
 
     if (args.length == 0) {
       // this should only be possible once
-      if (curNode.leaf) console.log("Aliasing " + def.name);
+      // if (curNode.leaf) console.log("Aliasing " + def.name);
       curNode.leaf = {
         idx: curNode.signatures.length - 1,
         nameTemplate: def.name, // todo def.nameTemplate

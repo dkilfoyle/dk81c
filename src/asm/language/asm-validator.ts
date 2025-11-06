@@ -122,7 +122,7 @@ export class AsmValidator {
 
     for (let i = 0; i <= args.length; i++) {
       if (i == args.length) {
-        if (curNode.codes.length == 0)
+        if (!curNode.leaf)
           // check for not enough arms
           accept("error", "Missing argument " + Array.from(curNode.args.keys()).join(","), { node: instruction, property: "opcode" });
       } else {

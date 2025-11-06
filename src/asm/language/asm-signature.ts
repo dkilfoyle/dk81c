@@ -20,7 +20,7 @@ export class AsmSignatureHelpProvider extends AbstractSignatureHelpProvider {
     const cst = document.parseResult.value.$cstNode;
     if (cst) {
       const curOffset = document.textDocument.offsetAt(params.position);
-      const sourceCstNode = CstUtils.findLeafNodeBeforeOffset(cst, curOffset);
+      const sourceCstNode = CstUtils.findLeafNodeBeforeOffset(cst, curOffset - 1);
       if (sourceCstNode) return this.getSignatureFromElement(sourceCstNode.astNode);
     }
     return undefined;
@@ -47,6 +47,7 @@ export class AsmSignatureHelpProvider extends AbstractSignatureHelpProvider {
   }
 
   protected override getSignatureFromElement(element: AstNode): MaybePromise<SignatureHelp | undefined> {
+    console.log("get signature for ", element);
     if (isInstruction(element)) {
       // ld ^
       return { signatures: this.findMatchingSignatures(element.opcode), activeParameter: 0, activeSignature: 0 };

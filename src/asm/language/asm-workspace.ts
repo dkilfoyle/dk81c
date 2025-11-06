@@ -2,11 +2,10 @@ import { AstNode, DefaultWorkspaceManager, LangiumDocument, LangiumDocumentFacto
 import { LangiumSharedServices } from "langium/lsp";
 import { WorkspaceFolder } from "vscode-languageserver";
 import { URI } from "vscode-uri";
-import { assembler } from "../assembler/asm-assembler8080";
+import { assembler } from "../assembler/asm-assembler";
 
-import { runtime8080 } from "../assembler/runtime8080";
-import { os8080 } from "../assembler/zx81pre.asm";
-import { stdlib8080 } from "../assembler/stdlib8080";
+import zx81start from "../assembler/zx81start.asm?raw";
+import zx81end from "../assembler/zx81end.asm?raw";
 
 export class AsmWorkspaceManager extends DefaultWorkspaceManager {
   private documentFactory: LangiumDocumentFactory;
@@ -21,17 +20,12 @@ export class AsmWorkspaceManager extends DefaultWorkspaceManager {
     collector: (document: LangiumDocument<AstNode>) => void
   ): Promise<void> {
     await super.loadAdditionalDocuments(folders, collector);
-    // Load runtime using the `builtin` URI schema
-    const runtime = this.documentFactory.fromString(runtime8080, URI.parse("builtin:///runtime8080.asm"));
-    assembler.runtime = runtime;
-    collector(runtime);
-    // load os
-    const os = this.documentFactory.fromString(os8080, URI.parse("builtin:///os8080.asm"));
-    assembler.os = os;
-    collector(os);
-    // load stdlib
-    const stdlib = this.documentFactory.fromString(stdlib8080, URI.parse("builtin:///stdlib8080.asm"));
-    assembler.stdlib = stdlib;
-    collector(stdlib);
+    // Load start and end using the `builtin` URI schema
+    const startasm = this.documentFactory.fromString(zx81start, URI.parse("builtin:///zx81start.asm"));
+    assembler.startasm = startasm;
+    collector(startasm);
+    const endasm = this.documentFactory.fromString(zx81end, URI.parse("builtin:///zx81end.asm"));
+    assembler.endasm = endasm;
+    collector(endasm);
   }
 }
