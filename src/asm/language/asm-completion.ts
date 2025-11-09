@@ -1,4 +1,14 @@
-import { AstNode, LangiumDocument, LangiumDocuments, ReferenceInfo } from "langium";
+import {
+  AstNode,
+  CompositeCstNode,
+  CstNode,
+  isCompositeCstNode,
+  isLeafCstNode,
+  LangiumDocument,
+  LangiumDocuments,
+  LeafCstNode,
+  ReferenceInfo,
+} from "langium";
 import { DefaultCompletionProvider, LangiumServices } from "langium/lsp";
 import { CstUtils, AstUtils } from "langium";
 import { isExpression, isExpressionList, isInstruction, isProgram } from "./generated/ast";
@@ -40,17 +50,17 @@ export class AsmCompletionProvider extends DefaultCompletionProvider {
     // const leafBeforeOffset = CstUtils.findLeafNodeBeforeOffset(cst, offset)?.astNode;
     // const leafAtOffset = CstUtils.findLeafNodeAtOffset(cst, offset)?.astNode;
     // const declAtOffset = CstUtils.findDeclarationNodeAtOffset(cst, offset)?.astNode;
-    // console.log({ leafAtOffset, leafBeforeOffset, declAtOffset, charBefore });
+    // console.log({ offset, leafAtOffset, leafBeforeOffset, declAtOffset, charBefore });
     if (charBefore == " ") offset -= 1; // eg call ^
 
-    return CstUtils.findLeafNodeBeforeOffset(cst, offset)?.astNode;
+    return CstUtils.findDeclarationNodeAtOffset(cst, offset)?.astNode;
   }
 
   async getCompletion(document: LangiumDocument, params: CompletionParams): Promise<CompletionList | undefined> {
     const items: CompletionItem[] = [];
 
     const node = this.getContext(document, params.position);
-    console.log(node);
+    // console.log(node);
 
     switch (true) {
       case node == undefined:
@@ -60,8 +70,8 @@ export class AsmCompletionProvider extends DefaultCompletionProvider {
         break;
       case isInstruction(node):
         // ld ^
-
-        items.push(...this.getArgs(node, node.opcode, [], false));
+        items.push(...this.completionLibrary.opcodes);
+        // items.push(...this.getArgs(node, node.opcode, [], false));
         break;
       case isExpression(node):
         // ld x^
@@ -86,7 +96,7 @@ export class AsmCompletionProvider extends DefaultCompletionProvider {
   }
 
   getArgs(node: AstNode, opcode: string, astargs: string[], brackets = false) {
-    const emptyNode: IOpcodesNode = { args: new Map().set("Error", {}), codes: [], signatures: [] };
+    const emptyNode: IOpcodesNode = { args: new Map().set("Error", {}), codes: [], signatures: [], name: opcode };
     let compargs = opcodesLookup.get(opcode.toUpperCase()) || emptyNode;
     if (astargs.length == 1) compargs = compargs.args.get(astargs[0].toUpperCase()) || emptyNode;
     if (astargs.length == 2) compargs = compargs.args.get(astargs[1].toUpperCase()) || emptyNode;
@@ -96,7 +106,7 @@ export class AsmCompletionProvider extends DefaultCompletionProvider {
     for (const argName of compargs.args.keys()) {
       if (!brackets || argName.startsWith("(") == brackets) {
         if (argName == "$N") continue;
-        if (argName == "$NN") {
+        if (argName == "$NN" || argName == "$E") {
           for (const lbl of this.getLabels(node)) {
             result.push({ label: this.toCase(lbl.name), kind: CompletionItemKind.Reference });
           }

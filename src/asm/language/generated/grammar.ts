@@ -81,7 +81,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@2"
+                    "$ref": "#/rules@3"
                   },
                   "arguments": []
                 },
@@ -97,7 +97,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@3"
+                        "$ref": "#/rules@2"
                       },
                       "arguments": []
                     }
@@ -141,7 +141,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@2"
+                    "$ref": "#/rules@3"
                   },
                   "arguments": []
                 }
@@ -181,35 +181,6 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
     },
     {
       "$type": "ParserRule",
-      "name": "Label",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "name",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@9"
-              },
-              "arguments": []
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": ":",
-            "cardinality": "?"
-          }
-        ]
-      },
-      "entry": false,
-      "fragment": false,
-      "parameters": []
-    },
-    {
-      "$type": "ParserRule",
       "name": "Instruction",
       "definition": {
         "$type": "Group",
@@ -221,7 +192,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@13"
+                "$ref": "#/rules@12"
               },
               "arguments": []
             }
@@ -247,6 +218,35 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
     },
     {
       "$type": "ParserRule",
+      "name": "Label",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@13"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ":",
+            "cardinality": "?"
+          }
+        ]
+      },
+      "entry": false,
+      "fragment": false,
+      "parameters": []
+    },
+    {
+      "$type": "ParserRule",
       "name": "Directive",
       "definition": {
         "$type": "Group",
@@ -258,7 +258,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@12"
+                "$ref": "#/rules@11"
               },
               "arguments": []
             }
@@ -401,7 +401,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@10"
+                "$ref": "#/rules@9"
               },
               "arguments": []
             }
@@ -425,7 +425,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@11"
+                "$ref": "#/rules@10"
               },
               "arguments": []
             }
@@ -437,12 +437,12 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
             "terminal": {
               "$type": "CrossReference",
               "type": {
-                "$ref": "#/rules@2"
+                "$ref": "#/rules@3"
               },
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@9"
+                  "$ref": "#/rules@13"
                 },
                 "arguments": []
               },
@@ -501,17 +501,6 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
       "entry": false,
       "fragment": false,
       "parameters": []
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "ID",
-      "definition": {
-        "$type": "RegexToken",
-        "regex": "/[_a-zA-Z][a-zA-Z0-9._]*/",
-        "parenthesized": false
-      },
-      "fragment": false,
-      "hidden": false
     },
     {
       "$type": "ParserRule",
@@ -761,11 +750,11 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "CPI"
+            "value": "CPIR"
           },
           {
             "$type": "Keyword",
-            "value": "CPIR"
+            "value": "CPI"
           },
           {
             "$type": "Keyword",
@@ -789,7 +778,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "EI"
+            "value": "EXX"
           },
           {
             "$type": "Keyword",
@@ -797,7 +786,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "EXX"
+            "value": "EI"
           },
           {
             "$type": "Keyword",
@@ -813,19 +802,19 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "IND"
-          },
-          {
-            "$type": "Keyword",
             "value": "INDR"
           },
           {
             "$type": "Keyword",
-            "value": "INI"
+            "value": "IND"
           },
           {
             "$type": "Keyword",
             "value": "INIR"
+          },
+          {
+            "$type": "Keyword",
+            "value": "INI"
           },
           {
             "$type": "Keyword",
@@ -837,7 +826,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "LD"
+            "value": "LDDR"
           },
           {
             "$type": "Keyword",
@@ -845,15 +834,15 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "LDDR"
-          },
-          {
-            "$type": "Keyword",
-            "value": "LDI"
+            "value": "LD"
           },
           {
             "$type": "Keyword",
             "value": "LDIR"
+          },
+          {
+            "$type": "Keyword",
+            "value": "LDI"
           },
           {
             "$type": "Keyword",
@@ -877,15 +866,15 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "OUT"
-          },
-          {
-            "$type": "Keyword",
             "value": "OUTD"
           },
           {
             "$type": "Keyword",
             "value": "OUTI"
+          },
+          {
+            "$type": "Keyword",
+            "value": "OUT"
           },
           {
             "$type": "Keyword",
@@ -901,10 +890,6 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "RET"
-          },
-          {
-            "$type": "Keyword",
             "value": "RETI"
           },
           {
@@ -913,7 +898,11 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "RL"
+            "value": "RET"
+          },
+          {
+            "$type": "Keyword",
+            "value": "RLCA"
           },
           {
             "$type": "Keyword",
@@ -925,15 +914,15 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "RLCA"
-          },
-          {
-            "$type": "Keyword",
             "value": "RLD"
           },
           {
             "$type": "Keyword",
-            "value": "RR"
+            "value": "RL"
+          },
+          {
+            "$type": "Keyword",
+            "value": "RRCA"
           },
           {
             "$type": "Keyword",
@@ -945,7 +934,7 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "RRCA"
+            "value": "RR"
           },
           {
             "$type": "Keyword",
@@ -973,10 +962,6 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
           },
           {
             "$type": "Keyword",
-            "value": "SL1"
-          },
-          {
-            "$type": "Keyword",
             "value": "SRA"
           },
           {
@@ -996,6 +981,17 @@ export const AsmGrammar = (): Grammar => loadedAsmGrammar ?? (loadedAsmGrammar =
       "entry": false,
       "fragment": false,
       "parameters": []
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "ID",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "/[_a-zA-Z][a-zA-Z0-9._]*/",
+        "parenthesized": false
+      },
+      "fragment": false,
+      "hidden": false
     },
     {
       "$type": "TerminalRule",

@@ -21,7 +21,7 @@ export const AsmEditing = ({ zxworker }: { zxworker: React.RefObject<Worker | nu
     // if (asmWrapperRef.current) {
     //   asmWrapperRef.current.getLanguageClient()?.sendNotification("client/pfile_req", { filename: "workspace/source.asm" });
     // }
-    console.log(bytes.length);
+    console.log(`Positing ${bytes.length} bytes to zxworker`);
     if (bytes.length > 0) {
       zxworker.current?.postMessage({ msg: "load_pfile", msgData: bytes });
     }
@@ -35,7 +35,7 @@ export const AsmEditing = ({ zxworker }: { zxworker: React.RefObject<Worker | nu
       const lc = wrapper.getLanguageClient();
       if (!lc) throw Error("asm !lc");
       lc.onNotification("server/AsmDocumentChange", ({ ast, bytes }) => {
-        console.log("app received notification server/documentChange", JSON.parse(ast));
+        // console.log("app received notification server/documentChange", JSON.parse(ast));
         setBytes(bytes);
       });
       lc.onNotification("server/pfile_resp", (pfile: PFile) => {

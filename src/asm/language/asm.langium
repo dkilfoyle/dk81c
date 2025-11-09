@@ -8,11 +8,12 @@ Line:
     (label=Label comment=COMMENT?) |
     (comment=COMMENT);
 
-Label:
-    name=ID ":"?;
 
 Instruction:
     opcode=OPCODE expressionList=ExpressionList?;
+
+Label:
+    name=ID ":"?;
 
 Directive:
     directive=ASSEMBLER_DIRECTIVE expressionList=ExpressionList;
@@ -36,7 +37,7 @@ Argument infers Expression:
     string=STRING |
     "(" paren=Expression ")";
 
-terminal ID: /[_a-zA-Z][a-zA-Z0-9._]*/;
+
 
 JUMPCONDITION returns string:
     'NC'|
@@ -97,65 +98,66 @@ OPCODE returns string:
     | 'CP'
     | 'CPD'
     | 'CPDR'
-    | 'CPI'
     | 'CPIR'
+    | 'CPI'
     | 'CPL'
     | 'DAA'
     | 'DEC'
     | 'DI'
     | 'DJNZ'
-    | 'EI'
-    | 'EX'
     | 'EXX'
+    | 'EX'
+    | 'EI'
     | 'IM'
     | 'IN'
     | 'INC'
-    | 'IND'
     | 'INDR'
-    | 'INI'
+    | 'IND'
     | 'INIR'
+    | 'INI'
     | 'JP'
     | 'JR'
-    | 'LD'
-    | 'LDD'
     | 'LDDR'
-    | 'LDI'
+    | 'LDD'
+    | 'LD'
     | 'LDIR'
+    | 'LDI'
     | 'NEG'
     | 'NOP'
     | 'OR'
     | 'OTDR'
     | 'OTIR'
-    | 'OUT'
     | 'OUTD'
     | 'OUTI'
+    | 'OUT'
     | 'POP'
     | 'PUSH'
     | 'RES'
-    | 'RET'
     | 'RETI'
     | 'RETN'
-    | 'RL'
+    | 'RET'
+    | 'RLCA'
     | 'RLA'
     | 'RLC'
-    | 'RLCA'
     | 'RLD'
-    | 'RR'
+    | 'RL'
+    | 'RRCA'
     | 'RRA'
     | 'RRC'
-    | 'RRCA'
+    | 'RR'
     | 'RRD'
     | 'RST'
     | 'SBC'
     | 'SCF'
     | 'SLA'
     | 'SLL'
-    | 'SL1'
     | 'SRA'
     | 'SRL'
     | 'SUB'
     | 'XOR'
 ;
+
+terminal ID: /[_a-zA-Z][a-zA-Z0-9._]*/;
 
 terminal EOL: /[\r\n]+/;
 terminal COMMENT: /;[^\n\r]*/;

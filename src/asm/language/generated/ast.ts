@@ -126,7 +126,6 @@ export type AsmKeywordNames =
     | "SBC"
     | "SCF"
     | "SET"
-    | "SL1"
     | "SLA"
     | "SLL"
     | "SP"
@@ -286,10 +285,10 @@ export function isLine(item: unknown): item is Line {
     return reflection.isInstance(item, Line.$type);
 }
 
-export type OPCODE = 'ADC' | 'ADD' | 'AND' | 'BIT' | 'CALL' | 'CCF' | 'CP' | 'CPD' | 'CPDR' | 'CPI' | 'CPIR' | 'CPL' | 'DAA' | 'DEC' | 'DI' | 'DJNZ' | 'EI' | 'EX' | 'EXX' | 'IM' | 'IN' | 'INC' | 'IND' | 'INDR' | 'INI' | 'INIR' | 'JP' | 'JR' | 'LD' | 'LDD' | 'LDDR' | 'LDI' | 'LDIR' | 'NEG' | 'NOP' | 'OR' | 'OTDR' | 'OTIR' | 'OUT' | 'OUTD' | 'OUTI' | 'POP' | 'PUSH' | 'RES' | 'RET' | 'RETI' | 'RETN' | 'RL' | 'RLA' | 'RLC' | 'RLCA' | 'RLD' | 'RR' | 'RRA' | 'RRC' | 'RRCA' | 'RRD' | 'RST' | 'SBC' | 'SCF' | 'SL1' | 'SLA' | 'SLL' | 'SRA' | 'SRL' | 'SUB' | 'XOR';
+export type OPCODE = 'ADC' | 'ADD' | 'AND' | 'BIT' | 'CALL' | 'CCF' | 'CP' | 'CPD' | 'CPDR' | 'CPI' | 'CPIR' | 'CPL' | 'DAA' | 'DEC' | 'DI' | 'DJNZ' | 'EI' | 'EX' | 'EXX' | 'IM' | 'IN' | 'INC' | 'IND' | 'INDR' | 'INI' | 'INIR' | 'JP' | 'JR' | 'LD' | 'LDD' | 'LDDR' | 'LDI' | 'LDIR' | 'NEG' | 'NOP' | 'OR' | 'OTDR' | 'OTIR' | 'OUT' | 'OUTD' | 'OUTI' | 'POP' | 'PUSH' | 'RES' | 'RET' | 'RETI' | 'RETN' | 'RL' | 'RLA' | 'RLC' | 'RLCA' | 'RLD' | 'RR' | 'RRA' | 'RRC' | 'RRCA' | 'RRD' | 'RST' | 'SBC' | 'SCF' | 'SLA' | 'SLL' | 'SRA' | 'SRL' | 'SUB' | 'XOR';
 
 export function isOPCODE(item: unknown): item is OPCODE {
-    return item === 'ADC' || item === 'ADD' || item === 'AND' || item === 'BIT' || item === 'CALL' || item === 'CCF' || item === 'CP' || item === 'CPD' || item === 'CPDR' || item === 'CPI' || item === 'CPIR' || item === 'CPL' || item === 'DAA' || item === 'DEC' || item === 'DI' || item === 'DJNZ' || item === 'EI' || item === 'EX' || item === 'EXX' || item === 'IM' || item === 'IN' || item === 'INC' || item === 'IND' || item === 'INDR' || item === 'INI' || item === 'INIR' || item === 'JP' || item === 'JR' || item === 'LD' || item === 'LDD' || item === 'LDDR' || item === 'LDI' || item === 'LDIR' || item === 'NEG' || item === 'NOP' || item === 'OR' || item === 'OTDR' || item === 'OTIR' || item === 'OUT' || item === 'OUTD' || item === 'OUTI' || item === 'POP' || item === 'PUSH' || item === 'RES' || item === 'RET' || item === 'RETI' || item === 'RETN' || item === 'RL' || item === 'RLA' || item === 'RLC' || item === 'RLCA' || item === 'RLD' || item === 'RR' || item === 'RRA' || item === 'RRC' || item === 'RRCA' || item === 'RRD' || item === 'RST' || item === 'SBC' || item === 'SCF' || item === 'SLA' || item === 'SLL' || item === 'SL1' || item === 'SRA' || item === 'SRL' || item === 'SUB' || item === 'XOR';
+    return item === 'ADC' || item === 'ADD' || item === 'AND' || item === 'BIT' || item === 'CALL' || item === 'CCF' || item === 'CP' || item === 'CPD' || item === 'CPDR' || item === 'CPIR' || item === 'CPI' || item === 'CPL' || item === 'DAA' || item === 'DEC' || item === 'DI' || item === 'DJNZ' || item === 'EXX' || item === 'EX' || item === 'EI' || item === 'IM' || item === 'IN' || item === 'INC' || item === 'INDR' || item === 'IND' || item === 'INIR' || item === 'INI' || item === 'JP' || item === 'JR' || item === 'LDDR' || item === 'LDD' || item === 'LD' || item === 'LDIR' || item === 'LDI' || item === 'NEG' || item === 'NOP' || item === 'OR' || item === 'OTDR' || item === 'OTIR' || item === 'OUTD' || item === 'OUTI' || item === 'OUT' || item === 'POP' || item === 'PUSH' || item === 'RES' || item === 'RETI' || item === 'RETN' || item === 'RET' || item === 'RLCA' || item === 'RLA' || item === 'RLC' || item === 'RLD' || item === 'RL' || item === 'RRCA' || item === 'RRA' || item === 'RRC' || item === 'RR' || item === 'RRD' || item === 'RST' || item === 'SBC' || item === 'SCF' || item === 'SLA' || item === 'SLL' || item === 'SRA' || item === 'SRL' || item === 'SUB' || item === 'XOR';
 }
 
 export interface Program extends langium.AstNode {

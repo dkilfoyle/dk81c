@@ -67,9 +67,16 @@ const debounce = <T extends unknown[]>(callback: (...args: T) => void, delay: nu
 };
 
 const sendAsmDocumentChange = (document: LangiumDocument<AstNode>) => {
+  if (document.diagnostics?.length) return;
   const { labels, bytes } = assembler.compileAsmToPFile(document);
   labelMap.clear();
   Object.entries(labels).forEach((l) => labelMap.set(l[0], l[1]));
+
+  console.log(
+    Array.from(bytes)
+      .slice(121)
+      .map((b) => b.toString(16).padStart(2, "0"))
+  );
 
   const json = Asm.serializer.JsonSerializer.serialize(document.parseResult.value, {
     sourceText: false,
@@ -90,12 +97,10 @@ const debouncedSendAsmDocumentChange = debounce(sendAsmDocumentChange, 1000);
 shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, (documents) => {
   for (const document of documents) {
     console.log("On build phase", document);
-    console.log(assembler.startasm);
-    if (document.diagnostics?.length != 0) console.log("HAS ERRORS");
-    if (document.diagnostics?.length == 0) {
-      // assembler.compileAsmToPFile(document);
-      debouncedSendAsmDocumentChange(document);
-      // sendAsmDocumentChange(document);
-    }
+    // console.log(assembler.startasm);
+    // if (document.diagnostics?.length != 0) console.log("HAS ERRORS");
+    // assembler.compileAsmToPFile(document);
+    debouncedSendAsmDocumentChange(document);
+    // sendAsmDocumentChange(document);
   }
 });

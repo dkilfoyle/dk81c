@@ -1,6 +1,6 @@
 import { opcodes } from "@/z80/decode";
 import { ParameterInformation, SignatureInformation } from "vscode-languageserver";
-import { Expression, Instruction } from "./language/generated/ast";
+import { Expression, Instruction, isBinaryExpression } from "./language/generated/ast";
 
 export interface IOpcodesNode {
   name: string;
@@ -22,7 +22,9 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
   const processDef = (defcase: "upper" | "lower") => {
     const instrSplit = (defcase == "upper" ? def.name.toUpperCase() : def.name.toLowerCase()).split(" ");
     const instrName = instrSplit[0];
-    const args = (instrSplit[1] ? instrSplit[1].split(",") : []).map((arg) => (arg.startsWith("$") ? arg.toUpperCase() : arg));
+    const args = (instrSplit[1] ? instrSplit[1].split(",") : []).map((arg) =>
+      arg.startsWith("$") || arg.startsWith("($") ? arg.toUpperCase() : arg
+    );
 
     let curNode = rootNode.get(instrName) || rootNode.set(instrName, newOpcodesNode(instrName)).get(instrName)!;
     curNode.codes.push(code);
@@ -72,14 +74,18 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
 }, new Map());
 
 export const getInfoNodeForAstNode = (instrAstNode: Instruction) => {
-  const emptyNode: IOpcodesNode = { args: new Map().set("Error", {}), codes: [], signatures: [] };
   const getInfoArgNode = (parentNode: IOpcodesNode, expr: Expression) => {
-    if (expr.immediate) {
-      if (instrAstNode.opcode == "RST") return parentNode.args.get(`0X${expr.immediate.toString(16).padStart(2, "0")}`);
+    if (expr.immediate != undefined) {
+      if (instrAstNode.opcode.toUpperCase() == "RST") {
+        return (
+          parentNode.args.get(`0X${expr.immediate.toString(16).padStart(2, "0")}`) ||
+          parentNode.args.get(`0x${expr.immediate.toString(16).padStart(2, "0")}`)
+        );
+      }
       return parentNode.args.get("$N") || parentNode.args.get("$NN") || parentNode.args.get("$E") || parentNode.args.get("$D");
     }
-    if (expr.paren && (expr.paren.immediate || expr.paren.label)) return parentNode.args.get("($NN)");
-    if (expr.label) return parentNode.args.get("$NN");
+    if (expr.paren && (expr.paren.immediate || expr.paren.label || isBinaryExpression(expr.paren))) return parentNode.args.get("($NN)");
+    if (expr.label) return parentNode.args.get("$NN") || parentNode.args.get("$E");
     return parentNode.args.get(expr.$cstNode!.text);
   };
 
@@ -89,11 +95,11 @@ export const getInfoNodeForAstNode = (instrAstNode: Instruction) => {
       const expressions = instrAstNode.expressionList.expressions;
       if (instrAstNode.expressionList.expressions.length > 0) {
         infoNode = getInfoArgNode(infoNode, expressions[0]);
-        if (!infoNode) debugger;
+        // if (!infoNode) debugger;
       }
-      if (instrAstNode.expressionList.expressions.length == 2) {
+      if (infoNode && instrAstNode.expressionList.expressions.length == 2) {
         infoNode = getInfoArgNode(infoNode!, expressions[1]);
-        if (!infoNode) debugger;
+        // if (!infoNode) debugger;
       }
       return infoNode;
     } else {
