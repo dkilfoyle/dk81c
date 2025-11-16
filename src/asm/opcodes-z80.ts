@@ -56,11 +56,13 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
         curNode.signatures.push(SignatureInformation.create(title, def.doc, ...params));
         curNode.codes.push(code);
         if (i == args.length - 1) {
-          curNode.leaf = {
-            idx: curNode.signatures.length - 1,
-            nameTemplate: def.name, // todo def.nameTemplate
-            bytesTemplate: def.bytes,
-          };
+          // if (curNode.leaf) console.log("aliased ", title);
+          if (!curNode.leaf)
+            curNode.leaf = {
+              idx: curNode.signatures.length - 1,
+              nameTemplate: def.name, // todo def.nameTemplate
+              bytesTemplate: def.bytes,
+            };
         }
         // if (parentNode != curNode) parentNode.codes.push(code);
         // rootNode.get(instrName)?.codes.push(code);
@@ -75,6 +77,7 @@ export const opcodesLookup = opcodes.entries().reduce<IOpcodesTree>((rootNode, [
 
 export const getInfoNodeForAstNode = (instrAstNode: Instruction) => {
   const getInfoArgNode = (parentNode: IOpcodesNode, expr: Expression) => {
+    if (isBinaryExpression(expr)) return parentNode.args.get("$N") || parentNode.args.get("$NN");
     if (expr.immediate != undefined) {
       if (instrAstNode.opcode.toUpperCase() == "RST") {
         return (

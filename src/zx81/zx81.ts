@@ -3,12 +3,13 @@
 // import { printf } from "fast-printf";
 import type { Hal } from "../z80/Hal";
 import { Z80 } from "../z80/z80";
-import { rom } from "./rom";
+// import { rom } from "./rom";
+import rom from "./zx81c.rom?uint8array";
 import { scanCodes } from "./keyboard";
 import { symbols } from "./romsymbols";
 import { opcodes } from "@/z80/decode";
 import { ULA } from "./ula";
-import { _b, debugMsg, startTracing } from "./utils";
+import { _b } from "./utils";
 
 // Acknowledgements
 // jszeddy https://weggetjes.nl/jszeddy/jszeddy.html
@@ -40,16 +41,43 @@ const SysVarAddress = {
   VARS: 16400,
 };
 
+interface ILogEntry {
+  frame?: number;
+  tstates?: number;
+  label?: string;
+  pc?: number;
+  opcode?: number;
+  charcode?: number;
+  rasterY?: number;
+  // linecntr: number;
+  rasterX?: number;
+  radj?: number;
+  hsync_counter?: number;
+  hsync_state?: number;
+  int_state?: number;
+  int_pending?: number;
+  vsync_state?: number;
+}
+
+const FSKIP = 5;
+
 export class ZX81 implements Hal {
   trace = 0;
   traceRuns = 0;
+
+  log: ILogEntry[] = [];
+  logRuns = -1;
+  maxLogRuns = 100;
+
   z80: Z80;
   memory: Uint8Array;
   ula: ULA;
   tStateCount: number;
+  tStateCountLast: number = 0;
   tStateMax = 64163;
   pcAtFetch = 0;
-  fcounter = 5;
+  fcounter = FSKIP;
+  frames = 0;
   // screen: ImageData;
   keyboard: Record<number, number> = {
     0xfe: 255,
@@ -63,9 +91,9 @@ export class ZX81 implements Hal {
   };
 
   NMI_generator: boolean = false;
+  int_state = 0;
   int_pending = 0;
   nmi_pending = 0;
-  SYNC_signal = 0;
   radj = 0;
 
   constructor() {
@@ -91,86 +119,58 @@ export class ZX81 implements Hal {
     this.memory[0x34b] = 0x07;
     this.memory[0x34c] = 0x02;
 
+    this.memory[0x02fc] = 0xed; /* for save */
+    this.memory[0x02fd] = 0xfd;
+    this.memory[0x02fe] = 0xc3;
+    this.memory[0x02ff] = 0x07;
+    this.memory[0x0300] = 0x02;
+
+    this.memory[0x0876] = 0xed; /* for lprint */
+    this.memory[0x0877] = 0xfe;
+    this.memory[0x0878] = 0xc3;
+    this.memory[0x0879] = 0xe2;
+    this.memory[0x087a] = 0x08; /* clr prb buffer */
+
+    this.memory[0x0869] = 0xed; /* for copy */
+    this.memory[0x086a] = 0xf5;
+    this.memory[0x086b] = 0xc9;
+
     this.z80 = new Z80(this);
     this.tStateCount = 0;
     this.ula = new ULA(this);
   }
 
-  getSysVar16(name: "D_FILE" | "DF_CC" | "VARS") {
-    return this.readMemory(SysVarAddress[name]) | (this.readMemory(SysVarAddress[name] + 1) << 8);
+  newLogEntry() {
+    if (this.logRuns != -1 && this.logRuns++ < this.maxLogRuns)
+      this.log.push({
+        frame: this.frames,
+        tstates: this.tStateCount,
+        pc: this.z80.regs.pc,
+        int_state: this.int_state,
+        label: "",
+        rasterX: this.ula.rasterX,
+        rasterY: this.ula.rasterY,
+      });
+    if (this.logRuns == this.maxLogRuns) console.table(this.log);
   }
 
-  keydown(key: string) {
-    if (key == "BACKSPACE") {
-      const shiftCode = scanCodes["SHIFT"];
-      const zeroCode = scanCodes["0"];
-      this.keyboard[shiftCode.row] &= shiftCode.code;
-      this.keyboard[zeroCode.row] &= zeroCode.code;
-    } else {
-      if (scanCodes[key]) {
-        const code = scanCodes[key];
-        this.keyboard[code.row] &= code.code;
-      }
-    }
-  }
-
-  keyup(key: string) {
-    if (key == "BACKSPACE") {
-      const shiftCode = scanCodes["SHIFT"];
-      const zeroCode = scanCodes["0"];
-      this.keyboard[shiftCode.row] |= ~shiftCode.code;
-      this.keyboard[zeroCode.row] |= ~zeroCode.code;
-    } else {
-      if (scanCodes[key]) {
-        const code = scanCodes[key];
-        this.keyboard[code.row] |= ~code.code;
-      }
-    }
-  }
-
-  // PAL  = 625 interleaved lines @ 25Hz
-  //      = 625 * 25 = 15625 lines/sec
-  //      = 64us/line
-  // zx81 = 3.25 MHz
-  //      = 3,250,000 cycles/sec
-  //      / 15625 lines/sec
-  //      = 208 cycles/line
-
-  disassemble(pc: number) {
-    const mem = this.memory.slice(pc, pc + 5);
-    const match = Array.from(opcodes.values()).find((definition) => {
-      if (definition.group == "Prefix") return false;
-      const bytes = definition.bytes.split(" ");
-      for (let i = 0; i < bytes.length; i++) {
-        if (bytes[i] != "XX") {
-          if (bytes[i] != mem[i].toString(16).padStart(2, "0")) return false;
-        }
-      }
-      return true;
-    });
-    if (match) {
-      let dis = match.name;
-      if (dis.includes("$nn")) {
-        const firstXX = match.bytes.split(" ").indexOf("XX");
-        dis = dis.replace("$nn", "$" + ((mem[firstXX + 1] << 8) + mem[firstXX]).toString(16).padStart(4, "0"));
-      }
-      if (dis.includes("$n")) {
-        const firstXX = match.bytes.split(" ").indexOf("XX");
-        if (firstXX == -1) debugger;
-        dis = dis.replace("$n", "$" + mem[firstXX].toString(16).padStart(2, "0"));
-      }
-      return dis;
-    }
-    debugger;
-    return "disassembleNA";
-  }
-
-  zx81Fetch(addr: number) {
-    this.z80.incTStateCount(4);
-    const inst = this.z80.readByteInternal(addr);
-    this.z80.regs.pc = (this.z80.regs.pc + 1) & 0xffff;
-    this.z80.regs.r = (this.z80.regs.r + 1) & 0x7f;
-    return inst;
+  setLogParameter(editEntry: ILogEntry) {
+    if (this.logRuns > this.maxLogRuns) return;
+    const curEntry = this.log.at(-1);
+    if (!curEntry) return; // dont update if haven't started logging
+    curEntry.label = editEntry.label ?? curEntry.label;
+    curEntry.rasterY = editEntry.rasterY ?? curEntry.rasterY;
+    curEntry.rasterX = editEntry.rasterX ?? curEntry.rasterX;
+    curEntry.radj = editEntry.radj ?? curEntry.radj;
+    // curEntry.int_state = editEntry.int_state ?? curEntry.int_state;
+    curEntry.int_state = editEntry.int_state;
+    // curEntry.int_pending = editEntry.int_pending ?? curEntry.int_pending;
+    curEntry.int_pending = editEntry.int_pending;
+    curEntry.charcode = editEntry.charcode ?? curEntry.charcode;
+    curEntry.opcode = editEntry.opcode ?? curEntry.opcode;
+    curEntry.hsync_counter = editEntry.hsync_counter ?? curEntry.hsync_counter;
+    curEntry.hsync_state = editEntry.hsync_state ?? curEntry.hsync_state;
+    curEntry.vsync_state = editEntry.vsync_state ?? curEntry.vsync_state;
   }
 
   frame() {
@@ -181,45 +181,67 @@ export class ZX81 implements Hal {
       this.runUntilFrameEnd();
       // console.log("Frame", this.tStateCount);
     } while (!this.ula.frameEnd);
-    if (this.fcounter == 0) {
+    if (this.fcounter < 1) {
       self.postMessage({ msg: "screen", msgData: this.ula.imageData });
-      this.fcounter = 5;
+      this.fcounter = FSKIP;
     }
   }
 
   runUntilFrameEnd() {
     while ((this.tStateCount == 0 || this.tStateCount < this.tStateMax) && !this.ula.frameEnd) {
+      this.tStateCountLast = this.tStateCount;
+
       this.pcAtFetch = this.z80.regs.pc;
-      const pcSymbol = symbols[this.pcAtFetch.toString(16).padStart(4, "0")];
-
-      // if (this.z80.regs.pc == 0x229) {
-      //   // 0x229=DISPLAY-1  0x281=R-IX-1
-      //   startTracing(1000, "Start tracing at " + pcSymbol);
-      // }
-
-      // if (traceLabels.includes(pcSymbol)) debugMsg(pcSymbol);
-      // if (pcSymbol) debugMsg(pcSymbol);
+      if (this.pcAtFetch == 0x229) this.frames++;
 
       this.ula.clearCharPixels();
+
+      // const pcSymbol = symbols[this.pcAtFetch.toString(16).padStart(4, "0")];
+      // if (this.pcAtFetch == 0x281 && this.logRuns == -1) this.logRuns = 0;
+      this.newLogEntry();
+      switch (this.pcAtFetch) {
+        case 0x38: //56
+          this.setLogParameter({ label: "INTERRUPT" });
+          break;
+        case 0x229: // 553
+          this.setLogParameter({ label: "DISPLAY-1" });
+          break;
+        case 0x23e: // 574
+          this.setLogParameter({ label: "DISPLAY-2" });
+          break;
+        case 0x281: // 641
+          this.setLogParameter({ label: "VIDEO-1" });
+          // console.log("RasterX", this.ula.rasterX);
+          break;
+        case 0x292: // 658
+          this.setLogParameter({ label: "DISPLAY-3 (BL)" });
+          break;
+        case 0x2a9: // 681
+          this.setLogParameter({ label: "DISPLAY-4" });
+          break;
+        case 0x2b5: // 693
+          this.setLogParameter({ label: "DISPLAY-5" });
+          break;
+      }
 
       if (!this.int_pending && !this.nmi_pending) {
         // zx81 custom fetch without increment PC or R yet
         this.tStateCount += 4;
         let opcode = this.readMemory(this.z80.regs.pc & 0x7fff);
+        this.radj = this.z80.regs.rCombined; // = (this.z80.regs.r & 0x7f) | (this.z80.regs.r7 & 0x80);
+        this.setLogParameter({ opcode });
+
         // if reading from DFILE with Bit 15=1 (ie > 49192) then opcode = screen char code
         //  mirror addresses >= 49192 into RAM
-        this.radj = this.z80.regs.rCombined;
-
-        // is this a DFILE access
         if (this.z80.regs.pc >= 0xc000) {
+          this.int_state = 0;
           if (!(opcode & 0x40)) {
             // if bit 6 of opcode is 0 then opcode is a charcode
-            this.ula.loadCharPixels(opcode);
-            // debugMsg(`  charCode ${opcode}`, ` | pixels=${_b(this.ula.rgb.pixels)}`);
+            if (this.fcounter == 0) this.ula.loadCharPixels(opcode);
+            this.setLogParameter({ charcode: opcode, opcode: 0 });
             opcode = 0; // mutate opcode to 0 (NOP)
           } else {
             // else it's probably at HLT=118
-            // debugMsg(`  Hit HLT`);
             // if so then pc will remain stuck until sync_counter > 207 => interrupt
           }
         }
@@ -231,33 +253,44 @@ export class ZX81 implements Hal {
         this.z80.executeInstruction(opcode);
       } else {
         if (this.int_pending && !this.nmi_pending) {
+          this.int_state = 2;
+          this.setLogParameter({ label: "interrupt" });
           this.z80.maskableInterrupt();
-          // push pc, jmp 0x38
+          // push pc, jmp 0x38, tstatecount+=13
           // INTERRUPT will jmp to echo display @ 0xc0a7
           // b will be row number (24..1) (0x18..1)
           // c will current scanline 8..1
           // hl will be popped from stack = address of start of row in DFILE with bit15=1 (in DISPLAY-2)
           // r will be 0xde 11011110
           // jmp (hl)
-          // if (this.trace) console.log("post interrupt", this.z80.regs.r, this.ula.hsync_counter);
-          this.ula.maskableInterrupt();
+          this.ula.maskableInterrupt(); // => hsync_counter = -2, hsync_pending=1
         }
         if (this.nmi_pending) {
-          debugMsg("NMI");
           this.z80.nonMaskableInterrupt(); // push pc, jmp 0x66
         }
       }
 
-      this.int_pending = this.nmi_pending = 0;
+      this.int_pending = 0;
+      this.nmi_pending = 0;
+
       if (!(this.radj & 0x40) && this.z80.regs.iff1) {
         // 0x40 = 01000000
         // Maskable interrupt is triggered when bit 6 of the R register changes from set to reset.
+        // 11111111 => 10000000
+        // R started in WAIT-INT as $DD 11011101
         this.int_pending = 1;
+        this.int_state = 1;
       }
 
       this.ula.advanceCycles();
-      // debugMsg(this.disassemble(pcAtFetch), "  " + (pcSymbol || ""));
-      // debugMsg(pcSymbol || "");
+      this.setLogParameter({
+        hsync_counter: this.ula.hsync_counter,
+        hsync_state: this.ula.hsync_state,
+        vsync_state: this.ula.vsync_state,
+        int_state: this.int_state,
+        int_pending: this.int_pending,
+        radj: this.radj,
+      });
     }
   }
 
@@ -438,6 +471,83 @@ export class ZX81 implements Hal {
     this.z80.regs.iyh = 0x40;
     this.z80.regs.iyl = 0x00;
     this.z80.regs.r = 0xca; // 11001010
+  }
+
+  getSysVar16(name: "D_FILE" | "DF_CC" | "VARS") {
+    return this.readMemory(SysVarAddress[name]) | (this.readMemory(SysVarAddress[name] + 1) << 8);
+  }
+
+  keydown(key: string) {
+    if (key == "BACKSPACE") {
+      const shiftCode = scanCodes["SHIFT"];
+      const zeroCode = scanCodes["0"];
+      this.keyboard[shiftCode.row] &= shiftCode.code;
+      this.keyboard[zeroCode.row] &= zeroCode.code;
+    } else {
+      if (scanCodes[key]) {
+        const code = scanCodes[key];
+        this.keyboard[code.row] &= code.code;
+      }
+    }
+  }
+
+  keyup(key: string) {
+    if (key == "BACKSPACE") {
+      const shiftCode = scanCodes["SHIFT"];
+      const zeroCode = scanCodes["0"];
+      this.keyboard[shiftCode.row] |= ~shiftCode.code;
+      this.keyboard[zeroCode.row] |= ~zeroCode.code;
+    } else {
+      if (scanCodes[key]) {
+        const code = scanCodes[key];
+        this.keyboard[code.row] |= ~code.code;
+      }
+    }
+  }
+
+  // PAL  = 625 interleaved lines @ 25Hz
+  //      = 625 * 25 = 15625 lines/sec
+  //      = 64us/line
+  // zx81 = 3.25 MHz
+  //      = 3,250,000 cycles/sec
+  //      / 15625 lines/sec
+  //      = 208 cycles/line
+
+  disassemble(pc: number) {
+    const mem = this.memory.slice(pc, pc + 5);
+    const match = Array.from(opcodes.values()).find((definition) => {
+      if (definition.group == "Prefix") return false;
+      const bytes = definition.bytes.split(" ");
+      for (let i = 0; i < bytes.length; i++) {
+        if (bytes[i] != "XX") {
+          if (bytes[i] != mem[i].toString(16).padStart(2, "0")) return false;
+        }
+      }
+      return true;
+    });
+    if (match) {
+      let dis = match.name;
+      if (dis.includes("$nn")) {
+        const firstXX = match.bytes.split(" ").indexOf("XX");
+        dis = dis.replace("$nn", "$" + ((mem[firstXX + 1] << 8) + mem[firstXX]).toString(16).padStart(4, "0"));
+      }
+      if (dis.includes("$n")) {
+        const firstXX = match.bytes.split(" ").indexOf("XX");
+        if (firstXX == -1) debugger;
+        dis = dis.replace("$n", "$" + mem[firstXX].toString(16).padStart(2, "0"));
+      }
+      return dis;
+    }
+    debugger;
+    return "disassembleNA";
+  }
+
+  zx81Fetch(addr: number) {
+    this.z80.incTStateCount(4);
+    const inst = this.z80.readByteInternal(addr);
+    this.z80.regs.pc = (this.z80.regs.pc + 1) & 0xffff;
+    this.z80.regs.r = (this.z80.regs.r + 1) & 0x7f;
+    return inst;
   }
 }
 

@@ -8,6 +8,7 @@ import { LanguageClientsManager, LanguageClientWrapper } from "monaco-languagecl
 import { EditorApp } from "monaco-languageclient/editorApp";
 import { vscodeApiConfig } from "./vscodeApiConfig";
 import { asmClientConfig } from "@/asm/monaco/asm-client-config";
+import { saveAs } from "file-saver";
 
 const sourceCodes = import.meta.glob("../../asm/examples/**/*.asm", { as: "raw" });
 
@@ -15,17 +16,21 @@ export const AsmEditing = ({ zxworker }: { zxworker: React.RefObject<Worker | nu
   const asmWrapperRef = useRef<LanguageClientWrapper | null>(null);
   const editorAppRef = useRef<EditorApp | null>(null);
   const [source, setSource] = useState("scratch.asm");
-  const [bytes, setBytes] = useState<Uint8Array>(new Uint8Array());
+  const [bytes, setBytes] = useState(new Uint8Array());
 
   const clickLoad = useCallback(() => {
     // if (asmWrapperRef.current) {
     //   asmWrapperRef.current.getLanguageClient()?.sendNotification("client/pfile_req", { filename: "workspace/source.asm" });
     // }
-    console.log(`Positing ${bytes.length} bytes to zxworker`);
+    console.log(`Posting ${bytes.length} bytes to zxworker`);
     if (bytes.length > 0) {
       zxworker.current?.postMessage({ msg: "load_pfile", msgData: bytes });
     }
   }, [bytes, zxworker]);
+
+  const clickDownLoad = useCallback(() => {
+    saveAs(new Blob([bytes]), source.replace(".asm", ".p"));
+  }, [bytes, source]);
 
   const onLanguageClientsLoad = useCallback(
     (lcsManager?: LanguageClientsManager) => {
@@ -34,7 +39,7 @@ export const AsmEditing = ({ zxworker }: { zxworker: React.RefObject<Worker | nu
       asmWrapperRef.current = wrapper;
       const lc = wrapper.getLanguageClient();
       if (!lc) throw Error("asm !lc");
-      lc.onNotification("server/AsmDocumentChange", ({ ast, bytes }) => {
+      lc.onNotification("server/AsmDocumentChange", ({ bytes }) => {
         // console.log("app received notification server/documentChange", JSON.parse(ast));
         setBytes(bytes);
       });
@@ -88,6 +93,7 @@ export const AsmEditing = ({ zxworker }: { zxworker: React.RefObject<Worker | nu
           </SelectContent>
         </SelectRoot>
         <Button onClick={clickLoad}>Load</Button>
+        <Button onClick={clickDownLoad}>DL</Button>
       </HStack>
       <MonacoEditorReactComp
         style={{ height: "100%", width: "100%" }}

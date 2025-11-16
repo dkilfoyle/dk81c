@@ -21,6 +21,7 @@ class Assembler {
   curAddr = 0;
   startasm: LangiumDocument<AstNode> | null = null;
   endasm: LangiumDocument<AstNode> | null = null;
+  lstlines: string[] = [];
 
   constructor() {}
   reset() {
@@ -28,6 +29,7 @@ class Assembler {
     this.machineCode = [];
     this.startOffset = 0;
     this.lineAddressMap = {};
+    this.lstlines = [];
   }
 
   compileAsmToPFile(doc: LangiumDocument<AstNode>) {
@@ -102,6 +104,9 @@ class Assembler {
           this.labels[label.name] = { expression: directive.expressionList.expressions[0] };
         }
         break;
+      case "DEFS":
+        this.curAddr += this.evalExpr(directive.expressionList.expressions[0]);
+        break;
     }
   }
 
@@ -119,10 +124,20 @@ class Assembler {
   secondPass(lines: Line[]) {
     this.curAddr = 0;
     for (const line of lines) {
+      const startAddr = this.curAddr;
       if (line.label != undefined) this.secondPassLabel(line.label);
       if (line.directive != undefined) this.secondPassDirective(line.directive);
       if (line.instruction != undefined) this.secondPassInstruction(line.instruction);
+      this.lstlines.push(
+        `${startAddr.toString().padStart(6, " ")}  |  ${(startAddr - 16514).toString(16).padStart(6, " ")}  | ${this.machineCode
+          .slice(startAddr - 16393, this.curAddr - 16393)
+          .map((x) => x.toString(16).padStart(2, "0"))
+          .join(" ")
+          .padEnd(20, " ")
+          .slice(0, 20)}  | ${line.$cstNode!.text}`
+      );
     }
+    // console.log(this.lstlines.join("\n"));
   }
 
   secondPassLabel(label: Label) {
@@ -131,25 +146,36 @@ class Assembler {
   }
 
   secondPassDirective(directive: Directive) {
+    const expressions = directive.expressionList.expressions;
     switch (directive.directive.toUpperCase()) {
       case "ORG":
-        this.curAddr = directive.expressionList.expressions[0].immediate!;
+        this.curAddr = expressions[0].immediate!;
         break;
       case "DB":
       case "DEFB":
-        directive.expressionList.expressions.forEach((expr) => {
+        expressions.forEach((expr) => {
           const exprRes = this.evalExpr(expr);
           this.addByte(exprRes);
         });
         break;
       case "DW":
       case "DEFW":
-        directive.expressionList.expressions.forEach((expr) => {
+        expressions.forEach((expr) => {
           const exprRes = this.evalExpr(expr);
           if (exprRes > 0xffff || exprRes < 0) throw Error("expr larger than 2 bytes");
           this.addByte(exprRes & 0xff);
           this.addByte((exprRes >> 8) & 0xff);
         });
+        break;
+      case "DEFS":
+        {
+          const bufferval = expressions.length == 2 ? this.evalExpr(expressions[1]) : 0;
+          let bufferlen = this.evalExpr(expressions[0]);
+          while (bufferlen > 0) {
+            this.addByte(bufferval);
+            bufferlen--;
+          }
+        }
         break;
     }
   }

@@ -72,11 +72,11 @@ const sendAsmDocumentChange = (document: LangiumDocument<AstNode>) => {
   labelMap.clear();
   Object.entries(labels).forEach((l) => labelMap.set(l[0], l[1]));
 
-  console.log(
-    Array.from(bytes)
-      .slice(121)
-      .map((b) => b.toString(16).padStart(2, "0"))
-  );
+  // console.log(
+  //   Array.from(bytes)
+  //     .slice(121)
+  //     .map((b) => b.toString(16).padStart(2, "0"))
+  // );
 
   const json = Asm.serializer.JsonSerializer.serialize(document.parseResult.value, {
     sourceText: false,
